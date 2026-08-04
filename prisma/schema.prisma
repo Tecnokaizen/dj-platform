@@ -189,22 +189,22 @@ enum TrackCreditType {
 }
 
 model User {
-  id             String       @id @default(cuid())
-  name           String?
-  email          String       @unique
-  emailVerified  DateTime?
-  image          String?
-  status         UserStatus   @default(INVITED)
-  role           UserRole     @default(READER)
-  securityVersion Int         @default(1)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id              String     @id @default(cuid())
+  name            String?
+  email           String     @unique
+  emailVerified   DateTime?
+  image           String?
+  status          UserStatus @default(INVITED)
+  role            UserRole   @default(READER)
+  securityVersion Int        @default(1)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
-  authoredArticles Article[]     @relation("ArticleAuthor")
-  reviewedAi      AiGeneration[] @relation("AiReviewer")
-  favorites       Favorite[]
-  auditEvents     AuditEvent[]   @relation("AuditActor")
-  importJobs      ImportJob[]    @relation("ImportCreator")
+  authoredArticles Article[]      @relation("ArticleAuthor")
+  reviewedAi       AiGeneration[] @relation("AiReviewer")
+  favorites        Favorite[]
+  auditEvents      AuditEvent[]   @relation("AuditActor")
+  importJobs       ImportJob[]    @relation("ImportCreator")
 
   @@index([status])
   @@index([role])
@@ -268,23 +268,23 @@ model Dj {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  country            Country?              @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  city               City?                 @relation(fields: [cityId], references: [id], onDelete: SetNull)
-  aliases            DjAlias[]
-  genres             DjGenre[]
-  appearances        FestivalAppearance[]
-  rankingEntries     RankingEntry[]
-  sessions           Session[]
-  socialProfiles     SocialProfile[]
-  externalProfiles   ExternalProfile[]
-  media               DjMedia[]
-  sources             DjSource[]
-  articles            ArticleDj[]
-  favorites           Favorite[]
-  trackCredits        TrackCredit[]
-  labels              DjLabel[]
-  similaritiesFrom    DjSimilarity[]       @relation("SimilaritySource")
-  similaritiesTo      DjSimilarity[]       @relation("SimilarityTarget")
+  country          Country?             @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  city             City?                @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  aliases          DjAlias[]
+  genres           DjGenre[]
+  appearances      FestivalAppearance[]
+  rankingEntries   RankingEntry[]
+  sessions         Session[]
+  socialProfiles   SocialProfile[]
+  externalProfiles ExternalProfile[]
+  media            DjMedia[]
+  sources          DjSource[]
+  articles         ArticleDj[]
+  favorites        Favorite[]
+  trackCredits     TrackCredit[]
+  labels           DjLabel[]
+  similaritiesFrom DjSimilarity[]       @relation("SimilaritySource")
+  similaritiesTo   DjSimilarity[]       @relation("SimilarityTarget")
 
   @@index([normalizedName])
   @@index([editorialStatus, publishedAt])
@@ -325,12 +325,12 @@ model Genre {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  parent          Genre?          @relation("GenreHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children        Genre[]         @relation("GenreHierarchy")
-  djs             DjGenre[]
-  articles        ArticleGenre[]
-  relatedFrom     GenreRelation[] @relation("GenreRelationSource")
-  relatedTo       GenreRelation[] @relation("GenreRelationTarget")
+  parent      Genre?          @relation("GenreHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Genre[]         @relation("GenreHierarchy")
+  djs         DjGenre[]
+  articles    ArticleGenre[]
+  relatedFrom GenreRelation[] @relation("GenreRelationSource")
+  relatedTo   GenreRelation[] @relation("GenreRelationTarget")
 
   @@index([normalizedName])
   @@index([parentId])
@@ -356,16 +356,16 @@ model GenreRelation {
 }
 
 model DjGenre {
-  id             String     @id @default(cuid())
+  id             String    @id @default(cuid())
   djId           String
   genreId        String
   sourceId       String?
-  role           GenreRole  @default(SECONDARY)
+  role           GenreRole @default(SECONDARY)
   weight         Int?
-  confidence     Decimal?   @db.Decimal(5, 4)
-  editorialNotes String?    @db.Text
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  confidence     Decimal?  @db.Decimal(5, 4)
+  editorialNotes String?   @db.Text
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   dj     Dj      @relation(fields: [djId], references: [id], onDelete: Cascade)
   genre  Genre   @relation(fields: [genreId], references: [id], onDelete: Cascade)
@@ -406,17 +406,17 @@ model Festival {
 }
 
 model FestivalEdition {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   festivalId  String
   name        String
   year        Int
   startsAt    DateTime?
   endsAt      DateTime?
   officialUrl String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  festival   Festival             @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+  festival    Festival             @relation(fields: [festivalId], references: [id], onDelete: Cascade)
   appearances FestivalAppearance[]
 
   @@unique([festivalId, year])
@@ -486,15 +486,15 @@ model RankingEdition {
 }
 
 model RankingEntry {
-  id                String   @id @default(cuid())
-  rankingEditionId  String
-  djId              String
-  position          Int
-  previousPosition  Int?
-  score             Decimal? @db.Decimal(10, 4)
-  editorialNote     String?  @db.Text
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String   @id @default(cuid())
+  rankingEditionId String
+  djId             String
+  position         Int
+  previousPosition Int?
+  score            Decimal? @db.Decimal(10, 4)
+  editorialNote    String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   rankingEdition RankingEdition @relation(fields: [rankingEditionId], references: [id], onDelete: Cascade)
   dj             Dj             @relation(fields: [djId], references: [id], onDelete: Cascade)
@@ -506,22 +506,22 @@ model RankingEntry {
 }
 
 model Session {
-  id              String          @id @default(cuid())
-  djId            String
-  slug            String          @unique
-  title           String
-  sessionType     SessionType
-  platform        ExternalPlatform
-  externalUrl     String
-  performedAt     DateTime?
+  id                  String           @id @default(cuid())
+  djId                String
+  slug                String           @unique
+  title               String
+  sessionType         SessionType
+  platform            ExternalPlatform
+  externalUrl         String
+  performedAt         DateTime?
   externalPublishedAt DateTime?
-  durationSeconds Int?
-  description     String?         @db.Text
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  durationSeconds     Int?
+  description         String?          @db.Text
+  editorialStatus     EditorialStatus  @default(DRAFT)
+  publishedAt         DateTime?
+  deletedAt           DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   dj Dj @relation(fields: [djId], references: [id], onDelete: Cascade)
 
@@ -709,13 +709,13 @@ model AuditEvent {
   id          String   @id @default(cuid())
   actorUserId String?
   action      String
-  entityType String
-  entityId   String?
-  beforeData Json?
-  afterData  Json?
-  ipHash     String?
-  requestId  String?
-  createdAt  DateTime @default(now())
+  entityType  String
+  entityId    String?
+  beforeData  Json?
+  afterData   Json?
+  ipHash      String?
+  requestId   String?
+  createdAt   DateTime @default(now())
 
   actor User? @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
 
@@ -726,23 +726,23 @@ model AuditEvent {
 }
 
 model ImportJob {
-  id             String       @id @default(cuid())
-  createdById    String?
-  originalName   String
-  storageKey     String?
-  mimeType       String?
-  checksum       String?
-  status         ImportStatus @default(PENDING)
-  totalRows      Int          @default(0)
-  validRows      Int          @default(0)
-  invalidRows    Int          @default(0)
-  duplicateRows  Int          @default(0)
-  importedRows   Int          @default(0)
-  startedAt      DateTime?
-  completedAt    DateTime?
-  errorMessage   String?      @db.Text
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id            String       @id @default(cuid())
+  createdById   String?
+  originalName  String
+  storageKey    String?
+  mimeType      String?
+  checksum      String?
+  status        ImportStatus @default(PENDING)
+  totalRows     Int          @default(0)
+  validRows     Int          @default(0)
+  invalidRows   Int          @default(0)
+  duplicateRows Int          @default(0)
+  importedRows  Int          @default(0)
+  startedAt     DateTime?
+  completedAt   DateTime?
+  errorMessage  String?      @db.Text
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   createdBy User?       @relation("ImportCreator", fields: [createdById], references: [id], onDelete: SetNull)
   rows      ImportRow[]
@@ -753,17 +753,17 @@ model ImportJob {
 }
 
 model ImportRow {
-  id             String          @id @default(cuid())
-  importJobId    String
-  rowNumber      Int
-  status         ImportRowStatus @default(PENDING)
-  rawData        Json
-  normalizedData Json?
+  id               String          @id @default(cuid())
+  importJobId      String
+  rowNumber        Int
+  status           ImportRowStatus @default(PENDING)
+  rawData          Json
+  normalizedData   Json?
   validationErrors Json?
-  entityType     String?
-  entityId       String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  entityType       String?
+  entityId         String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   importJob ImportJob @relation(fields: [importJobId], references: [id], onDelete: Cascade)
 
@@ -868,7 +868,7 @@ model Label {
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  country Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  country Country?  @relation(fields: [countryId], references: [id], onDelete: SetNull)
   djs     DjLabel[]
 
   @@index([normalizedName])
@@ -882,7 +882,7 @@ model DjLabel {
   role      String?
   startedAt DateTime?
   endedAt   DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
   dj    Dj    @relation(fields: [djId], references: [id], onDelete: Cascade)
   label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
