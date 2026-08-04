@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: dj-platform-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dj_platform
+      POSTGRES_PASSWORD: dj_platform_dev
+      POSTGRES_DB: dj_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - dj_platform_postgres_data:/var/lib/postgresql
+
+volumes:
+  dj_platform_postgres_data:
