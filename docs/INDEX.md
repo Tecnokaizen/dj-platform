@@ -124,3 +124,21 @@ Whenever a new document is created:
 4. Verify that no duplicated documentation exists.
 
 This file should always reflect the current state of the project documentation.
+
+## Architecture
+
+| Document            | Purpose                            | Status |
+| ------------------- | ---------------------------------- | ------ |
+| README.md           | Architecture reading guide         | ✅      |
+| ARCHITECTURE.md     | System architecture blueprint      | ✅      |
+| TECH_STACK.md       | Technology boundaries              | ✅      |
+| FOLDER_STRUCTURE.md | Repository and module structure    | ✅      |
+| DATABASE.md         | PostgreSQL and Prisma architecture | ✅      |
+| DATA_MODEL.md       | Domain entities and relationships  | ✅      |
+| API.md              | Server Actions and HTTP contracts  | ✅      |
+| AUTH.md             | Authentication and authorization   | ✅      |
+| AI.md               | AI provider and editorial workflow | ✅      |
+| CACHE.md            | Caching and invalidation           | ✅      |
+| SECURITY.md         | Security architecture              | ✅      |
+| DEPLOYMENT.md       | Docker and Coolify deployment      | ✅      |
+

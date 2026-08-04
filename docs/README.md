@@ -1,126 +1,241 @@
-# Documentation Index
+# Documentation Guide
 
-This file provides a complete map of the DJ Platform knowledge base.
+Welcome to the DJ Platform documentation.
 
----
+This directory contains the complete knowledge base of the project.
 
-# Foundation
+The documentation is organized by domains rather than by chronology.
 
-| Document            | Purpose              | Status |
-| ------------------- | -------------------- | ------ |
-| VISION.md           | Product vision       | ✅      |
-| PRD.md              | Product requirements | ✅      |
-| ROADMAP.md          | Product roadmap      | ⏳      |
-| GLOSSARY.md         | Shared terminology   | ⏳      |
-| DEVELOPMENT_PLAN.md | Development strategy | ⏳      |
+Every contributor—human or AI—should consult the relevant documentation before implementing new functionality.
 
 ---
 
-# Architecture
+# Documentation Principles
 
-| Document        | Purpose                 | Status |
-| --------------- | ----------------------- | ------ |
-| ARCHITECTURE.md | System architecture     | ⏳      |
-| TECH_STACK.md   | Technologies            | ⏳      |
-| DATA_MODEL.md   | Global data model       | ⏳      |
-| DATABASE.md     | Database design         | ⏳      |
-| API.md          | API conventions         | ⏳      |
-| AUTH.md         | Authentication          | ⏳      |
-| DEPLOYMENT.md   | Infrastructure          | ⏳      |
-| DECISIONS.md    | Architectural decisions | ⏳      |
+The documentation is considered part of the product.
+
+Code and documentation evolve together.
+
+If implementation changes but documentation does not, the task is incomplete.
 
 ---
 
-# Domain
+# Reading Order
 
-| Document    | Purpose           | Status |
-| ----------- | ----------------- | ------ |
-| DJ.md       | DJ entity         | ⏳      |
-| GENRE.md    | Genre entity      | ⏳      |
-| FESTIVAL.md | Festival entity   | ⏳      |
-| TRACK.md    | Track entity      | ⏳      |
-| RANKING.md  | Ranking entity    | ⏳      |
-| CONTENT.md  | Editorial content | ⏳      |
+New contributors should follow this order.
 
----
-
-# Frontend
-
-| Document         | Purpose           | Status |
-| ---------------- | ----------------- | ------ |
-| DESIGN_SYSTEM.md | UI system         | ⏳      |
-| COMPONENTS.md    | Shared components | ⏳      |
-| PAGES.md         | Public pages      | ⏳      |
-| ADMIN.md         | Admin interface   | ⏳      |
+1. `/PROJECT_CONTEXT.md`
+2. `/AGENTS.md`
+3. `/README.md`
+4. `/docs/foundation/`
+5. `/docs/architecture/`
+6. `/docs/domain/`
+7. `/docs/frontend/`
+8. `/docs/backend/`
+9. `/docs/seo/`
+10. `/docs/operations/`
 
 ---
 
-# Backend
+# Documentation Domains
 
-| Document      | Purpose             | Status |
-| ------------- | ------------------- | ------ |
-| SERVICES.md   | Service layer       | ⏳      |
-| VALIDATION.md | Validation strategy | ⏳      |
-| IMPORTERS.md  | Data import system  | ⏳      |
-| AI.md         | AI integrations     | ⏳      |
+## Foundation
 
----
+Defines the product itself.
 
-# SEO
+Includes:
 
-| Document            | Purpose          | Status |
-| ------------------- | ---------------- | ------ |
-| SEO_STRATEGY.md     | SEO architecture | ⏳      |
-| URLS.md             | URL conventions  | ⏳      |
-| SCHEMA.md           | Structured data  | ⏳      |
-| INTERNAL_LINKING.md | Internal links   | ⏳      |
+- Vision
+- PRD
+- Roadmap
+- Glossary
 
 ---
 
-# Operations
+## Architecture
 
-| Document       | Purpose                | Status |
-| -------------- | ---------------------- | ------ |
-| DEPLOYMENT.md  | Deployment process     | ⏳      |
-| SECURITY.md    | Security policies      | ⏳      |
-| MONITORING.md  | Monitoring             | ⏳      |
-| BACKUPS.md     | Backup strategy        | ⏳      |
-| MAINTENANCE.md | Maintenance procedures | ⏳      |
+Explains how the system is built.
+
+Includes:
+
+- System Architecture
+- Tech Stack
+- Database
+- APIs
+- Authentication
+- Deployment
+- Architectural Decisions
 
 ---
 
-# ADR
+## Domain
+
+Defines the business entities.
+
+Examples:
+
+- DJ
+- Genre
+- Festival
+- Ranking
+- Track
+- Playlist
+- Label
+
+---
+
+## Frontend
+
+Documents:
+
+- Design System
+- Components
+- Pages
+- UI patterns
+- Accessibility
+
+---
+
+## Backend
+
+Documents:
+
+- Services
+- Validation
+- Importers
+- AI integrations
+- Business logic
+
+---
+
+## SEO
+
+Contains:
+
+- URL Strategy
+- Metadata
+- Structured Data
+- Internal Linking
+- Content Strategy
+
+---
+
+## Operations
+
+Contains:
+
+- Deployment
+- Monitoring
+- Security
+- Backups
+- Maintenance
+
+---
+
+## ADR
 
 Architecture Decision Records.
 
-| Document                   | Purpose                  |
-| -------------------------- | ------------------------ |
-| 0001-project-foundation.md | Project initialization   |
-| 0002-tech-stack.md         | Technology selection     |
-| 0003-database.md           | Database decisions       |
-| 0004-authentication.md     | Authentication decisions |
-| 0005-deployment.md         | Infrastructure decisions |
+Every important technical decision must be documented before implementation.
+
+Examples:
+
+- Why Prisma was selected.
+- Why PostgreSQL was selected.
+- Why Coolify was selected.
 
 ---
 
-# Legend
+# Documentation Rules
 
-| Symbol | Meaning     |
-| ------ | ----------- |
-| ✅      | Completed   |
-| 🚧      | In Progress |
-| ⏳      | Planned     |
-| ❌      | Deprecated  |
+Every document should:
+
+- solve one problem
+- have a single responsibility
+- avoid duplication
+- reference related documents
+- remain concise when possible
 
 ---
 
-# Maintenance
+# Naming Convention
 
-Whenever a new document is created:
+Use:
 
-1. Add it to this index.
-2. Link related documents.
-3. Update its status.
-4. Verify that no duplicated documentation exists.
+UPPER_CASE.md
 
-This file should always reflect the current state of the project documentation.
+Examples:
+
+```
+PRD.md
+
+VISION.md
+
+DATABASE.md
+
+AUTH.md
+```
+
+Avoid:
+
+```
+prd-final.md
+
+new-document.md
+
+document-v2.md
+```
+
+Versioning belongs inside the document, not in the filename.
+
+---
+
+# Ownership
+
+Documentation belongs to the project.
+
+Not to a developer.
+
+Not to an AI.
+
+Every contributor is responsible for keeping it accurate.
+
+---
+
+# Documentation Workflow
+
+```
+Idea
+
+↓
+
+Documentation
+
+↓
+
+Review
+
+↓
+
+Architecture
+
+↓
+
+Implementation
+
+↓
+
+Testing
+
+↓
+
+Deployment
+```
+
+Implementation never comes first.
+
+---
+
+# Golden Rule
+
+If a future developer cannot understand the project by reading this documentation, then the documentation is incomplete.

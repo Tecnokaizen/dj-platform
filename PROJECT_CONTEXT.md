@@ -355,3 +355,34 @@ A new developer or AI agent should understand the project in less than five minu
 4. The relevant documentation for the task.
 
 If additional explanations are required, documentation is considered incomplete.
+
+# Suggested PROJECT_CONTEXT.md update
+
+## Current architecture status
+
+Architecture Pack v2 completed as draft.
+
+## Completed architecture documents
+
+- DATABASE.md
+- DATA_MODEL.md
+- API.md
+- AUTH.md
+- AI.md
+- CACHE.md
+- SECURITY.md
+- DEPLOYMENT.md
+
+## ADRs required before implementation
+
+- internal identifier strategy
+- authentication method
+- permissions persistence
+- media storage provider
+- deployment branch strategy
+- AI provider routing
+- multilingual data strategy
+
+## Next priority
+
+Create ADRs and convert DATA_MODEL.md into the first Prisma schema specification.
