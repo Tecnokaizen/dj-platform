@@ -26,45 +26,33 @@ export type AggregateGenre = {
 
 export type GenreMinAggregateOutputType = {
   id: string | null
-  parentId: string | null
-  slug: string | null
   name: string | null
   normalizedName: string | null
+  slug: string | null
+  parentId: string | null
   description: string | null
-  history: string | null
-  editorialStatus: $Enums.EditorialStatus | null
-  publishedAt: Date | null
-  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type GenreMaxAggregateOutputType = {
   id: string | null
-  parentId: string | null
-  slug: string | null
   name: string | null
   normalizedName: string | null
+  slug: string | null
+  parentId: string | null
   description: string | null
-  history: string | null
-  editorialStatus: $Enums.EditorialStatus | null
-  publishedAt: Date | null
-  deletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type GenreCountAggregateOutputType = {
   id: number
-  parentId: number
-  slug: number
   name: number
   normalizedName: number
+  slug: number
+  parentId: number
   description: number
-  history: number
-  editorialStatus: number
-  publishedAt: number
-  deletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -73,45 +61,33 @@ export type GenreCountAggregateOutputType = {
 
 export type GenreMinAggregateInputType = {
   id?: true
-  parentId?: true
-  slug?: true
   name?: true
   normalizedName?: true
+  slug?: true
+  parentId?: true
   description?: true
-  history?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type GenreMaxAggregateInputType = {
   id?: true
-  parentId?: true
-  slug?: true
   name?: true
   normalizedName?: true
+  slug?: true
+  parentId?: true
   description?: true
-  history?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type GenreCountAggregateInputType = {
   id?: true
-  parentId?: true
-  slug?: true
   name?: true
   normalizedName?: true
+  slug?: true
+  parentId?: true
   description?: true
-  history?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -191,15 +167,11 @@ export type GenreGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type GenreGroupByOutputType = {
   id: string
-  parentId: string | null
-  slug: string
   name: string
   normalizedName: string
+  slug: string
+  parentId: string | null
   description: string | null
-  history: string | null
-  editorialStatus: $Enums.EditorialStatus
-  publishedAt: Date | null
-  deletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: GenreCountAggregateOutputType | null
@@ -226,45 +198,31 @@ export type GenreWhereInput = {
   AND?: Prisma.GenreWhereInput | Prisma.GenreWhereInput[]
   OR?: Prisma.GenreWhereInput[]
   NOT?: Prisma.GenreWhereInput | Prisma.GenreWhereInput[]
-  id?: Prisma.StringFilter<"Genre"> | string
-  parentId?: Prisma.StringNullableFilter<"Genre"> | string | null
-  slug?: Prisma.StringFilter<"Genre"> | string
+  id?: Prisma.UuidFilter<"Genre"> | string
   name?: Prisma.StringFilter<"Genre"> | string
   normalizedName?: Prisma.StringFilter<"Genre"> | string
+  slug?: Prisma.StringFilter<"Genre"> | string
+  parentId?: Prisma.UuidNullableFilter<"Genre"> | string | null
   description?: Prisma.StringNullableFilter<"Genre"> | string | null
-  history?: Prisma.StringNullableFilter<"Genre"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Genre"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Genre"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Genre"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Genre"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Genre"> | Date | string
   parent?: Prisma.XOR<Prisma.GenreNullableScalarRelationFilter, Prisma.GenreWhereInput> | null
   children?: Prisma.GenreListRelationFilter
-  djs?: Prisma.DjGenreListRelationFilter
-  articles?: Prisma.ArticleGenreListRelationFilter
-  relatedFrom?: Prisma.GenreRelationListRelationFilter
-  relatedTo?: Prisma.GenreRelationListRelationFilter
+  tracks?: Prisma.TrackGenreListRelationFilter
 }
 
 export type GenreOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  history?: Prisma.SortOrderInput | Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   parent?: Prisma.GenreOrderByWithRelationInput
   children?: Prisma.GenreOrderByRelationAggregateInput
-  djs?: Prisma.DjGenreOrderByRelationAggregateInput
-  articles?: Prisma.ArticleGenreOrderByRelationAggregateInput
-  relatedFrom?: Prisma.GenreRelationOrderByRelationAggregateInput
-  relatedTo?: Prisma.GenreRelationOrderByRelationAggregateInput
+  tracks?: Prisma.TrackGenreOrderByRelationAggregateInput
 }
 
 export type GenreWhereUniqueInput = Prisma.AtLeast<{
@@ -273,35 +231,24 @@ export type GenreWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.GenreWhereInput | Prisma.GenreWhereInput[]
   OR?: Prisma.GenreWhereInput[]
   NOT?: Prisma.GenreWhereInput | Prisma.GenreWhereInput[]
-  parentId?: Prisma.StringNullableFilter<"Genre"> | string | null
   name?: Prisma.StringFilter<"Genre"> | string
   normalizedName?: Prisma.StringFilter<"Genre"> | string
+  parentId?: Prisma.UuidNullableFilter<"Genre"> | string | null
   description?: Prisma.StringNullableFilter<"Genre"> | string | null
-  history?: Prisma.StringNullableFilter<"Genre"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Genre"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Genre"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Genre"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Genre"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Genre"> | Date | string
   parent?: Prisma.XOR<Prisma.GenreNullableScalarRelationFilter, Prisma.GenreWhereInput> | null
   children?: Prisma.GenreListRelationFilter
-  djs?: Prisma.DjGenreListRelationFilter
-  articles?: Prisma.ArticleGenreListRelationFilter
-  relatedFrom?: Prisma.GenreRelationListRelationFilter
-  relatedTo?: Prisma.GenreRelationListRelationFilter
+  tracks?: Prisma.TrackGenreListRelationFilter
 }, "id" | "slug">
 
 export type GenreOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  history?: Prisma.SortOrderInput | Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.GenreCountOrderByAggregateInput
@@ -313,140 +260,96 @@ export type GenreScalarWhereWithAggregatesInput = {
   AND?: Prisma.GenreScalarWhereWithAggregatesInput | Prisma.GenreScalarWhereWithAggregatesInput[]
   OR?: Prisma.GenreScalarWhereWithAggregatesInput[]
   NOT?: Prisma.GenreScalarWhereWithAggregatesInput | Prisma.GenreScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Genre"> | string
-  parentId?: Prisma.StringNullableWithAggregatesFilter<"Genre"> | string | null
-  slug?: Prisma.StringWithAggregatesFilter<"Genre"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Genre"> | string
   name?: Prisma.StringWithAggregatesFilter<"Genre"> | string
   normalizedName?: Prisma.StringWithAggregatesFilter<"Genre"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"Genre"> | string
+  parentId?: Prisma.UuidNullableWithAggregatesFilter<"Genre"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"Genre"> | string | null
-  history?: Prisma.StringNullableWithAggregatesFilter<"Genre"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusWithAggregatesFilter<"Genre"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Genre"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Genre"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Genre"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Genre"> | Date | string
 }
 
 export type GenreCreateInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
+  slug: string
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   parent?: Prisma.GenreCreateNestedOneWithoutChildrenInput
   children?: Prisma.GenreCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationCreateNestedManyWithoutTargetGenreInput
+  tracks?: Prisma.TrackGenreCreateNestedManyWithoutGenreInput
 }
 
 export type GenreUncheckedCreateInput = {
   id?: string
-  parentId?: string | null
-  slug: string
   name: string
   normalizedName: string
+  slug: string
+  parentId?: string | null
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.GenreUncheckedCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreUncheckedCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutTargetGenreInput
+  tracks?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutGenreInput
 }
 
 export type GenreUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.GenreUpdateOneWithoutChildrenNestedInput
   children?: Prisma.GenreUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUpdateManyWithoutTargetGenreNestedInput
+  tracks?: Prisma.TrackGenreUpdateManyWithoutGenreNestedInput
 }
 
 export type GenreUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GenreUncheckedUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUncheckedUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUncheckedUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUncheckedUpdateManyWithoutTargetGenreNestedInput
+  tracks?: Prisma.TrackGenreUncheckedUpdateManyWithoutGenreNestedInput
 }
 
 export type GenreCreateManyInput = {
   id?: string
-  parentId?: string | null
-  slug: string
   name: string
   normalizedName: string
+  slug: string
+  parentId?: string | null
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type GenreUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type GenreUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -468,45 +371,33 @@ export type GenreOrderByRelationAggregateInput = {
 
 export type GenreCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  parentId?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  history?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type GenreMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  parentId?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  history?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type GenreMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  parentId?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  parentId?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  history?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -574,98 +465,42 @@ export type GenreUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.GenreScalarWhereInput | Prisma.GenreScalarWhereInput[]
 }
 
-export type GenreCreateNestedOneWithoutRelatedFromInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutRelatedFromInput, Prisma.GenreUncheckedCreateWithoutRelatedFromInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutRelatedFromInput
+export type GenreCreateNestedOneWithoutTracksInput = {
+  create?: Prisma.XOR<Prisma.GenreCreateWithoutTracksInput, Prisma.GenreUncheckedCreateWithoutTracksInput>
+  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutTracksInput
   connect?: Prisma.GenreWhereUniqueInput
 }
 
-export type GenreCreateNestedOneWithoutRelatedToInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutRelatedToInput, Prisma.GenreUncheckedCreateWithoutRelatedToInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutRelatedToInput
+export type GenreUpdateOneRequiredWithoutTracksNestedInput = {
+  create?: Prisma.XOR<Prisma.GenreCreateWithoutTracksInput, Prisma.GenreUncheckedCreateWithoutTracksInput>
+  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutTracksInput
+  upsert?: Prisma.GenreUpsertWithoutTracksInput
   connect?: Prisma.GenreWhereUniqueInput
-}
-
-export type GenreUpdateOneRequiredWithoutRelatedFromNestedInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutRelatedFromInput, Prisma.GenreUncheckedCreateWithoutRelatedFromInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutRelatedFromInput
-  upsert?: Prisma.GenreUpsertWithoutRelatedFromInput
-  connect?: Prisma.GenreWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GenreUpdateToOneWithWhereWithoutRelatedFromInput, Prisma.GenreUpdateWithoutRelatedFromInput>, Prisma.GenreUncheckedUpdateWithoutRelatedFromInput>
-}
-
-export type GenreUpdateOneRequiredWithoutRelatedToNestedInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutRelatedToInput, Prisma.GenreUncheckedCreateWithoutRelatedToInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutRelatedToInput
-  upsert?: Prisma.GenreUpsertWithoutRelatedToInput
-  connect?: Prisma.GenreWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GenreUpdateToOneWithWhereWithoutRelatedToInput, Prisma.GenreUpdateWithoutRelatedToInput>, Prisma.GenreUncheckedUpdateWithoutRelatedToInput>
-}
-
-export type GenreCreateNestedOneWithoutDjsInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutDjsInput, Prisma.GenreUncheckedCreateWithoutDjsInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutDjsInput
-  connect?: Prisma.GenreWhereUniqueInput
-}
-
-export type GenreUpdateOneRequiredWithoutDjsNestedInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutDjsInput, Prisma.GenreUncheckedCreateWithoutDjsInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutDjsInput
-  upsert?: Prisma.GenreUpsertWithoutDjsInput
-  connect?: Prisma.GenreWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GenreUpdateToOneWithWhereWithoutDjsInput, Prisma.GenreUpdateWithoutDjsInput>, Prisma.GenreUncheckedUpdateWithoutDjsInput>
-}
-
-export type GenreCreateNestedOneWithoutArticlesInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutArticlesInput, Prisma.GenreUncheckedCreateWithoutArticlesInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutArticlesInput
-  connect?: Prisma.GenreWhereUniqueInput
-}
-
-export type GenreUpdateOneRequiredWithoutArticlesNestedInput = {
-  create?: Prisma.XOR<Prisma.GenreCreateWithoutArticlesInput, Prisma.GenreUncheckedCreateWithoutArticlesInput>
-  connectOrCreate?: Prisma.GenreCreateOrConnectWithoutArticlesInput
-  upsert?: Prisma.GenreUpsertWithoutArticlesInput
-  connect?: Prisma.GenreWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.GenreUpdateToOneWithWhereWithoutArticlesInput, Prisma.GenreUpdateWithoutArticlesInput>, Prisma.GenreUncheckedUpdateWithoutArticlesInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GenreUpdateToOneWithWhereWithoutTracksInput, Prisma.GenreUpdateWithoutTracksInput>, Prisma.GenreUncheckedUpdateWithoutTracksInput>
 }
 
 export type GenreCreateWithoutChildrenInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
+  slug: string
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   parent?: Prisma.GenreCreateNestedOneWithoutChildrenInput
-  djs?: Prisma.DjGenreCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationCreateNestedManyWithoutTargetGenreInput
+  tracks?: Prisma.TrackGenreCreateNestedManyWithoutGenreInput
 }
 
 export type GenreUncheckedCreateWithoutChildrenInput = {
   id?: string
-  parentId?: string | null
-  slug: string
   name: string
   normalizedName: string
+  slug: string
+  parentId?: string | null
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  djs?: Prisma.DjGenreUncheckedCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutTargetGenreInput
+  tracks?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutGenreInput
 }
 
 export type GenreCreateOrConnectWithoutChildrenInput = {
@@ -675,40 +510,26 @@ export type GenreCreateOrConnectWithoutChildrenInput = {
 
 export type GenreCreateWithoutParentInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
+  slug: string
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.GenreCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationCreateNestedManyWithoutTargetGenreInput
+  tracks?: Prisma.TrackGenreCreateNestedManyWithoutGenreInput
 }
 
 export type GenreUncheckedCreateWithoutParentInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
+  slug: string
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.GenreUncheckedCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreUncheckedCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutTargetGenreInput
+  tracks?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutGenreInput
 }
 
 export type GenreCreateOrConnectWithoutParentInput = {
@@ -734,40 +555,26 @@ export type GenreUpdateToOneWithWhereWithoutChildrenInput = {
 
 export type GenreUpdateWithoutChildrenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.GenreUpdateOneWithoutChildrenNestedInput
-  djs?: Prisma.DjGenreUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUpdateManyWithoutTargetGenreNestedInput
+  tracks?: Prisma.TrackGenreUpdateManyWithoutGenreNestedInput
 }
 
 export type GenreUncheckedUpdateWithoutChildrenInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  djs?: Prisma.DjGenreUncheckedUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUncheckedUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUncheckedUpdateManyWithoutTargetGenreNestedInput
+  tracks?: Prisma.TrackGenreUncheckedUpdateManyWithoutGenreNestedInput
 }
 
 export type GenreUpsertWithWhereUniqueWithoutParentInput = {
@@ -790,450 +597,120 @@ export type GenreScalarWhereInput = {
   AND?: Prisma.GenreScalarWhereInput | Prisma.GenreScalarWhereInput[]
   OR?: Prisma.GenreScalarWhereInput[]
   NOT?: Prisma.GenreScalarWhereInput | Prisma.GenreScalarWhereInput[]
-  id?: Prisma.StringFilter<"Genre"> | string
-  parentId?: Prisma.StringNullableFilter<"Genre"> | string | null
-  slug?: Prisma.StringFilter<"Genre"> | string
+  id?: Prisma.UuidFilter<"Genre"> | string
   name?: Prisma.StringFilter<"Genre"> | string
   normalizedName?: Prisma.StringFilter<"Genre"> | string
+  slug?: Prisma.StringFilter<"Genre"> | string
+  parentId?: Prisma.UuidNullableFilter<"Genre"> | string | null
   description?: Prisma.StringNullableFilter<"Genre"> | string | null
-  history?: Prisma.StringNullableFilter<"Genre"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Genre"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Genre"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Genre"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Genre"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Genre"> | Date | string
 }
 
-export type GenreCreateWithoutRelatedFromInput = {
+export type GenreCreateWithoutTracksInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
+  slug: string
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   parent?: Prisma.GenreCreateNestedOneWithoutChildrenInput
   children?: Prisma.GenreCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreCreateNestedManyWithoutGenreInput
-  relatedTo?: Prisma.GenreRelationCreateNestedManyWithoutTargetGenreInput
 }
 
-export type GenreUncheckedCreateWithoutRelatedFromInput = {
+export type GenreUncheckedCreateWithoutTracksInput = {
   id?: string
-  parentId?: string | null
-  slug: string
   name: string
   normalizedName: string
+  slug: string
+  parentId?: string | null
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   children?: Prisma.GenreUncheckedCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreUncheckedCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedTo?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutTargetGenreInput
 }
 
-export type GenreCreateOrConnectWithoutRelatedFromInput = {
+export type GenreCreateOrConnectWithoutTracksInput = {
   where: Prisma.GenreWhereUniqueInput
-  create: Prisma.XOR<Prisma.GenreCreateWithoutRelatedFromInput, Prisma.GenreUncheckedCreateWithoutRelatedFromInput>
+  create: Prisma.XOR<Prisma.GenreCreateWithoutTracksInput, Prisma.GenreUncheckedCreateWithoutTracksInput>
 }
 
-export type GenreCreateWithoutRelatedToInput = {
-  id?: string
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  parent?: Prisma.GenreCreateNestedOneWithoutChildrenInput
-  children?: Prisma.GenreCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationCreateNestedManyWithoutSourceGenreInput
-}
-
-export type GenreUncheckedCreateWithoutRelatedToInput = {
-  id?: string
-  parentId?: string | null
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  children?: Prisma.GenreUncheckedCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreUncheckedCreateNestedManyWithoutGenreInput
-  articles?: Prisma.ArticleGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutSourceGenreInput
-}
-
-export type GenreCreateOrConnectWithoutRelatedToInput = {
-  where: Prisma.GenreWhereUniqueInput
-  create: Prisma.XOR<Prisma.GenreCreateWithoutRelatedToInput, Prisma.GenreUncheckedCreateWithoutRelatedToInput>
-}
-
-export type GenreUpsertWithoutRelatedFromInput = {
-  update: Prisma.XOR<Prisma.GenreUpdateWithoutRelatedFromInput, Prisma.GenreUncheckedUpdateWithoutRelatedFromInput>
-  create: Prisma.XOR<Prisma.GenreCreateWithoutRelatedFromInput, Prisma.GenreUncheckedCreateWithoutRelatedFromInput>
+export type GenreUpsertWithoutTracksInput = {
+  update: Prisma.XOR<Prisma.GenreUpdateWithoutTracksInput, Prisma.GenreUncheckedUpdateWithoutTracksInput>
+  create: Prisma.XOR<Prisma.GenreCreateWithoutTracksInput, Prisma.GenreUncheckedCreateWithoutTracksInput>
   where?: Prisma.GenreWhereInput
 }
 
-export type GenreUpdateToOneWithWhereWithoutRelatedFromInput = {
+export type GenreUpdateToOneWithWhereWithoutTracksInput = {
   where?: Prisma.GenreWhereInput
-  data: Prisma.XOR<Prisma.GenreUpdateWithoutRelatedFromInput, Prisma.GenreUncheckedUpdateWithoutRelatedFromInput>
+  data: Prisma.XOR<Prisma.GenreUpdateWithoutTracksInput, Prisma.GenreUncheckedUpdateWithoutTracksInput>
 }
 
-export type GenreUpdateWithoutRelatedFromInput = {
+export type GenreUpdateWithoutTracksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.GenreUpdateOneWithoutChildrenNestedInput
   children?: Prisma.GenreUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUpdateManyWithoutGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUpdateManyWithoutTargetGenreNestedInput
 }
 
-export type GenreUncheckedUpdateWithoutRelatedFromInput = {
+export type GenreUncheckedUpdateWithoutTracksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GenreUncheckedUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUncheckedUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUncheckedUpdateManyWithoutTargetGenreNestedInput
-}
-
-export type GenreUpsertWithoutRelatedToInput = {
-  update: Prisma.XOR<Prisma.GenreUpdateWithoutRelatedToInput, Prisma.GenreUncheckedUpdateWithoutRelatedToInput>
-  create: Prisma.XOR<Prisma.GenreCreateWithoutRelatedToInput, Prisma.GenreUncheckedCreateWithoutRelatedToInput>
-  where?: Prisma.GenreWhereInput
-}
-
-export type GenreUpdateToOneWithWhereWithoutRelatedToInput = {
-  where?: Prisma.GenreWhereInput
-  data: Prisma.XOR<Prisma.GenreUpdateWithoutRelatedToInput, Prisma.GenreUncheckedUpdateWithoutRelatedToInput>
-}
-
-export type GenreUpdateWithoutRelatedToInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.GenreUpdateOneWithoutChildrenNestedInput
-  children?: Prisma.GenreUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUpdateManyWithoutSourceGenreNestedInput
-}
-
-export type GenreUncheckedUpdateWithoutRelatedToInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  children?: Prisma.GenreUncheckedUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUncheckedUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUncheckedUpdateManyWithoutSourceGenreNestedInput
-}
-
-export type GenreCreateWithoutDjsInput = {
-  id?: string
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  parent?: Prisma.GenreCreateNestedOneWithoutChildrenInput
-  children?: Prisma.GenreCreateNestedManyWithoutParentInput
-  articles?: Prisma.ArticleGenreCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationCreateNestedManyWithoutTargetGenreInput
-}
-
-export type GenreUncheckedCreateWithoutDjsInput = {
-  id?: string
-  parentId?: string | null
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  children?: Prisma.GenreUncheckedCreateNestedManyWithoutParentInput
-  articles?: Prisma.ArticleGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutTargetGenreInput
-}
-
-export type GenreCreateOrConnectWithoutDjsInput = {
-  where: Prisma.GenreWhereUniqueInput
-  create: Prisma.XOR<Prisma.GenreCreateWithoutDjsInput, Prisma.GenreUncheckedCreateWithoutDjsInput>
-}
-
-export type GenreUpsertWithoutDjsInput = {
-  update: Prisma.XOR<Prisma.GenreUpdateWithoutDjsInput, Prisma.GenreUncheckedUpdateWithoutDjsInput>
-  create: Prisma.XOR<Prisma.GenreCreateWithoutDjsInput, Prisma.GenreUncheckedCreateWithoutDjsInput>
-  where?: Prisma.GenreWhereInput
-}
-
-export type GenreUpdateToOneWithWhereWithoutDjsInput = {
-  where?: Prisma.GenreWhereInput
-  data: Prisma.XOR<Prisma.GenreUpdateWithoutDjsInput, Prisma.GenreUncheckedUpdateWithoutDjsInput>
-}
-
-export type GenreUpdateWithoutDjsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.GenreUpdateOneWithoutChildrenNestedInput
-  children?: Prisma.GenreUpdateManyWithoutParentNestedInput
-  articles?: Prisma.ArticleGenreUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUpdateManyWithoutTargetGenreNestedInput
-}
-
-export type GenreUncheckedUpdateWithoutDjsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  children?: Prisma.GenreUncheckedUpdateManyWithoutParentNestedInput
-  articles?: Prisma.ArticleGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUncheckedUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUncheckedUpdateManyWithoutTargetGenreNestedInput
-}
-
-export type GenreCreateWithoutArticlesInput = {
-  id?: string
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  parent?: Prisma.GenreCreateNestedOneWithoutChildrenInput
-  children?: Prisma.GenreCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationCreateNestedManyWithoutTargetGenreInput
-}
-
-export type GenreUncheckedCreateWithoutArticlesInput = {
-  id?: string
-  parentId?: string | null
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  children?: Prisma.GenreUncheckedCreateNestedManyWithoutParentInput
-  djs?: Prisma.DjGenreUncheckedCreateNestedManyWithoutGenreInput
-  relatedFrom?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutSourceGenreInput
-  relatedTo?: Prisma.GenreRelationUncheckedCreateNestedManyWithoutTargetGenreInput
-}
-
-export type GenreCreateOrConnectWithoutArticlesInput = {
-  where: Prisma.GenreWhereUniqueInput
-  create: Prisma.XOR<Prisma.GenreCreateWithoutArticlesInput, Prisma.GenreUncheckedCreateWithoutArticlesInput>
-}
-
-export type GenreUpsertWithoutArticlesInput = {
-  update: Prisma.XOR<Prisma.GenreUpdateWithoutArticlesInput, Prisma.GenreUncheckedUpdateWithoutArticlesInput>
-  create: Prisma.XOR<Prisma.GenreCreateWithoutArticlesInput, Prisma.GenreUncheckedCreateWithoutArticlesInput>
-  where?: Prisma.GenreWhereInput
-}
-
-export type GenreUpdateToOneWithWhereWithoutArticlesInput = {
-  where?: Prisma.GenreWhereInput
-  data: Prisma.XOR<Prisma.GenreUpdateWithoutArticlesInput, Prisma.GenreUncheckedUpdateWithoutArticlesInput>
-}
-
-export type GenreUpdateWithoutArticlesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  parent?: Prisma.GenreUpdateOneWithoutChildrenNestedInput
-  children?: Prisma.GenreUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUpdateManyWithoutTargetGenreNestedInput
-}
-
-export type GenreUncheckedUpdateWithoutArticlesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  children?: Prisma.GenreUncheckedUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUncheckedUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUncheckedUpdateManyWithoutTargetGenreNestedInput
 }
 
 export type GenreCreateManyParentInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
+  slug: string
   description?: string | null
-  history?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type GenreUpdateWithoutParentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GenreUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUpdateManyWithoutTargetGenreNestedInput
+  tracks?: Prisma.TrackGenreUpdateManyWithoutGenreNestedInput
 }
 
 export type GenreUncheckedUpdateWithoutParentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.GenreUncheckedUpdateManyWithoutParentNestedInput
-  djs?: Prisma.DjGenreUncheckedUpdateManyWithoutGenreNestedInput
-  articles?: Prisma.ArticleGenreUncheckedUpdateManyWithoutGenreNestedInput
-  relatedFrom?: Prisma.GenreRelationUncheckedUpdateManyWithoutSourceGenreNestedInput
-  relatedTo?: Prisma.GenreRelationUncheckedUpdateManyWithoutTargetGenreNestedInput
+  tracks?: Prisma.TrackGenreUncheckedUpdateManyWithoutGenreNestedInput
 }
 
 export type GenreUncheckedUpdateManyWithoutParentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  history?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1245,18 +722,12 @@ export type GenreUncheckedUpdateManyWithoutParentInput = {
 
 export type GenreCountOutputType = {
   children: number
-  djs: number
-  articles: number
-  relatedFrom: number
-  relatedTo: number
+  tracks: number
 }
 
 export type GenreCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | GenreCountOutputTypeCountChildrenArgs
-  djs?: boolean | GenreCountOutputTypeCountDjsArgs
-  articles?: boolean | GenreCountOutputTypeCountArticlesArgs
-  relatedFrom?: boolean | GenreCountOutputTypeCountRelatedFromArgs
-  relatedTo?: boolean | GenreCountOutputTypeCountRelatedToArgs
+  tracks?: boolean | GenreCountOutputTypeCountTracksArgs
 }
 
 /**
@@ -1279,65 +750,33 @@ export type GenreCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.Types.
 /**
  * GenreCountOutputType without action
  */
-export type GenreCountOutputTypeCountDjsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DjGenreWhereInput
-}
-
-/**
- * GenreCountOutputType without action
- */
-export type GenreCountOutputTypeCountArticlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ArticleGenreWhereInput
-}
-
-/**
- * GenreCountOutputType without action
- */
-export type GenreCountOutputTypeCountRelatedFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.GenreRelationWhereInput
-}
-
-/**
- * GenreCountOutputType without action
- */
-export type GenreCountOutputTypeCountRelatedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.GenreRelationWhereInput
+export type GenreCountOutputTypeCountTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrackGenreWhereInput
 }
 
 
 export type GenreSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  parentId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
+  slug?: boolean
+  parentId?: boolean
   description?: boolean
-  history?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   parent?: boolean | Prisma.Genre$parentArgs<ExtArgs>
   children?: boolean | Prisma.Genre$childrenArgs<ExtArgs>
-  djs?: boolean | Prisma.Genre$djsArgs<ExtArgs>
-  articles?: boolean | Prisma.Genre$articlesArgs<ExtArgs>
-  relatedFrom?: boolean | Prisma.Genre$relatedFromArgs<ExtArgs>
-  relatedTo?: boolean | Prisma.Genre$relatedToArgs<ExtArgs>
+  tracks?: boolean | Prisma.Genre$tracksArgs<ExtArgs>
   _count?: boolean | Prisma.GenreCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["genre"]>
 
 export type GenreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  parentId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
+  slug?: boolean
+  parentId?: boolean
   description?: boolean
-  history?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   parent?: boolean | Prisma.Genre$parentArgs<ExtArgs>
@@ -1345,15 +784,11 @@ export type GenreSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type GenreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  parentId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
+  slug?: boolean
+  parentId?: boolean
   description?: boolean
-  history?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   parent?: boolean | Prisma.Genre$parentArgs<ExtArgs>
@@ -1361,27 +796,20 @@ export type GenreSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type GenreSelectScalar = {
   id?: boolean
-  parentId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
+  slug?: boolean
+  parentId?: boolean
   description?: boolean
-  history?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GenreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "parentId" | "slug" | "name" | "normalizedName" | "description" | "history" | "editorialStatus" | "publishedAt" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["genre"]>
+export type GenreOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "normalizedName" | "slug" | "parentId" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["genre"]>
 export type GenreInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   parent?: boolean | Prisma.Genre$parentArgs<ExtArgs>
   children?: boolean | Prisma.Genre$childrenArgs<ExtArgs>
-  djs?: boolean | Prisma.Genre$djsArgs<ExtArgs>
-  articles?: boolean | Prisma.Genre$articlesArgs<ExtArgs>
-  relatedFrom?: boolean | Prisma.Genre$relatedFromArgs<ExtArgs>
-  relatedTo?: boolean | Prisma.Genre$relatedToArgs<ExtArgs>
+  tracks?: boolean | Prisma.Genre$tracksArgs<ExtArgs>
   _count?: boolean | Prisma.GenreCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GenreIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1396,22 +824,15 @@ export type $GenrePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     parent: Prisma.$GenrePayload<ExtArgs> | null
     children: Prisma.$GenrePayload<ExtArgs>[]
-    djs: Prisma.$DjGenrePayload<ExtArgs>[]
-    articles: Prisma.$ArticleGenrePayload<ExtArgs>[]
-    relatedFrom: Prisma.$GenreRelationPayload<ExtArgs>[]
-    relatedTo: Prisma.$GenreRelationPayload<ExtArgs>[]
+    tracks: Prisma.$TrackGenrePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    parentId: string | null
-    slug: string
     name: string
     normalizedName: string
+    slug: string
+    parentId: string | null
     description: string | null
-    history: string | null
-    editorialStatus: $Enums.EditorialStatus
-    publishedAt: Date | null
-    deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["genre"]>
@@ -1810,10 +1231,7 @@ export interface Prisma__GenreClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   parent<T extends Prisma.Genre$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$parentArgs<ExtArgs>>): Prisma.Prisma__GenreClient<runtime.Types.Result.GetResult<Prisma.$GenrePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.Genre$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenrePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  djs<T extends Prisma.Genre$djsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$djsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DjGenrePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  articles<T extends Prisma.Genre$articlesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$articlesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArticleGenrePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  relatedFrom<T extends Prisma.Genre$relatedFromArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$relatedFromArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenreRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  relatedTo<T extends Prisma.Genre$relatedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$relatedToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GenreRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tracks<T extends Prisma.Genre$tracksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Genre$tracksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackGenrePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1844,15 +1262,11 @@ export interface Prisma__GenreClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface GenreFieldRefs {
   readonly id: Prisma.FieldRef<"Genre", 'String'>
-  readonly parentId: Prisma.FieldRef<"Genre", 'String'>
-  readonly slug: Prisma.FieldRef<"Genre", 'String'>
   readonly name: Prisma.FieldRef<"Genre", 'String'>
   readonly normalizedName: Prisma.FieldRef<"Genre", 'String'>
+  readonly slug: Prisma.FieldRef<"Genre", 'String'>
+  readonly parentId: Prisma.FieldRef<"Genre", 'String'>
   readonly description: Prisma.FieldRef<"Genre", 'String'>
-  readonly history: Prisma.FieldRef<"Genre", 'String'>
-  readonly editorialStatus: Prisma.FieldRef<"Genre", 'EditorialStatus'>
-  readonly publishedAt: Prisma.FieldRef<"Genre", 'DateTime'>
-  readonly deletedAt: Prisma.FieldRef<"Genre", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Genre", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Genre", 'DateTime'>
 }
@@ -2299,99 +1713,27 @@ export type Genre$childrenArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Genre.djs
+ * Genre.tracks
  */
-export type Genre$djsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Genre$tracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the DjGenre
+   * Select specific fields to fetch from the TrackGenre
    */
-  select?: Prisma.DjGenreSelect<ExtArgs> | null
+  select?: Prisma.TrackGenreSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the DjGenre
+   * Omit specific fields from the TrackGenre
    */
-  omit?: Prisma.DjGenreOmit<ExtArgs> | null
+  omit?: Prisma.TrackGenreOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.DjGenreInclude<ExtArgs> | null
-  where?: Prisma.DjGenreWhereInput
-  orderBy?: Prisma.DjGenreOrderByWithRelationInput | Prisma.DjGenreOrderByWithRelationInput[]
-  cursor?: Prisma.DjGenreWhereUniqueInput
+  include?: Prisma.TrackGenreInclude<ExtArgs> | null
+  where?: Prisma.TrackGenreWhereInput
+  orderBy?: Prisma.TrackGenreOrderByWithRelationInput | Prisma.TrackGenreOrderByWithRelationInput[]
+  cursor?: Prisma.TrackGenreWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.DjGenreScalarFieldEnum | Prisma.DjGenreScalarFieldEnum[]
-}
-
-/**
- * Genre.articles
- */
-export type Genre$articlesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ArticleGenre
-   */
-  select?: Prisma.ArticleGenreSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ArticleGenre
-   */
-  omit?: Prisma.ArticleGenreOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ArticleGenreInclude<ExtArgs> | null
-  where?: Prisma.ArticleGenreWhereInput
-  orderBy?: Prisma.ArticleGenreOrderByWithRelationInput | Prisma.ArticleGenreOrderByWithRelationInput[]
-  cursor?: Prisma.ArticleGenreWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ArticleGenreScalarFieldEnum | Prisma.ArticleGenreScalarFieldEnum[]
-}
-
-/**
- * Genre.relatedFrom
- */
-export type Genre$relatedFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the GenreRelation
-   */
-  select?: Prisma.GenreRelationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the GenreRelation
-   */
-  omit?: Prisma.GenreRelationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.GenreRelationInclude<ExtArgs> | null
-  where?: Prisma.GenreRelationWhereInput
-  orderBy?: Prisma.GenreRelationOrderByWithRelationInput | Prisma.GenreRelationOrderByWithRelationInput[]
-  cursor?: Prisma.GenreRelationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.GenreRelationScalarFieldEnum | Prisma.GenreRelationScalarFieldEnum[]
-}
-
-/**
- * Genre.relatedTo
- */
-export type Genre$relatedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the GenreRelation
-   */
-  select?: Prisma.GenreRelationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the GenreRelation
-   */
-  omit?: Prisma.GenreRelationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.GenreRelationInclude<ExtArgs> | null
-  where?: Prisma.GenreRelationWhereInput
-  orderBy?: Prisma.GenreRelationOrderByWithRelationInput | Prisma.GenreRelationOrderByWithRelationInput[]
-  cursor?: Prisma.GenreRelationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.GenreRelationScalarFieldEnum | Prisma.GenreRelationScalarFieldEnum[]
+  distinct?: Prisma.TrackGenreScalarFieldEnum | Prisma.TrackGenreScalarFieldEnum[]
 }
 
 /**

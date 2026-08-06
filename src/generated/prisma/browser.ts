@@ -18,172 +18,107 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
- * Model User
+ * Model Profile
  * 
  */
-export type User = Prisma.UserModel
+export type Profile = Prisma.ProfileModel
 /**
- * Model Country
+ * Model Artist
  * 
  */
-export type Country = Prisma.CountryModel
-/**
- * Model City
- * 
- */
-export type City = Prisma.CityModel
-/**
- * Model Dj
- * 
- */
-export type Dj = Prisma.DjModel
-/**
- * Model DjAlias
- * 
- */
-export type DjAlias = Prisma.DjAliasModel
-/**
- * Model Genre
- * 
- */
-export type Genre = Prisma.GenreModel
-/**
- * Model GenreRelation
- * 
- */
-export type GenreRelation = Prisma.GenreRelationModel
-/**
- * Model DjGenre
- * 
- */
-export type DjGenre = Prisma.DjGenreModel
-/**
- * Model Festival
- * 
- */
-export type Festival = Prisma.FestivalModel
-/**
- * Model FestivalEdition
- * 
- */
-export type FestivalEdition = Prisma.FestivalEditionModel
-/**
- * Model FestivalAppearance
- * 
- */
-export type FestivalAppearance = Prisma.FestivalAppearanceModel
-/**
- * Model Ranking
- * 
- */
-export type Ranking = Prisma.RankingModel
-/**
- * Model RankingEdition
- * 
- */
-export type RankingEdition = Prisma.RankingEditionModel
-/**
- * Model RankingEntry
- * 
- */
-export type RankingEntry = Prisma.RankingEntryModel
-/**
- * Model Session
- * 
- */
-export type Session = Prisma.SessionModel
-/**
- * Model Article
- * 
- */
-export type Article = Prisma.ArticleModel
-/**
- * Model ArticleDj
- * 
- */
-export type ArticleDj = Prisma.ArticleDjModel
-/**
- * Model ArticleGenre
- * 
- */
-export type ArticleGenre = Prisma.ArticleGenreModel
-/**
- * Model MediaAsset
- * 
- */
-export type MediaAsset = Prisma.MediaAssetModel
-/**
- * Model DjMedia
- * 
- */
-export type DjMedia = Prisma.DjMediaModel
-/**
- * Model SocialProfile
- * 
- */
-export type SocialProfile = Prisma.SocialProfileModel
-/**
- * Model ExternalProfile
- * 
- */
-export type ExternalProfile = Prisma.ExternalProfileModel
-/**
- * Model Source
- * 
- */
-export type Source = Prisma.SourceModel
-/**
- * Model DjSource
- * 
- */
-export type DjSource = Prisma.DjSourceModel
-/**
- * Model Favorite
- * 
- */
-export type Favorite = Prisma.FavoriteModel
-/**
- * Model AuditEvent
- * 
- */
-export type AuditEvent = Prisma.AuditEventModel
-/**
- * Model ImportJob
- * 
- */
-export type ImportJob = Prisma.ImportJobModel
-/**
- * Model ImportRow
- * 
- */
-export type ImportRow = Prisma.ImportRowModel
-/**
- * Model AiGeneration
- * 
- */
-export type AiGeneration = Prisma.AiGenerationModel
-/**
- * Model DjSimilarity
- * 
- */
-export type DjSimilarity = Prisma.DjSimilarityModel
+export type Artist = Prisma.ArtistModel
 /**
  * Model Track
  * 
  */
 export type Track = Prisma.TrackModel
 /**
- * Model TrackCredit
+ * Model TrackArtist
  * 
  */
-export type TrackCredit = Prisma.TrackCreditModel
+export type TrackArtist = Prisma.TrackArtistModel
+/**
+ * Model Genre
+ * 
+ */
+export type Genre = Prisma.GenreModel
+/**
+ * Model TrackGenre
+ * 
+ */
+export type TrackGenre = Prisma.TrackGenreModel
 /**
  * Model Label
  * 
  */
 export type Label = Prisma.LabelModel
 /**
- * Model DjLabel
+ * Model Release
  * 
  */
-export type DjLabel = Prisma.DjLabelModel
+export type Release = Prisma.ReleaseModel
+/**
+ * Model ReleaseTrack
+ * 
+ */
+export type ReleaseTrack = Prisma.ReleaseTrackModel
+/**
+ * Model DataSource
+ * 
+ */
+export type DataSource = Prisma.DataSourceModel
+/**
+ * Model ExternalEntity
+ * 
+ */
+export type ExternalEntity = Prisma.ExternalEntityModel
+/**
+ * Model SourceSnapshot
+ * 
+ */
+export type SourceSnapshot = Prisma.SourceSnapshotModel
+/**
+ * Model EntityFact
+ * 
+ */
+export type EntityFact = Prisma.EntityFactModel
+/**
+ * Model IngestionJob
+ * 
+ */
+export type IngestionJob = Prisma.IngestionJobModel
+/**
+ * Model IngestionItem
+ * 
+ */
+export type IngestionItem = Prisma.IngestionItemModel
+/**
+ * Model EnrichmentJob
+ * 
+ */
+export type EnrichmentJob = Prisma.EnrichmentJobModel
+/**
+ * Model UserTrack
+ * 
+ */
+export type UserTrack = Prisma.UserTrackModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model UserTrackTag
+ * 
+ */
+export type UserTrackTag = Prisma.UserTrackTagModel
+/**
+ * Model Playlist
+ * 
+ */
+export type Playlist = Prisma.PlaylistModel
+/**
+ * Model PlaylistTrack
+ * 
+ */
+export type PlaylistTrack = Prisma.PlaylistTrackModel

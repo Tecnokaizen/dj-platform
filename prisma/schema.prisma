@@ -7,887 +7,615 @@ datasource db {
   provider = "postgresql"
 }
 
-enum EditorialStatus {
-  DRAFT
-  IN_REVIEW
-  PUBLISHED
-  ARCHIVED
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  PROFESSIONAL
 }
 
-enum ActivityStatus {
-  ACTIVE
-  INACTIVE
-  RETIRED
+enum ArtistType {
+  PERSON
+  GROUP
+  PROJECT
+  ORCHESTRA
+  COLLECTIVE
   UNKNOWN
 }
 
-enum UserStatus {
-  INVITED
-  ACTIVE
-  SUSPENDED
-  DISABLED
-}
-
-enum UserRole {
-  READER
-  EDITOR
-  ADMIN
-  SUPER_ADMIN
-}
-
-enum GenreRole {
+enum ArtistRole {
   PRIMARY
-  SECONDARY
-  INFLUENCE
-  HISTORICAL
-}
-
-enum AliasType {
-  ALTERNATIVE
-  FORMER
-  LEGAL
-  COLLECTIVE
+  FEATURED
+  REMIXER
+  PRODUCER
+  COMPOSER
+  VOCALIST
+  DJ_MIXER
   OTHER
 }
 
-enum RankingType {
-  EDITORIAL
-  POPULARITY
-  GENRE
-  COUNTRY
-  EMERGING
-  HISTORICAL
-}
-
-enum SessionType {
-  DJ_SET
-  LIVE_SET
-  RADIO_SHOW
-  PODCAST
-  MIX
+enum ReleaseType {
+  SINGLE
+  EP
+  ALBUM
+  COMPILATION
+  DJ_MIX
+  SOUNDTRACK
+  LIVE
   OTHER
 }
 
-enum ExternalPlatform {
-  SPOTIFY
-  YOUTUBE
-  YOUTUBE_MUSIC
-  SOUNDCLOUD
-  APPLE_MUSIC
-  BEATPORT
-  DISCOGS
-  MUSICBRAINZ
-  BANDCAMP
-  MIXCLOUD
-  OTHER
-}
-
-enum SocialPlatform {
-  INSTAGRAM
-  FACEBOOK
-  X
-  TIKTOK
-  THREADS
-  TWITCH
-  WEBSITE
-  OTHER
-}
-
-enum MediaType {
-  IMAGE
-  VIDEO
-  AUDIO
-  DOCUMENT
-}
-
-enum MediaStatus {
-  PENDING
-  ACTIVE
-  BLOCKED
-  ARCHIVED
+enum AssignmentMethod {
+  SOURCE
+  AI
+  AUDIO_ANALYSIS
+  MANUAL
+  CONSENSUS
 }
 
 enum SourceType {
-  OFFICIAL_WEBSITE
-  INTERVIEW
-  PRESS
-  DATABASE
-  SOCIAL
-  FESTIVAL
+  API
+  WEB
+  FILE
+  AI
+  MANUAL
+  INTERNAL
+}
+
+enum EntityType {
+  ARTIST
+  TRACK
+  RELEASE
   LABEL
-  STREAMING
-  OTHER
+  GENRE
+  PLAYLIST
+  DJ_SET
 }
 
-enum VerificationStatus {
-  UNVERIFIED
-  PARTIALLY_VERIFIED
-  VERIFIED
-  REJECTED
+enum AvailabilityStatus {
+  UNKNOWN
+  AVAILABLE
+  UNAVAILABLE
+  REGION_RESTRICTED
+  REMOVED
+  PRIVATE
 }
 
-enum ArticleType {
-  NEWS
-  GUIDE
-  LIST
-  BIOGRAPHY
-  INTERVIEW
-  REVIEW
-  FEATURE
-  EVERGREEN
+enum ExtractionMethod {
+  API_RESPONSE
+  HTML_PARSER
+  STRUCTURED_DATA
+  METADATA
+  AUDIO_ANALYSIS
+  AI_EXTRACTION
+  AI_INFERENCE
+  MANUAL
+  DERIVED
 }
 
-enum ImportStatus {
+enum JobStatus {
   PENDING
-  VALIDATING
-  READY
-  PROCESSING
+  QUEUED
+  RUNNING
+  PARTIALLY_COMPLETED
   COMPLETED
   FAILED
   CANCELLED
 }
 
-enum ImportRowStatus {
+enum IngestionJobType {
+  TRACKLIST_URL
+  TRACKLIST_TEXT
+  PLAYLIST_URL
+  CHANNEL_SCAN
+  SOURCE_SYNC
+  FILE_IMPORT
+  MANUAL_BATCH
+}
+
+enum IngestionItemStatus {
   PENDING
-  VALID
-  INVALID
-  DUPLICATE
-  IMPORTED
+  PARSED
+  MATCHED
+  CREATED
+  NEEDS_REVIEW
   SKIPPED
   FAILED
 }
 
-enum AiValidationStatus {
-  PENDING
-  VALID
-  INVALID
-  REVIEWED
+enum EnrichmentJobType {
+  METADATA_ENRICHMENT
+  TRACK_MATCHING
+  GENRE_CLASSIFICATION
+  BPM_ANALYSIS
+  KEY_ANALYSIS
+  MOOD_CLASSIFICATION
+  ENERGY_CLASSIFICATION
+  ARTIST_RESOLUTION
+  DUPLICATE_DETECTION
+  SOURCE_DISCOVERY
+  PLAYLIST_ANALYSIS
+  TRANSITION_RECOMMENDATION
+}
+
+enum UserTrackStatus {
+  LIBRARY
+  WISHLIST
+  ARCHIVED
   REJECTED
 }
 
-enum SimilarityType {
-  EDITORIAL
-  GENRE
-  STYLE
-  AUDIENCE
-  COLLABORATION
-  AI_SUGGESTED
+enum PlaylistType {
+  MANUAL
+  IMPORTED
+  SMART
+  AI_GENERATED
+  CRATE
 }
 
-enum RelationReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
+enum Visibility {
+  PRIVATE
+  UNLISTED
+  PUBLIC
 }
 
-enum TrackCreditType {
-  PRIMARY_ARTIST
-  FEATURED_ARTIST
-  REMIXER
-  PRODUCER
-  COMPOSER
+model Profile {
+  id                String           @id @db.Uuid
+  username          String?          @unique @db.VarChar(50)
+  displayName       String?          @map("display_name") @db.VarChar(120)
+  djName            String?          @map("dj_name") @db.VarChar(120)
+  avatarUrl         String?          @map("avatar_url")
+  bio               String?          @db.Text
+  countryCode       String?          @map("country_code") @db.Char(2)
+  preferredLanguage String           @default("es") @map("preferred_language") @db.VarChar(10)
+  experienceLevel   ExperienceLevel? @map("experience_level")
+  isAdmin           Boolean          @default(false) @map("is_admin")
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  userTracks          UserTrack[]
+  tags                Tag[]
+  playlists           Playlist[]
+  ingestionJobs       IngestionJob[]  @relation("IngestionRequestedBy")
+  playlistTracksAdded PlaylistTrack[] @relation("PlaylistTrackAddedBy")
+
+  @@map("profiles")
 }
 
-model User {
-  id              String     @id @default(cuid())
-  name            String?
-  email           String     @unique
-  emailVerified   DateTime?
-  image           String?
-  status          UserStatus @default(INVITED)
-  role            UserRole   @default(READER)
-  securityVersion Int        @default(1)
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+model Artist {
+  id                  String     @id @default(uuid()) @db.Uuid
+  name                String     @db.VarChar(255)
+  normalizedName      String     @map("normalized_name") @db.VarChar(255)
+  slug                String     @unique @db.VarChar(255)
+  artistType          ArtistType @default(PERSON) @map("artist_type")
+  countryCode         String?    @map("country_code") @db.Char(2)
+  biography           String?    @db.Text
+  imageUrl            String?    @map("image_url")
+  canonicalConfidence Decimal?   @map("canonical_confidence") @db.Decimal(5, 4)
+  createdAt           DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  authoredArticles Article[]      @relation("ArticleAuthor")
-  reviewedAi       AiGeneration[] @relation("AiReviewer")
-  favorites        Favorite[]
-  auditEvents      AuditEvent[]   @relation("AuditActor")
-  importJobs       ImportJob[]    @relation("ImportCreator")
-
-  @@index([status])
-  @@index([role])
-  @@map("users")
-}
-
-model Country {
-  id        String   @id @default(cuid())
-  isoCode   String   @unique @db.VarChar(2)
-  name      String
-  slug      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  cities    City[]
-  djs       Dj[]
-  festivals Festival[]
-  labels    Label[]
-
-  @@index([name])
-  @@map("countries")
-}
-
-model City {
-  id        String   @id @default(cuid())
-  countryId String
-  name      String
-  slug      String
-  latitude  Decimal? @db.Decimal(9, 6)
-  longitude Decimal? @db.Decimal(9, 6)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  country   Country    @relation(fields: [countryId], references: [id], onDelete: Restrict)
-  djs       Dj[]
-  festivals Festival[]
-
-  @@unique([countryId, slug])
-  @@index([countryId, name])
-  @@map("cities")
-}
-
-model Dj {
-  id              String          @id @default(cuid())
-  slug            String          @unique
-  displayName     String
-  normalizedName  String
-  realName        String?
-  shortBio        String?         @db.Text
-  longBio         String?         @db.Text
-  countryId       String?
-  cityId          String?
-  activeFrom      Int?
-  activeTo        Int?
-  activityStatus  ActivityStatus  @default(UNKNOWN)
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  reviewedAt      DateTime?
-  archivedAt      DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  country          Country?             @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  city             City?                @relation(fields: [cityId], references: [id], onDelete: SetNull)
-  aliases          DjAlias[]
-  genres           DjGenre[]
-  appearances      FestivalAppearance[]
-  rankingEntries   RankingEntry[]
-  sessions         Session[]
-  socialProfiles   SocialProfile[]
-  externalProfiles ExternalProfile[]
-  media            DjMedia[]
-  sources          DjSource[]
-  articles         ArticleDj[]
-  favorites        Favorite[]
-  trackCredits     TrackCredit[]
-  labels           DjLabel[]
-  similaritiesFrom DjSimilarity[]       @relation("SimilaritySource")
-  similaritiesTo   DjSimilarity[]       @relation("SimilarityTarget")
+  trackArtists TrackArtist[]
 
   @@index([normalizedName])
-  @@index([editorialStatus, publishedAt])
-  @@index([countryId])
-  @@index([cityId])
-  @@index([deletedAt])
-  @@map("djs")
-}
-
-model DjAlias {
-  id             String    @id @default(cuid())
-  djId           String
-  name           String
-  normalizedName String
-  aliasType      AliasType @default(ALTERNATIVE)
-  isPrimary      Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  dj Dj @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@unique([djId, normalizedName])
-  @@index([normalizedName])
-  @@map("dj_aliases")
-}
-
-model Genre {
-  id              String          @id @default(cuid())
-  parentId        String?
-  slug            String          @unique
-  name            String
-  normalizedName  String
-  description     String?         @db.Text
-  history         String?         @db.Text
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  parent      Genre?          @relation("GenreHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children    Genre[]         @relation("GenreHierarchy")
-  djs         DjGenre[]
-  articles    ArticleGenre[]
-  relatedFrom GenreRelation[] @relation("GenreRelationSource")
-  relatedTo   GenreRelation[] @relation("GenreRelationTarget")
-
-  @@index([normalizedName])
-  @@index([parentId])
-  @@index([editorialStatus, publishedAt])
-  @@map("genres")
-}
-
-model GenreRelation {
-  id            String   @id @default(cuid())
-  sourceGenreId String
-  targetGenreId String
-  weight        Int?
-  notes         String?  @db.Text
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  sourceGenre Genre @relation("GenreRelationSource", fields: [sourceGenreId], references: [id], onDelete: Cascade)
-  targetGenre Genre @relation("GenreRelationTarget", fields: [targetGenreId], references: [id], onDelete: Cascade)
-
-  @@unique([sourceGenreId, targetGenreId])
-  @@index([targetGenreId])
-  @@map("genre_relations")
-}
-
-model DjGenre {
-  id             String    @id @default(cuid())
-  djId           String
-  genreId        String
-  sourceId       String?
-  role           GenreRole @default(SECONDARY)
-  weight         Int?
-  confidence     Decimal?  @db.Decimal(5, 4)
-  editorialNotes String?   @db.Text
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  dj     Dj      @relation(fields: [djId], references: [id], onDelete: Cascade)
-  genre  Genre   @relation(fields: [genreId], references: [id], onDelete: Cascade)
-  source Source? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
-
-  @@unique([djId, genreId])
-  @@index([genreId, role])
-  @@index([sourceId])
-  @@map("dj_genres")
-}
-
-model Festival {
-  id              String          @id @default(cuid())
-  slug            String          @unique
-  name            String
-  normalizedName  String
-  description     String?         @db.Text
-  countryId       String?
-  cityId          String?
-  officialUrl     String?
-  foundedYear     Int?
-  activityStatus  ActivityStatus  @default(UNKNOWN)
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  country  Country?          @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  city     City?             @relation(fields: [cityId], references: [id], onDelete: SetNull)
-  editions FestivalEdition[]
-
-  @@index([normalizedName])
-  @@index([countryId])
-  @@index([cityId])
-  @@index([editorialStatus, publishedAt])
-  @@map("festivals")
-}
-
-model FestivalEdition {
-  id          String    @id @default(cuid())
-  festivalId  String
-  name        String
-  year        Int
-  startsAt    DateTime?
-  endsAt      DateTime?
-  officialUrl String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  festival    Festival             @relation(fields: [festivalId], references: [id], onDelete: Cascade)
-  appearances FestivalAppearance[]
-
-  @@unique([festivalId, year])
-  @@index([year])
-  @@map("festival_editions")
-}
-
-model FestivalAppearance {
-  id                String    @id @default(cuid())
-  festivalEditionId String
-  djId              String
-  sourceId          String?
-  stage             String?
-  performanceDate   DateTime?
-  billingPosition   Int?
-  isHeadliner       Boolean   @default(false)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  festivalEdition FestivalEdition @relation(fields: [festivalEditionId], references: [id], onDelete: Cascade)
-  dj              Dj              @relation(fields: [djId], references: [id], onDelete: Cascade)
-  source          Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
-
-  @@unique([festivalEditionId, djId, performanceDate])
-  @@index([djId])
-  @@index([sourceId])
-  @@map("festival_appearances")
-}
-
-model Ranking {
-  id              String          @id @default(cuid())
-  slug            String          @unique
-  title           String
-  description     String?         @db.Text
-  rankingType     RankingType
-  methodology     String?         @db.Text
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  editions RankingEdition[]
-
-  @@index([rankingType])
-  @@index([editorialStatus, publishedAt])
-  @@map("rankings")
-}
-
-model RankingEdition {
-  id          String    @id @default(cuid())
-  rankingId   String
-  label       String
-  year        Int?
-  periodStart DateTime?
-  periodEnd   DateTime?
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  ranking Ranking        @relation(fields: [rankingId], references: [id], onDelete: Cascade)
-  entries RankingEntry[]
-
-  @@unique([rankingId, label])
-  @@index([year])
-  @@map("ranking_editions")
-}
-
-model RankingEntry {
-  id               String   @id @default(cuid())
-  rankingEditionId String
-  djId             String
-  position         Int
-  previousPosition Int?
-  score            Decimal? @db.Decimal(10, 4)
-  editorialNote    String?  @db.Text
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  rankingEdition RankingEdition @relation(fields: [rankingEditionId], references: [id], onDelete: Cascade)
-  dj             Dj             @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@unique([rankingEditionId, position])
-  @@unique([rankingEditionId, djId])
-  @@index([djId])
-  @@map("ranking_entries")
-}
-
-model Session {
-  id                  String           @id @default(cuid())
-  djId                String
-  slug                String           @unique
-  title               String
-  sessionType         SessionType
-  platform            ExternalPlatform
-  externalUrl         String
-  performedAt         DateTime?
-  externalPublishedAt DateTime?
-  durationSeconds     Int?
-  description         String?          @db.Text
-  editorialStatus     EditorialStatus  @default(DRAFT)
-  publishedAt         DateTime?
-  deletedAt           DateTime?
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-
-  dj Dj @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@index([djId, editorialStatus])
-  @@index([platform])
-  @@map("sessions")
-}
-
-model Article {
-  id              String          @id @default(cuid())
-  authorId        String?
-  slug            String          @unique
-  title           String
-  excerpt         String?         @db.Text
-  body            String          @db.Text
-  articleType     ArticleType
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  reviewedAt      DateTime?
-  archivedAt      DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  author User?          @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-  djs    ArticleDj[]
-  genres ArticleGenre[]
-
-  @@index([authorId])
-  @@index([articleType])
-  @@index([editorialStatus, publishedAt])
-  @@map("articles")
-}
-
-model ArticleDj {
-  articleId String
-  djId      String
-  position  Int?
-  createdAt DateTime @default(now())
-
-  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  dj      Dj      @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@id([articleId, djId])
-  @@index([djId])
-  @@map("article_djs")
-}
-
-model ArticleGenre {
-  articleId String
-  genreId   String
-  position  Int?
-  createdAt DateTime @default(now())
-
-  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  genre   Genre   @relation(fields: [genreId], references: [id], onDelete: Cascade)
-
-  @@id([articleId, genreId])
-  @@index([genreId])
-  @@map("article_genres")
-}
-
-model MediaAsset {
-  id         String      @id @default(cuid())
-  storageKey String      @unique
-  mediaType  MediaType
-  mimeType   String
-  width      Int?
-  height     Int?
-  fileSize   Int
-  altText    String?
-  credit     String?
-  sourceUrl  String?
-  license    String?
-  status     MediaStatus @default(PENDING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  djs DjMedia[]
-
-  @@index([mediaType, status])
-  @@map("media_assets")
-}
-
-model DjMedia {
-  djId         String
-  mediaAssetId String
-  role         String
-  position     Int?
-  createdAt    DateTime @default(now())
-
-  dj         Dj         @relation(fields: [djId], references: [id], onDelete: Cascade)
-  mediaAsset MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
-
-  @@id([djId, mediaAssetId, role])
-  @@index([mediaAssetId])
-  @@map("dj_media")
-}
-
-model SocialProfile {
-  id         String         @id @default(cuid())
-  djId       String
-  platform   SocialPlatform
-  handle     String?
-  url        String
-  verifiedAt DateTime?
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-
-  dj Dj @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@unique([djId, platform, url])
-  @@index([platform])
-  @@map("social_profiles")
-}
-
-model ExternalProfile {
-  id         String           @id @default(cuid())
-  djId       String
-  provider   ExternalPlatform
-  externalId String?
-  url        String
-  metadata   Json?
-  verifiedAt DateTime?
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
-
-  dj Dj @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@unique([djId, provider, url])
-  @@unique([provider, externalId])
-  @@index([provider])
-  @@map("external_profiles")
-}
-
-model Source {
-  id                 String             @id @default(cuid())
-  url                String             @unique
-  title              String?
-  publisher          String?
-  sourceType         SourceType
-  accessedAt         DateTime
-  verificationStatus VerificationStatus @default(UNVERIFIED)
-  notes              String?            @db.Text
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-
-  djGenres            DjGenre[]
-  festivalAppearances FestivalAppearance[]
-  djs                 DjSource[]
-
-  @@index([sourceType])
-  @@index([verificationStatus])
-  @@map("sources")
-}
-
-model DjSource {
-  djId      String
-  sourceId  String
-  notes     String?  @db.Text
-  createdAt DateTime @default(now())
-
-  dj     Dj     @relation(fields: [djId], references: [id], onDelete: Cascade)
-  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
-
-  @@id([djId, sourceId])
-  @@index([sourceId])
-  @@map("dj_sources")
-}
-
-model Favorite {
-  userId    String
-  djId      String
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dj   Dj   @relation(fields: [djId], references: [id], onDelete: Cascade)
-
-  @@id([userId, djId])
-  @@index([djId])
-  @@map("favorites")
-}
-
-model AuditEvent {
-  id          String   @id @default(cuid())
-  actorUserId String?
-  action      String
-  entityType  String
-  entityId    String?
-  beforeData  Json?
-  afterData   Json?
-  ipHash      String?
-  requestId   String?
-  createdAt   DateTime @default(now())
-
-  actor User? @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
-
-  @@index([actorUserId])
-  @@index([entityType, entityId])
-  @@index([createdAt])
-  @@map("audit_events")
-}
-
-model ImportJob {
-  id            String       @id @default(cuid())
-  createdById   String?
-  originalName  String
-  storageKey    String?
-  mimeType      String?
-  checksum      String?
-  status        ImportStatus @default(PENDING)
-  totalRows     Int          @default(0)
-  validRows     Int          @default(0)
-  invalidRows   Int          @default(0)
-  duplicateRows Int          @default(0)
-  importedRows  Int          @default(0)
-  startedAt     DateTime?
-  completedAt   DateTime?
-  errorMessage  String?      @db.Text
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-
-  createdBy User?       @relation("ImportCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  rows      ImportRow[]
-
-  @@index([createdById])
-  @@index([status, createdAt])
-  @@map("import_jobs")
-}
-
-model ImportRow {
-  id               String          @id @default(cuid())
-  importJobId      String
-  rowNumber        Int
-  status           ImportRowStatus @default(PENDING)
-  rawData          Json
-  normalizedData   Json?
-  validationErrors Json?
-  entityType       String?
-  entityId         String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-
-  importJob ImportJob @relation(fields: [importJobId], references: [id], onDelete: Cascade)
-
-  @@unique([importJobId, rowNumber])
-  @@index([status])
-  @@map("import_rows")
-}
-
-model AiGeneration {
-  id               String             @id @default(cuid())
-  reviewedById     String?
-  provider         String
-  model            String
-  promptVersion    String
-  taskType         String
-  inputHash        String
-  output           Json
-  validationStatus AiValidationStatus @default(PENDING)
-  tokenUsage       Json?
-  estimatedCost    Decimal?           @db.Decimal(12, 6)
-  reviewedAt       DateTime?
-  createdAt        DateTime           @default(now())
-
-  reviewedBy User? @relation("AiReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-
-  @@index([taskType, promptVersion])
-  @@index([inputHash])
-  @@index([validationStatus])
-  @@map("ai_generations")
-}
-
-model DjSimilarity {
-  id             String               @id @default(cuid())
-  sourceDjId     String
-  targetDjId     String
-  similarityType SimilarityType
-  score          Decimal?             @db.Decimal(5, 4)
-  explanation    String?              @db.Text
-  generatedBy    String?
-  reviewStatus   RelationReviewStatus @default(PENDING)
-  reviewedAt     DateTime?
-  createdAt      DateTime             @default(now())
-  updatedAt      DateTime             @updatedAt
-
-  sourceDj Dj @relation("SimilaritySource", fields: [sourceDjId], references: [id], onDelete: Cascade)
-  targetDj Dj @relation("SimilarityTarget", fields: [targetDjId], references: [id], onDelete: Cascade)
-
-  @@unique([sourceDjId, targetDjId, similarityType])
-  @@index([targetDjId])
-  @@index([reviewStatus])
-  @@map("dj_similarities")
+  @@map("artists")
 }
 
 model Track {
-  id              String          @id @default(cuid())
-  slug            String          @unique
-  title           String
-  normalizedTitle String
-  releaseDate     DateTime?
-  durationSeconds Int?
-  isrc            String?         @unique
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id                  String    @id @default(uuid()) @db.Uuid
+  title               String    @db.VarChar(500)
+  normalizedTitle     String    @map("normalized_title") @db.VarChar(500)
+  version             String?   @db.VarChar(255)
+  durationMs          Int?      @map("duration_ms")
+  bpm                 Decimal?  @db.Decimal(7, 3)
+  musicalKey          String?   @map("musical_key") @db.VarChar(20)
+  camelotKey          String?   @map("camelot_key") @db.VarChar(4)
+  isrc                String?   @db.VarChar(20)
+  releaseDate         DateTime? @map("release_date") @db.Date
+  explicit            Boolean?
+  artworkUrl          String?   @map("artwork_url")
+  canonicalConfidence Decimal?  @map("canonical_confidence") @db.Decimal(5, 4)
+  metadata            Json      @default("{}")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  credits TrackCredit[]
+  artists        TrackArtist[]
+  genres         TrackGenre[]
+  releases       ReleaseTrack[]
+  userTracks     UserTrack[]
+  playlistTracks PlaylistTrack[]
+  ingestionItems IngestionItem[]
 
   @@index([normalizedTitle])
-  @@index([editorialStatus, publishedAt])
+  @@index([isrc])
+  @@index([bpm])
+  @@index([camelotKey])
   @@map("tracks")
 }
 
-model TrackCredit {
-  trackId     String
-  djId        String
-  creditType  TrackCreditType
-  position    Int             @default(0)
-  displayName String?
-  createdAt   DateTime        @default(now())
+model TrackArtist {
+  trackId      String     @map("track_id") @db.Uuid
+  artistId     String     @map("artist_id") @db.Uuid
+  role         ArtistRole
+  position     Int        @default(0) @db.SmallInt
+  creditedName String?    @map("credited_name") @db.VarChar(255)
+
+  track  Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Restrict)
+
+  @@id([trackId, artistId, role])
+  @@index([artistId])
+  @@index([trackId, position])
+  @@map("track_artists")
+}
+
+model Genre {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String   @db.VarChar(120)
+  normalizedName String   @map("normalized_name") @db.VarChar(120)
+  slug           String   @unique @db.VarChar(150)
+  parentId       String?  @map("parent_id") @db.Uuid
+  description    String?  @db.Text
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  parent   Genre?       @relation("GenreHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Genre[]      @relation("GenreHierarchy")
+  tracks   TrackGenre[]
+
+  @@index([normalizedName])
+  @@index([parentId])
+  @@map("genres")
+}
+
+model TrackGenre {
+  trackId          String           @map("track_id") @db.Uuid
+  genreId          String           @map("genre_id") @db.Uuid
+  isPrimary        Boolean          @default(false) @map("is_primary")
+  confidence       Decimal?         @db.Decimal(5, 4)
+  assignmentMethod AssignmentMethod @map("assignment_method")
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
 
   track Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
-  dj    Dj    @relation(fields: [djId], references: [id], onDelete: Cascade)
+  genre Genre @relation(fields: [genreId], references: [id], onDelete: Restrict)
 
-  @@id([trackId, djId, creditType])
-  @@index([djId])
-  @@map("track_credits")
+  @@id([trackId, genreId])
+  @@index([genreId])
+  @@index([trackId, isPrimary])
+  @@map("track_genres")
 }
 
 model Label {
-  id              String          @id @default(cuid())
-  countryId       String?
-  slug            String          @unique
-  name            String
-  normalizedName  String
-  description     String?         @db.Text
-  officialUrl     String?
-  editorialStatus EditorialStatus @default(DRAFT)
-  publishedAt     DateTime?
-  deletedAt       DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String   @db.VarChar(255)
+  normalizedName String   @map("normalized_name") @db.VarChar(255)
+  slug           String   @unique @db.VarChar(255)
+  countryCode    String?  @map("country_code") @db.Char(2)
+  websiteUrl     String?  @map("website_url")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  country Country?  @relation(fields: [countryId], references: [id], onDelete: SetNull)
-  djs     DjLabel[]
+  releases Release[]
 
   @@index([normalizedName])
-  @@index([countryId])
   @@map("labels")
 }
 
-model DjLabel {
-  djId      String
-  labelId   String
-  role      String?
-  startedAt DateTime?
-  endedAt   DateTime?
-  createdAt DateTime  @default(now())
+model Release {
+  id              String      @id @default(uuid()) @db.Uuid
+  title           String      @db.VarChar(500)
+  normalizedTitle String      @map("normalized_title") @db.VarChar(500)
+  releaseType     ReleaseType @map("release_type")
+  labelId         String?     @map("label_id") @db.Uuid
+  catalogNumber   String?     @map("catalog_number") @db.VarChar(100)
+  releaseDate     DateTime?   @map("release_date") @db.Date
+  artworkUrl      String?     @map("artwork_url")
+  metadata        Json        @default("{}")
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  dj    Dj    @relation(fields: [djId], references: [id], onDelete: Cascade)
-  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  label  Label?         @relation(fields: [labelId], references: [id], onDelete: SetNull)
+  tracks ReleaseTrack[]
 
-  @@id([djId, labelId])
+  @@index([normalizedTitle])
   @@index([labelId])
-  @@map("dj_labels")
+  @@index([releaseDate])
+  @@index([catalogNumber])
+  @@map("releases")
+}
+
+model ReleaseTrack {
+  releaseId   String @map("release_id") @db.Uuid
+  trackId     String @map("track_id") @db.Uuid
+  discNumber  Int    @default(1) @map("disc_number") @db.SmallInt
+  trackNumber Int?   @map("track_number") @db.SmallInt
+  position    Int
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  track   Track   @relation(fields: [trackId], references: [id], onDelete: Restrict)
+
+  @@id([releaseId, position])
+  @@unique([releaseId, discNumber, trackNumber])
+  @@index([trackId])
+  @@map("release_tracks")
+}
+
+model DataSource {
+  id          String     @id @default(uuid()) @db.Uuid
+  code        String     @unique @db.VarChar(80)
+  name        String     @db.VarChar(160)
+  sourceType  SourceType @map("source_type")
+  baseUrl     String?    @map("base_url")
+  isActive    Boolean    @default(true) @map("is_active")
+  trustWeight Decimal    @default(0.5000) @map("trust_weight") @db.Decimal(5, 4)
+  config      Json       @default("{}")
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  externalEntities ExternalEntity[]
+  snapshots        SourceSnapshot[]
+  facts            EntityFact[]
+  ingestionJobs    IngestionJob[]
+
+  @@map("data_sources")
+}
+
+model ExternalEntity {
+  id                 String             @id @default(uuid()) @db.Uuid
+  sourceId           String             @map("source_id") @db.Uuid
+  entityType         EntityType         @map("entity_type")
+  entityId           String             @map("entity_id") @db.Uuid
+  externalId         String?            @map("external_id") @db.VarChar(500)
+  externalUrl        String?            @map("external_url")
+  externalName       String?            @map("external_name")
+  availabilityStatus AvailabilityStatus @default(UNKNOWN) @map("availability_status")
+  metadata           Json               @default("{}")
+  lastCheckedAt      DateTime?          @map("last_checked_at") @db.Timestamptz(6)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  source DataSource @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+
+  @@unique([sourceId, entityType, externalId])
+  @@index([entityType, entityId])
+  @@index([sourceId, entityType])
+  @@index([lastCheckedAt])
+  @@map("external_entities")
+}
+
+model SourceSnapshot {
+  id            String    @id @default(uuid()) @db.Uuid
+  sourceId      String    @map("source_id") @db.Uuid
+  sourceUrl     String?   @map("source_url")
+  externalId    String?   @map("external_id") @db.VarChar(500)
+  contentType   String?   @map("content_type") @db.VarChar(120)
+  httpStatus    Int?      @map("http_status") @db.SmallInt
+  rawPayload    Json?     @map("raw_payload")
+  rawText       String?   @map("raw_text") @db.Text
+  contentHash   String?   @map("content_hash") @db.VarChar(128)
+  parserVersion String?   @map("parser_version") @db.VarChar(80)
+  fetchedAt     DateTime  @map("fetched_at") @db.Timestamptz(6)
+  expiresAt     DateTime? @map("expires_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  source DataSource   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  facts  EntityFact[]
+
+  @@index([contentHash])
+  @@index([sourceId, externalId])
+  @@index([fetchedAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("source_snapshots")
+}
+
+model EntityFact {
+  id               String           @id @default(uuid()) @db.Uuid
+  entityType       EntityType       @map("entity_type")
+  entityId         String           @map("entity_id") @db.Uuid
+  fieldName        String           @map("field_name") @db.VarChar(120)
+  valueJson        Json             @map("value_json")
+  normalizedValue  String?          @map("normalized_value")
+  sourceId         String?          @map("source_id") @db.Uuid
+  snapshotId       String?          @map("snapshot_id") @db.Uuid
+  extractionMethod ExtractionMethod @map("extraction_method")
+  confidence       Decimal?         @db.Decimal(5, 4)
+  isVerified       Boolean          @default(false) @map("is_verified")
+  isSelected       Boolean          @default(false) @map("is_selected")
+  observedAt       DateTime         @map("observed_at") @db.Timestamptz(6)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  source   DataSource?     @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  snapshot SourceSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, fieldName])
+  @@index([sourceId])
+  @@index([snapshotId])
+  @@index([isSelected])
+  @@index([isVerified])
+  @@map("entity_facts")
+}
+
+model IngestionJob {
+  id              String           @id @default(uuid()) @db.Uuid
+  requestedById   String?          @map("requested_by") @db.Uuid
+  sourceId        String?          @map("source_id") @db.Uuid
+  jobType         IngestionJobType @map("job_type")
+  status          JobStatus        @default(PENDING)
+  sourceUrl       String?          @map("source_url")
+  input           Json             @default("{}")
+  totalItems      Int              @default(0) @map("total_items")
+  processedItems  Int              @default(0) @map("processed_items")
+  successfulItems Int              @default(0) @map("successful_items")
+  failedItems     Int              @default(0) @map("failed_items")
+  errorMessage    String?          @map("error_message") @db.Text
+  startedAt       DateTime?        @map("started_at") @db.Timestamptz(6)
+  completedAt     DateTime?        @map("completed_at") @db.Timestamptz(6)
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  requestedBy Profile?        @relation("IngestionRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+  source      DataSource?     @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  items       IngestionItem[]
+
+  @@index([status])
+  @@index([jobType])
+  @@index([requestedById, createdAt(sort: Desc)])
+  @@index([sourceId, createdAt(sort: Desc)])
+  @@map("ingestion_jobs")
+}
+
+model IngestionItem {
+  id                String              @id @default(uuid()) @db.Uuid
+  jobId             String              @map("job_id") @db.Uuid
+  sourcePosition    Int?                @map("source_position")
+  sourceTimestampMs Int?                @map("source_timestamp_ms")
+  rawTitle          String?             @map("raw_title") @db.Text
+  rawArtist         String?             @map("raw_artist") @db.Text
+  rawData           Json                @default("{}") @map("raw_data")
+  matchedTrackId    String?             @map("matched_track_id") @db.Uuid
+  status            IngestionItemStatus @default(PENDING)
+  matchConfidence   Decimal?            @map("match_confidence") @db.Decimal(5, 4)
+  errorMessage      String?             @map("error_message") @db.Text
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  job          IngestionJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  matchedTrack Track?       @relation(fields: [matchedTrackId], references: [id], onDelete: SetNull)
+
+  @@index([jobId, status])
+  @@index([matchedTrackId])
+  @@index([rawTitle])
+  @@index([sourceTimestampMs])
+  @@map("ingestion_items")
+}
+
+model EnrichmentJob {
+  id             String            @id @default(uuid()) @db.Uuid
+  entityType     EntityType        @map("entity_type")
+  entityId       String            @map("entity_id") @db.Uuid
+  jobType        EnrichmentJobType @map("job_type")
+  status         JobStatus         @default(PENDING)
+  provider       String?           @db.VarChar(120)
+  modelName      String?           @map("model_name") @db.VarChar(160)
+  processVersion String?           @map("process_version") @db.VarChar(80)
+  input          Json              @default("{}")
+  output         Json              @default("{}")
+  confidence     Decimal?          @db.Decimal(5, 4)
+  tokensUsed     Int?              @map("tokens_used")
+  estimatedCost  Decimal?          @map("estimated_cost") @db.Decimal(12, 6)
+  errorMessage   String?           @map("error_message") @db.Text
+  startedAt      DateTime?         @map("started_at") @db.Timestamptz(6)
+  completedAt    DateTime?         @map("completed_at") @db.Timestamptz(6)
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entityType, entityId])
+  @@index([status])
+  @@index([jobType])
+  @@index([createdAt(sort: Desc)])
+  @@map("enrichment_jobs")
+}
+
+model UserTrack {
+  id           String          @id @default(uuid()) @db.Uuid
+  userId       String          @map("user_id") @db.Uuid
+  trackId      String          @map("track_id") @db.Uuid
+  status       UserTrackStatus @default(LIBRARY)
+  rating       Int?            @db.SmallInt
+  energy       Int?            @db.SmallInt
+  familiarity  Int?            @db.SmallInt
+  notes        String?         @db.Text
+  customBpm    Decimal?        @map("custom_bpm") @db.Decimal(7, 3)
+  customKey    String?         @map("custom_key") @db.VarChar(20)
+  isFavorite   Boolean         @default(false) @map("is_favorite")
+  playCount    Int             @default(0) @map("play_count")
+  dateAdded    DateTime        @default(now()) @map("date_added") @db.Timestamptz(6)
+  lastPlayedAt DateTime?       @map("last_played_at") @db.Timestamptz(6)
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user  Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track Track          @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  tags  UserTrackTag[]
+
+  @@unique([userId, trackId])
+  @@index([userId, dateAdded(sort: Desc)])
+  @@index([userId, isFavorite])
+  @@index([userId, status])
+  @@index([trackId])
+  @@map("user_tracks")
+}
+
+model Tag {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  name           String   @db.VarChar(80)
+  normalizedName String   @map("normalized_name") @db.VarChar(80)
+  color          String?  @db.VarChar(20)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user       Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userTracks UserTrackTag[]
+
+  @@unique([userId, normalizedName])
+  @@index([userId])
+  @@index([normalizedName])
+  @@map("tags")
+}
+
+model UserTrackTag {
+  userTrackId String @map("user_track_id") @db.Uuid
+  tagId       String @map("tag_id") @db.Uuid
+
+  userTrack UserTrack @relation(fields: [userTrackId], references: [id], onDelete: Cascade)
+  tag       Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([userTrackId, tagId])
+  @@map("user_track_tags")
+}
+
+model Playlist {
+  id           String       @id @default(uuid()) @db.Uuid
+  userId       String       @map("user_id") @db.Uuid
+  name         String       @db.VarChar(255)
+  slug         String?      @db.VarChar(255)
+  description  String?      @db.Text
+  playlistType PlaylistType @map("playlist_type")
+  visibility   Visibility   @default(PRIVATE)
+  artworkUrl   String?      @map("artwork_url")
+  sourceUrl    String?      @map("source_url")
+  metadata     Json         @default("{}")
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user   Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracks PlaylistTrack[]
+
+  @@unique([userId, slug])
+  @@index([userId, updatedAt(sort: Desc)])
+  @@index([visibility])
+  @@index([playlistType])
+  @@map("playlists")
+}
+
+model PlaylistTrack {
+  id                String   @id @default(uuid()) @db.Uuid
+  playlistId        String   @map("playlist_id") @db.Uuid
+  trackId           String   @map("track_id") @db.Uuid
+  position          Int
+  addedById         String?  @map("added_by") @db.Uuid
+  notes             String?  @db.Text
+  transitionNotes   String?  @map("transition_notes") @db.Text
+  sourceTimestampMs Int?     @map("source_timestamp_ms")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  track    Track    @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  addedBy  Profile? @relation("PlaylistTrackAddedBy", fields: [addedById], references: [id], onDelete: SetNull)
+
+  @@unique([playlistId, position])
+  @@index([playlistId, position])
+  @@index([trackId])
+  @@index([addedById])
+  @@map("playlist_tracks")
 }

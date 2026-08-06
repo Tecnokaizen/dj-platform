@@ -51,40 +51,27 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User',
-  Country: 'Country',
-  City: 'City',
-  Dj: 'Dj',
-  DjAlias: 'DjAlias',
-  Genre: 'Genre',
-  GenreRelation: 'GenreRelation',
-  DjGenre: 'DjGenre',
-  Festival: 'Festival',
-  FestivalEdition: 'FestivalEdition',
-  FestivalAppearance: 'FestivalAppearance',
-  Ranking: 'Ranking',
-  RankingEdition: 'RankingEdition',
-  RankingEntry: 'RankingEntry',
-  Session: 'Session',
-  Article: 'Article',
-  ArticleDj: 'ArticleDj',
-  ArticleGenre: 'ArticleGenre',
-  MediaAsset: 'MediaAsset',
-  DjMedia: 'DjMedia',
-  SocialProfile: 'SocialProfile',
-  ExternalProfile: 'ExternalProfile',
-  Source: 'Source',
-  DjSource: 'DjSource',
-  Favorite: 'Favorite',
-  AuditEvent: 'AuditEvent',
-  ImportJob: 'ImportJob',
-  ImportRow: 'ImportRow',
-  AiGeneration: 'AiGeneration',
-  DjSimilarity: 'DjSimilarity',
+  Profile: 'Profile',
+  Artist: 'Artist',
   Track: 'Track',
-  TrackCredit: 'TrackCredit',
+  TrackArtist: 'TrackArtist',
+  Genre: 'Genre',
+  TrackGenre: 'TrackGenre',
   Label: 'Label',
-  DjLabel: 'DjLabel'
+  Release: 'Release',
+  ReleaseTrack: 'ReleaseTrack',
+  DataSource: 'DataSource',
+  ExternalEntity: 'ExternalEntity',
+  SourceSnapshot: 'SourceSnapshot',
+  EntityFact: 'EntityFact',
+  IngestionJob: 'IngestionJob',
+  IngestionItem: 'IngestionItem',
+  EnrichmentJob: 'EnrichmentJob',
+  UserTrack: 'UserTrack',
+  Tag: 'Tag',
+  UserTrackTag: 'UserTrackTag',
+  Playlist: 'Playlist',
+  PlaylistTrack: 'PlaylistTrack'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -103,493 +90,56 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const UserScalarFieldEnum = {
+export const ProfileScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  email: 'email',
-  emailVerified: 'emailVerified',
-  image: 'image',
-  status: 'status',
-  role: 'role',
-  securityVersion: 'securityVersion',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const CountryScalarFieldEnum = {
-  id: 'id',
-  isoCode: 'isoCode',
-  name: 'name',
-  slug: 'slug',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CountryScalarFieldEnum = (typeof CountryScalarFieldEnum)[keyof typeof CountryScalarFieldEnum]
-
-
-export const CityScalarFieldEnum = {
-  id: 'id',
-  countryId: 'countryId',
-  name: 'name',
-  slug: 'slug',
-  latitude: 'latitude',
-  longitude: 'longitude',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CityScalarFieldEnum = (typeof CityScalarFieldEnum)[keyof typeof CityScalarFieldEnum]
-
-
-export const DjScalarFieldEnum = {
-  id: 'id',
-  slug: 'slug',
+  username: 'username',
   displayName: 'displayName',
-  normalizedName: 'normalizedName',
-  realName: 'realName',
-  shortBio: 'shortBio',
-  longBio: 'longBio',
-  countryId: 'countryId',
-  cityId: 'cityId',
-  activeFrom: 'activeFrom',
-  activeTo: 'activeTo',
-  activityStatus: 'activityStatus',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  reviewedAt: 'reviewedAt',
-  archivedAt: 'archivedAt',
-  deletedAt: 'deletedAt',
+  djName: 'djName',
+  avatarUrl: 'avatarUrl',
+  bio: 'bio',
+  countryCode: 'countryCode',
+  preferredLanguage: 'preferredLanguage',
+  experienceLevel: 'experienceLevel',
+  isAdmin: 'isAdmin',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type DjScalarFieldEnum = (typeof DjScalarFieldEnum)[keyof typeof DjScalarFieldEnum]
+export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
 
 
-export const DjAliasScalarFieldEnum = {
+export const ArtistScalarFieldEnum = {
   id: 'id',
-  djId: 'djId',
   name: 'name',
   normalizedName: 'normalizedName',
-  aliasType: 'aliasType',
-  isPrimary: 'isPrimary',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type DjAliasScalarFieldEnum = (typeof DjAliasScalarFieldEnum)[keyof typeof DjAliasScalarFieldEnum]
-
-
-export const GenreScalarFieldEnum = {
-  id: 'id',
-  parentId: 'parentId',
   slug: 'slug',
-  name: 'name',
-  normalizedName: 'normalizedName',
-  description: 'description',
-  history: 'history',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  deletedAt: 'deletedAt',
+  artistType: 'artistType',
+  countryCode: 'countryCode',
+  biography: 'biography',
+  imageUrl: 'imageUrl',
+  canonicalConfidence: 'canonicalConfidence',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type GenreScalarFieldEnum = (typeof GenreScalarFieldEnum)[keyof typeof GenreScalarFieldEnum]
-
-
-export const GenreRelationScalarFieldEnum = {
-  id: 'id',
-  sourceGenreId: 'sourceGenreId',
-  targetGenreId: 'targetGenreId',
-  weight: 'weight',
-  notes: 'notes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type GenreRelationScalarFieldEnum = (typeof GenreRelationScalarFieldEnum)[keyof typeof GenreRelationScalarFieldEnum]
-
-
-export const DjGenreScalarFieldEnum = {
-  id: 'id',
-  djId: 'djId',
-  genreId: 'genreId',
-  sourceId: 'sourceId',
-  role: 'role',
-  weight: 'weight',
-  confidence: 'confidence',
-  editorialNotes: 'editorialNotes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type DjGenreScalarFieldEnum = (typeof DjGenreScalarFieldEnum)[keyof typeof DjGenreScalarFieldEnum]
-
-
-export const FestivalScalarFieldEnum = {
-  id: 'id',
-  slug: 'slug',
-  name: 'name',
-  normalizedName: 'normalizedName',
-  description: 'description',
-  countryId: 'countryId',
-  cityId: 'cityId',
-  officialUrl: 'officialUrl',
-  foundedYear: 'foundedYear',
-  activityStatus: 'activityStatus',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type FestivalScalarFieldEnum = (typeof FestivalScalarFieldEnum)[keyof typeof FestivalScalarFieldEnum]
-
-
-export const FestivalEditionScalarFieldEnum = {
-  id: 'id',
-  festivalId: 'festivalId',
-  name: 'name',
-  year: 'year',
-  startsAt: 'startsAt',
-  endsAt: 'endsAt',
-  officialUrl: 'officialUrl',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type FestivalEditionScalarFieldEnum = (typeof FestivalEditionScalarFieldEnum)[keyof typeof FestivalEditionScalarFieldEnum]
-
-
-export const FestivalAppearanceScalarFieldEnum = {
-  id: 'id',
-  festivalEditionId: 'festivalEditionId',
-  djId: 'djId',
-  sourceId: 'sourceId',
-  stage: 'stage',
-  performanceDate: 'performanceDate',
-  billingPosition: 'billingPosition',
-  isHeadliner: 'isHeadliner',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type FestivalAppearanceScalarFieldEnum = (typeof FestivalAppearanceScalarFieldEnum)[keyof typeof FestivalAppearanceScalarFieldEnum]
-
-
-export const RankingScalarFieldEnum = {
-  id: 'id',
-  slug: 'slug',
-  title: 'title',
-  description: 'description',
-  rankingType: 'rankingType',
-  methodology: 'methodology',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RankingScalarFieldEnum = (typeof RankingScalarFieldEnum)[keyof typeof RankingScalarFieldEnum]
-
-
-export const RankingEditionScalarFieldEnum = {
-  id: 'id',
-  rankingId: 'rankingId',
-  label: 'label',
-  year: 'year',
-  periodStart: 'periodStart',
-  periodEnd: 'periodEnd',
-  publishedAt: 'publishedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RankingEditionScalarFieldEnum = (typeof RankingEditionScalarFieldEnum)[keyof typeof RankingEditionScalarFieldEnum]
-
-
-export const RankingEntryScalarFieldEnum = {
-  id: 'id',
-  rankingEditionId: 'rankingEditionId',
-  djId: 'djId',
-  position: 'position',
-  previousPosition: 'previousPosition',
-  score: 'score',
-  editorialNote: 'editorialNote',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RankingEntryScalarFieldEnum = (typeof RankingEntryScalarFieldEnum)[keyof typeof RankingEntryScalarFieldEnum]
-
-
-export const SessionScalarFieldEnum = {
-  id: 'id',
-  djId: 'djId',
-  slug: 'slug',
-  title: 'title',
-  sessionType: 'sessionType',
-  platform: 'platform',
-  externalUrl: 'externalUrl',
-  performedAt: 'performedAt',
-  externalPublishedAt: 'externalPublishedAt',
-  durationSeconds: 'durationSeconds',
-  description: 'description',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
-
-
-export const ArticleScalarFieldEnum = {
-  id: 'id',
-  authorId: 'authorId',
-  slug: 'slug',
-  title: 'title',
-  excerpt: 'excerpt',
-  body: 'body',
-  articleType: 'articleType',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  reviewedAt: 'reviewedAt',
-  archivedAt: 'archivedAt',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
-
-
-export const ArticleDjScalarFieldEnum = {
-  articleId: 'articleId',
-  djId: 'djId',
-  position: 'position',
-  createdAt: 'createdAt'
-} as const
-
-export type ArticleDjScalarFieldEnum = (typeof ArticleDjScalarFieldEnum)[keyof typeof ArticleDjScalarFieldEnum]
-
-
-export const ArticleGenreScalarFieldEnum = {
-  articleId: 'articleId',
-  genreId: 'genreId',
-  position: 'position',
-  createdAt: 'createdAt'
-} as const
-
-export type ArticleGenreScalarFieldEnum = (typeof ArticleGenreScalarFieldEnum)[keyof typeof ArticleGenreScalarFieldEnum]
-
-
-export const MediaAssetScalarFieldEnum = {
-  id: 'id',
-  storageKey: 'storageKey',
-  mediaType: 'mediaType',
-  mimeType: 'mimeType',
-  width: 'width',
-  height: 'height',
-  fileSize: 'fileSize',
-  altText: 'altText',
-  credit: 'credit',
-  sourceUrl: 'sourceUrl',
-  license: 'license',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
-
-
-export const DjMediaScalarFieldEnum = {
-  djId: 'djId',
-  mediaAssetId: 'mediaAssetId',
-  role: 'role',
-  position: 'position',
-  createdAt: 'createdAt'
-} as const
-
-export type DjMediaScalarFieldEnum = (typeof DjMediaScalarFieldEnum)[keyof typeof DjMediaScalarFieldEnum]
-
-
-export const SocialProfileScalarFieldEnum = {
-  id: 'id',
-  djId: 'djId',
-  platform: 'platform',
-  handle: 'handle',
-  url: 'url',
-  verifiedAt: 'verifiedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type SocialProfileScalarFieldEnum = (typeof SocialProfileScalarFieldEnum)[keyof typeof SocialProfileScalarFieldEnum]
-
-
-export const ExternalProfileScalarFieldEnum = {
-  id: 'id',
-  djId: 'djId',
-  provider: 'provider',
-  externalId: 'externalId',
-  url: 'url',
-  metadata: 'metadata',
-  verifiedAt: 'verifiedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ExternalProfileScalarFieldEnum = (typeof ExternalProfileScalarFieldEnum)[keyof typeof ExternalProfileScalarFieldEnum]
-
-
-export const SourceScalarFieldEnum = {
-  id: 'id',
-  url: 'url',
-  title: 'title',
-  publisher: 'publisher',
-  sourceType: 'sourceType',
-  accessedAt: 'accessedAt',
-  verificationStatus: 'verificationStatus',
-  notes: 'notes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type SourceScalarFieldEnum = (typeof SourceScalarFieldEnum)[keyof typeof SourceScalarFieldEnum]
-
-
-export const DjSourceScalarFieldEnum = {
-  djId: 'djId',
-  sourceId: 'sourceId',
-  notes: 'notes',
-  createdAt: 'createdAt'
-} as const
-
-export type DjSourceScalarFieldEnum = (typeof DjSourceScalarFieldEnum)[keyof typeof DjSourceScalarFieldEnum]
-
-
-export const FavoriteScalarFieldEnum = {
-  userId: 'userId',
-  djId: 'djId',
-  createdAt: 'createdAt'
-} as const
-
-export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typeof FavoriteScalarFieldEnum]
-
-
-export const AuditEventScalarFieldEnum = {
-  id: 'id',
-  actorUserId: 'actorUserId',
-  action: 'action',
-  entityType: 'entityType',
-  entityId: 'entityId',
-  beforeData: 'beforeData',
-  afterData: 'afterData',
-  ipHash: 'ipHash',
-  requestId: 'requestId',
-  createdAt: 'createdAt'
-} as const
-
-export type AuditEventScalarFieldEnum = (typeof AuditEventScalarFieldEnum)[keyof typeof AuditEventScalarFieldEnum]
-
-
-export const ImportJobScalarFieldEnum = {
-  id: 'id',
-  createdById: 'createdById',
-  originalName: 'originalName',
-  storageKey: 'storageKey',
-  mimeType: 'mimeType',
-  checksum: 'checksum',
-  status: 'status',
-  totalRows: 'totalRows',
-  validRows: 'validRows',
-  invalidRows: 'invalidRows',
-  duplicateRows: 'duplicateRows',
-  importedRows: 'importedRows',
-  startedAt: 'startedAt',
-  completedAt: 'completedAt',
-  errorMessage: 'errorMessage',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ImportJobScalarFieldEnum = (typeof ImportJobScalarFieldEnum)[keyof typeof ImportJobScalarFieldEnum]
-
-
-export const ImportRowScalarFieldEnum = {
-  id: 'id',
-  importJobId: 'importJobId',
-  rowNumber: 'rowNumber',
-  status: 'status',
-  rawData: 'rawData',
-  normalizedData: 'normalizedData',
-  validationErrors: 'validationErrors',
-  entityType: 'entityType',
-  entityId: 'entityId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ImportRowScalarFieldEnum = (typeof ImportRowScalarFieldEnum)[keyof typeof ImportRowScalarFieldEnum]
-
-
-export const AiGenerationScalarFieldEnum = {
-  id: 'id',
-  reviewedById: 'reviewedById',
-  provider: 'provider',
-  model: 'model',
-  promptVersion: 'promptVersion',
-  taskType: 'taskType',
-  inputHash: 'inputHash',
-  output: 'output',
-  validationStatus: 'validationStatus',
-  tokenUsage: 'tokenUsage',
-  estimatedCost: 'estimatedCost',
-  reviewedAt: 'reviewedAt',
-  createdAt: 'createdAt'
-} as const
-
-export type AiGenerationScalarFieldEnum = (typeof AiGenerationScalarFieldEnum)[keyof typeof AiGenerationScalarFieldEnum]
-
-
-export const DjSimilarityScalarFieldEnum = {
-  id: 'id',
-  sourceDjId: 'sourceDjId',
-  targetDjId: 'targetDjId',
-  similarityType: 'similarityType',
-  score: 'score',
-  explanation: 'explanation',
-  generatedBy: 'generatedBy',
-  reviewStatus: 'reviewStatus',
-  reviewedAt: 'reviewedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type DjSimilarityScalarFieldEnum = (typeof DjSimilarityScalarFieldEnum)[keyof typeof DjSimilarityScalarFieldEnum]
+export type ArtistScalarFieldEnum = (typeof ArtistScalarFieldEnum)[keyof typeof ArtistScalarFieldEnum]
 
 
 export const TrackScalarFieldEnum = {
   id: 'id',
-  slug: 'slug',
   title: 'title',
   normalizedTitle: 'normalizedTitle',
-  releaseDate: 'releaseDate',
-  durationSeconds: 'durationSeconds',
+  version: 'version',
+  durationMs: 'durationMs',
+  bpm: 'bpm',
+  musicalKey: 'musicalKey',
+  camelotKey: 'camelotKey',
   isrc: 'isrc',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  deletedAt: 'deletedAt',
+  releaseDate: 'releaseDate',
+  explicit: 'explicit',
+  artworkUrl: 'artworkUrl',
+  canonicalConfidence: 'canonicalConfidence',
+  metadata: 'metadata',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -597,29 +147,50 @@ export const TrackScalarFieldEnum = {
 export type TrackScalarFieldEnum = (typeof TrackScalarFieldEnum)[keyof typeof TrackScalarFieldEnum]
 
 
-export const TrackCreditScalarFieldEnum = {
+export const TrackArtistScalarFieldEnum = {
   trackId: 'trackId',
-  djId: 'djId',
-  creditType: 'creditType',
+  artistId: 'artistId',
+  role: 'role',
   position: 'position',
-  displayName: 'displayName',
+  creditedName: 'creditedName'
+} as const
+
+export type TrackArtistScalarFieldEnum = (typeof TrackArtistScalarFieldEnum)[keyof typeof TrackArtistScalarFieldEnum]
+
+
+export const GenreScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  normalizedName: 'normalizedName',
+  slug: 'slug',
+  parentId: 'parentId',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GenreScalarFieldEnum = (typeof GenreScalarFieldEnum)[keyof typeof GenreScalarFieldEnum]
+
+
+export const TrackGenreScalarFieldEnum = {
+  trackId: 'trackId',
+  genreId: 'genreId',
+  isPrimary: 'isPrimary',
+  confidence: 'confidence',
+  assignmentMethod: 'assignmentMethod',
   createdAt: 'createdAt'
 } as const
 
-export type TrackCreditScalarFieldEnum = (typeof TrackCreditScalarFieldEnum)[keyof typeof TrackCreditScalarFieldEnum]
+export type TrackGenreScalarFieldEnum = (typeof TrackGenreScalarFieldEnum)[keyof typeof TrackGenreScalarFieldEnum]
 
 
 export const LabelScalarFieldEnum = {
   id: 'id',
-  countryId: 'countryId',
-  slug: 'slug',
   name: 'name',
   normalizedName: 'normalizedName',
-  description: 'description',
-  officialUrl: 'officialUrl',
-  editorialStatus: 'editorialStatus',
-  publishedAt: 'publishedAt',
-  deletedAt: 'deletedAt',
+  slug: 'slug',
+  countryCode: 'countryCode',
+  websiteUrl: 'websiteUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -627,16 +198,245 @@ export const LabelScalarFieldEnum = {
 export type LabelScalarFieldEnum = (typeof LabelScalarFieldEnum)[keyof typeof LabelScalarFieldEnum]
 
 
-export const DjLabelScalarFieldEnum = {
-  djId: 'djId',
+export const ReleaseScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  normalizedTitle: 'normalizedTitle',
+  releaseType: 'releaseType',
   labelId: 'labelId',
-  role: 'role',
-  startedAt: 'startedAt',
-  endedAt: 'endedAt',
+  catalogNumber: 'catalogNumber',
+  releaseDate: 'releaseDate',
+  artworkUrl: 'artworkUrl',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReleaseScalarFieldEnum = (typeof ReleaseScalarFieldEnum)[keyof typeof ReleaseScalarFieldEnum]
+
+
+export const ReleaseTrackScalarFieldEnum = {
+  releaseId: 'releaseId',
+  trackId: 'trackId',
+  discNumber: 'discNumber',
+  trackNumber: 'trackNumber',
+  position: 'position'
+} as const
+
+export type ReleaseTrackScalarFieldEnum = (typeof ReleaseTrackScalarFieldEnum)[keyof typeof ReleaseTrackScalarFieldEnum]
+
+
+export const DataSourceScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  sourceType: 'sourceType',
+  baseUrl: 'baseUrl',
+  isActive: 'isActive',
+  trustWeight: 'trustWeight',
+  config: 'config',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DataSourceScalarFieldEnum = (typeof DataSourceScalarFieldEnum)[keyof typeof DataSourceScalarFieldEnum]
+
+
+export const ExternalEntityScalarFieldEnum = {
+  id: 'id',
+  sourceId: 'sourceId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  externalId: 'externalId',
+  externalUrl: 'externalUrl',
+  externalName: 'externalName',
+  availabilityStatus: 'availabilityStatus',
+  metadata: 'metadata',
+  lastCheckedAt: 'lastCheckedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExternalEntityScalarFieldEnum = (typeof ExternalEntityScalarFieldEnum)[keyof typeof ExternalEntityScalarFieldEnum]
+
+
+export const SourceSnapshotScalarFieldEnum = {
+  id: 'id',
+  sourceId: 'sourceId',
+  sourceUrl: 'sourceUrl',
+  externalId: 'externalId',
+  contentType: 'contentType',
+  httpStatus: 'httpStatus',
+  rawPayload: 'rawPayload',
+  rawText: 'rawText',
+  contentHash: 'contentHash',
+  parserVersion: 'parserVersion',
+  fetchedAt: 'fetchedAt',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt'
 } as const
 
-export type DjLabelScalarFieldEnum = (typeof DjLabelScalarFieldEnum)[keyof typeof DjLabelScalarFieldEnum]
+export type SourceSnapshotScalarFieldEnum = (typeof SourceSnapshotScalarFieldEnum)[keyof typeof SourceSnapshotScalarFieldEnum]
+
+
+export const EntityFactScalarFieldEnum = {
+  id: 'id',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  fieldName: 'fieldName',
+  valueJson: 'valueJson',
+  normalizedValue: 'normalizedValue',
+  sourceId: 'sourceId',
+  snapshotId: 'snapshotId',
+  extractionMethod: 'extractionMethod',
+  confidence: 'confidence',
+  isVerified: 'isVerified',
+  isSelected: 'isSelected',
+  observedAt: 'observedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EntityFactScalarFieldEnum = (typeof EntityFactScalarFieldEnum)[keyof typeof EntityFactScalarFieldEnum]
+
+
+export const IngestionJobScalarFieldEnum = {
+  id: 'id',
+  requestedById: 'requestedById',
+  sourceId: 'sourceId',
+  jobType: 'jobType',
+  status: 'status',
+  sourceUrl: 'sourceUrl',
+  input: 'input',
+  totalItems: 'totalItems',
+  processedItems: 'processedItems',
+  successfulItems: 'successfulItems',
+  failedItems: 'failedItems',
+  errorMessage: 'errorMessage',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IngestionJobScalarFieldEnum = (typeof IngestionJobScalarFieldEnum)[keyof typeof IngestionJobScalarFieldEnum]
+
+
+export const IngestionItemScalarFieldEnum = {
+  id: 'id',
+  jobId: 'jobId',
+  sourcePosition: 'sourcePosition',
+  sourceTimestampMs: 'sourceTimestampMs',
+  rawTitle: 'rawTitle',
+  rawArtist: 'rawArtist',
+  rawData: 'rawData',
+  matchedTrackId: 'matchedTrackId',
+  status: 'status',
+  matchConfidence: 'matchConfidence',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IngestionItemScalarFieldEnum = (typeof IngestionItemScalarFieldEnum)[keyof typeof IngestionItemScalarFieldEnum]
+
+
+export const EnrichmentJobScalarFieldEnum = {
+  id: 'id',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  jobType: 'jobType',
+  status: 'status',
+  provider: 'provider',
+  modelName: 'modelName',
+  processVersion: 'processVersion',
+  input: 'input',
+  output: 'output',
+  confidence: 'confidence',
+  tokensUsed: 'tokensUsed',
+  estimatedCost: 'estimatedCost',
+  errorMessage: 'errorMessage',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EnrichmentJobScalarFieldEnum = (typeof EnrichmentJobScalarFieldEnum)[keyof typeof EnrichmentJobScalarFieldEnum]
+
+
+export const UserTrackScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  trackId: 'trackId',
+  status: 'status',
+  rating: 'rating',
+  energy: 'energy',
+  familiarity: 'familiarity',
+  notes: 'notes',
+  customBpm: 'customBpm',
+  customKey: 'customKey',
+  isFavorite: 'isFavorite',
+  playCount: 'playCount',
+  dateAdded: 'dateAdded',
+  lastPlayedAt: 'lastPlayedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserTrackScalarFieldEnum = (typeof UserTrackScalarFieldEnum)[keyof typeof UserTrackScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  normalizedName: 'normalizedName',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const UserTrackTagScalarFieldEnum = {
+  userTrackId: 'userTrackId',
+  tagId: 'tagId'
+} as const
+
+export type UserTrackTagScalarFieldEnum = (typeof UserTrackTagScalarFieldEnum)[keyof typeof UserTrackTagScalarFieldEnum]
+
+
+export const PlaylistScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  playlistType: 'playlistType',
+  visibility: 'visibility',
+  artworkUrl: 'artworkUrl',
+  sourceUrl: 'sourceUrl',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlaylistScalarFieldEnum = (typeof PlaylistScalarFieldEnum)[keyof typeof PlaylistScalarFieldEnum]
+
+
+export const PlaylistTrackScalarFieldEnum = {
+  id: 'id',
+  playlistId: 'playlistId',
+  trackId: 'trackId',
+  position: 'position',
+  addedById: 'addedById',
+  notes: 'notes',
+  transitionNotes: 'transitionNotes',
+  sourceTimestampMs: 'sourceTimestampMs',
+  createdAt: 'createdAt'
+} as const
+
+export type PlaylistTrackScalarFieldEnum = (typeof PlaylistTrackScalarFieldEnum)[keyof typeof PlaylistTrackScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -647,19 +447,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
-
-
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

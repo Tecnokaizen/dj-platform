@@ -27,54 +27,68 @@ export type AggregateTrack = {
 }
 
 export type TrackAvgAggregateOutputType = {
-  durationSeconds: number | null
+  durationMs: number | null
+  bpm: runtime.Decimal | null
+  canonicalConfidence: runtime.Decimal | null
 }
 
 export type TrackSumAggregateOutputType = {
-  durationSeconds: number | null
+  durationMs: number | null
+  bpm: runtime.Decimal | null
+  canonicalConfidence: runtime.Decimal | null
 }
 
 export type TrackMinAggregateOutputType = {
   id: string | null
-  slug: string | null
   title: string | null
   normalizedTitle: string | null
-  releaseDate: Date | null
-  durationSeconds: number | null
+  version: string | null
+  durationMs: number | null
+  bpm: runtime.Decimal | null
+  musicalKey: string | null
+  camelotKey: string | null
   isrc: string | null
-  editorialStatus: $Enums.EditorialStatus | null
-  publishedAt: Date | null
-  deletedAt: Date | null
+  releaseDate: Date | null
+  explicit: boolean | null
+  artworkUrl: string | null
+  canonicalConfidence: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type TrackMaxAggregateOutputType = {
   id: string | null
-  slug: string | null
   title: string | null
   normalizedTitle: string | null
-  releaseDate: Date | null
-  durationSeconds: number | null
+  version: string | null
+  durationMs: number | null
+  bpm: runtime.Decimal | null
+  musicalKey: string | null
+  camelotKey: string | null
   isrc: string | null
-  editorialStatus: $Enums.EditorialStatus | null
-  publishedAt: Date | null
-  deletedAt: Date | null
+  releaseDate: Date | null
+  explicit: boolean | null
+  artworkUrl: string | null
+  canonicalConfidence: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type TrackCountAggregateOutputType = {
   id: number
-  slug: number
   title: number
   normalizedTitle: number
-  releaseDate: number
-  durationSeconds: number
+  version: number
+  durationMs: number
+  bpm: number
+  musicalKey: number
+  camelotKey: number
   isrc: number
-  editorialStatus: number
-  publishedAt: number
-  deletedAt: number
+  releaseDate: number
+  explicit: number
+  artworkUrl: number
+  canonicalConfidence: number
+  metadata: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -82,54 +96,68 @@ export type TrackCountAggregateOutputType = {
 
 
 export type TrackAvgAggregateInputType = {
-  durationSeconds?: true
+  durationMs?: true
+  bpm?: true
+  canonicalConfidence?: true
 }
 
 export type TrackSumAggregateInputType = {
-  durationSeconds?: true
+  durationMs?: true
+  bpm?: true
+  canonicalConfidence?: true
 }
 
 export type TrackMinAggregateInputType = {
   id?: true
-  slug?: true
   title?: true
   normalizedTitle?: true
-  releaseDate?: true
-  durationSeconds?: true
+  version?: true
+  durationMs?: true
+  bpm?: true
+  musicalKey?: true
+  camelotKey?: true
   isrc?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
+  releaseDate?: true
+  explicit?: true
+  artworkUrl?: true
+  canonicalConfidence?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type TrackMaxAggregateInputType = {
   id?: true
-  slug?: true
   title?: true
   normalizedTitle?: true
-  releaseDate?: true
-  durationSeconds?: true
+  version?: true
+  durationMs?: true
+  bpm?: true
+  musicalKey?: true
+  camelotKey?: true
   isrc?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
+  releaseDate?: true
+  explicit?: true
+  artworkUrl?: true
+  canonicalConfidence?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type TrackCountAggregateInputType = {
   id?: true
-  slug?: true
   title?: true
   normalizedTitle?: true
-  releaseDate?: true
-  durationSeconds?: true
+  version?: true
+  durationMs?: true
+  bpm?: true
+  musicalKey?: true
+  camelotKey?: true
   isrc?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
+  releaseDate?: true
+  explicit?: true
+  artworkUrl?: true
+  canonicalConfidence?: true
+  metadata?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -223,15 +251,19 @@ export type TrackGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type TrackGroupByOutputType = {
   id: string
-  slug: string
   title: string
   normalizedTitle: string
-  releaseDate: Date | null
-  durationSeconds: number | null
+  version: string | null
+  durationMs: number | null
+  bpm: runtime.Decimal | null
+  musicalKey: string | null
+  camelotKey: string | null
   isrc: string | null
-  editorialStatus: $Enums.EditorialStatus
-  publishedAt: Date | null
-  deletedAt: Date | null
+  releaseDate: Date | null
+  explicit: boolean | null
+  artworkUrl: string | null
+  canonicalConfidence: runtime.Decimal | null
+  metadata: runtime.JsonValue
   createdAt: Date
   updatedAt: Date
   _count: TrackCountAggregateOutputType | null
@@ -260,67 +292,98 @@ export type TrackWhereInput = {
   AND?: Prisma.TrackWhereInput | Prisma.TrackWhereInput[]
   OR?: Prisma.TrackWhereInput[]
   NOT?: Prisma.TrackWhereInput | Prisma.TrackWhereInput[]
-  id?: Prisma.StringFilter<"Track"> | string
-  slug?: Prisma.StringFilter<"Track"> | string
+  id?: Prisma.UuidFilter<"Track"> | string
   title?: Prisma.StringFilter<"Track"> | string
   normalizedTitle?: Prisma.StringFilter<"Track"> | string
-  releaseDate?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
-  durationSeconds?: Prisma.IntNullableFilter<"Track"> | number | null
+  version?: Prisma.StringNullableFilter<"Track"> | string | null
+  durationMs?: Prisma.IntNullableFilter<"Track"> | number | null
+  bpm?: Prisma.DecimalNullableFilter<"Track"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.StringNullableFilter<"Track"> | string | null
+  camelotKey?: Prisma.StringNullableFilter<"Track"> | string | null
   isrc?: Prisma.StringNullableFilter<"Track"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Track"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
+  releaseDate?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
+  explicit?: Prisma.BoolNullableFilter<"Track"> | boolean | null
+  artworkUrl?: Prisma.StringNullableFilter<"Track"> | string | null
+  canonicalConfidence?: Prisma.DecimalNullableFilter<"Track"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonFilter<"Track">
   createdAt?: Prisma.DateTimeFilter<"Track"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Track"> | Date | string
-  credits?: Prisma.TrackCreditListRelationFilter
+  artists?: Prisma.TrackArtistListRelationFilter
+  genres?: Prisma.TrackGenreListRelationFilter
+  releases?: Prisma.ReleaseTrackListRelationFilter
+  userTracks?: Prisma.UserTrackListRelationFilter
+  playlistTracks?: Prisma.PlaylistTrackListRelationFilter
+  ingestionItems?: Prisma.IngestionItemListRelationFilter
 }
 
 export type TrackOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   normalizedTitle?: Prisma.SortOrder
-  releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
-  durationSeconds?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrderInput | Prisma.SortOrder
+  durationMs?: Prisma.SortOrderInput | Prisma.SortOrder
+  bpm?: Prisma.SortOrderInput | Prisma.SortOrder
+  musicalKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  camelotKey?: Prisma.SortOrderInput | Prisma.SortOrder
   isrc?: Prisma.SortOrderInput | Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  explicit?: Prisma.SortOrderInput | Prisma.SortOrder
+  artworkUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  credits?: Prisma.TrackCreditOrderByRelationAggregateInput
+  artists?: Prisma.TrackArtistOrderByRelationAggregateInput
+  genres?: Prisma.TrackGenreOrderByRelationAggregateInput
+  releases?: Prisma.ReleaseTrackOrderByRelationAggregateInput
+  userTracks?: Prisma.UserTrackOrderByRelationAggregateInput
+  playlistTracks?: Prisma.PlaylistTrackOrderByRelationAggregateInput
+  ingestionItems?: Prisma.IngestionItemOrderByRelationAggregateInput
 }
 
 export type TrackWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  slug?: string
-  isrc?: string
   AND?: Prisma.TrackWhereInput | Prisma.TrackWhereInput[]
   OR?: Prisma.TrackWhereInput[]
   NOT?: Prisma.TrackWhereInput | Prisma.TrackWhereInput[]
   title?: Prisma.StringFilter<"Track"> | string
   normalizedTitle?: Prisma.StringFilter<"Track"> | string
+  version?: Prisma.StringNullableFilter<"Track"> | string | null
+  durationMs?: Prisma.IntNullableFilter<"Track"> | number | null
+  bpm?: Prisma.DecimalNullableFilter<"Track"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.StringNullableFilter<"Track"> | string | null
+  camelotKey?: Prisma.StringNullableFilter<"Track"> | string | null
+  isrc?: Prisma.StringNullableFilter<"Track"> | string | null
   releaseDate?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
-  durationSeconds?: Prisma.IntNullableFilter<"Track"> | number | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Track"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Track"> | Date | string | null
+  explicit?: Prisma.BoolNullableFilter<"Track"> | boolean | null
+  artworkUrl?: Prisma.StringNullableFilter<"Track"> | string | null
+  canonicalConfidence?: Prisma.DecimalNullableFilter<"Track"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonFilter<"Track">
   createdAt?: Prisma.DateTimeFilter<"Track"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Track"> | Date | string
-  credits?: Prisma.TrackCreditListRelationFilter
-}, "id" | "slug" | "isrc">
+  artists?: Prisma.TrackArtistListRelationFilter
+  genres?: Prisma.TrackGenreListRelationFilter
+  releases?: Prisma.ReleaseTrackListRelationFilter
+  userTracks?: Prisma.UserTrackListRelationFilter
+  playlistTracks?: Prisma.PlaylistTrackListRelationFilter
+  ingestionItems?: Prisma.IngestionItemListRelationFilter
+}, "id">
 
 export type TrackOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   normalizedTitle?: Prisma.SortOrder
-  releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
-  durationSeconds?: Prisma.SortOrderInput | Prisma.SortOrder
+  version?: Prisma.SortOrderInput | Prisma.SortOrder
+  durationMs?: Prisma.SortOrderInput | Prisma.SortOrder
+  bpm?: Prisma.SortOrderInput | Prisma.SortOrder
+  musicalKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  camelotKey?: Prisma.SortOrderInput | Prisma.SortOrder
   isrc?: Prisma.SortOrderInput | Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  explicit?: Prisma.SortOrderInput | Prisma.SortOrder
+  artworkUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrderInput | Prisma.SortOrder
+  metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TrackCountOrderByAggregateInput
@@ -334,180 +397,246 @@ export type TrackScalarWhereWithAggregatesInput = {
   AND?: Prisma.TrackScalarWhereWithAggregatesInput | Prisma.TrackScalarWhereWithAggregatesInput[]
   OR?: Prisma.TrackScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TrackScalarWhereWithAggregatesInput | Prisma.TrackScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Track"> | string
-  slug?: Prisma.StringWithAggregatesFilter<"Track"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Track"> | string
   title?: Prisma.StringWithAggregatesFilter<"Track"> | string
   normalizedTitle?: Prisma.StringWithAggregatesFilter<"Track"> | string
-  releaseDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Track"> | Date | string | null
-  durationSeconds?: Prisma.IntNullableWithAggregatesFilter<"Track"> | number | null
+  version?: Prisma.StringNullableWithAggregatesFilter<"Track"> | string | null
+  durationMs?: Prisma.IntNullableWithAggregatesFilter<"Track"> | number | null
+  bpm?: Prisma.DecimalNullableWithAggregatesFilter<"Track"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.StringNullableWithAggregatesFilter<"Track"> | string | null
+  camelotKey?: Prisma.StringNullableWithAggregatesFilter<"Track"> | string | null
   isrc?: Prisma.StringNullableWithAggregatesFilter<"Track"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusWithAggregatesFilter<"Track"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Track"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Track"> | Date | string | null
+  releaseDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Track"> | Date | string | null
+  explicit?: Prisma.BoolNullableWithAggregatesFilter<"Track"> | boolean | null
+  artworkUrl?: Prisma.StringNullableWithAggregatesFilter<"Track"> | string | null
+  canonicalConfidence?: Prisma.DecimalNullableWithAggregatesFilter<"Track"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonWithAggregatesFilter<"Track">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Track"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Track"> | Date | string
 }
 
 export type TrackCreateInput = {
   id?: string
-  slug: string
   title: string
   normalizedTitle: string
-  releaseDate?: Date | string | null
-  durationSeconds?: number | null
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
   isrc?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  credits?: Prisma.TrackCreditCreateNestedManyWithoutTrackInput
+  artists?: Prisma.TrackArtistCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemCreateNestedManyWithoutMatchedTrackInput
 }
 
 export type TrackUncheckedCreateInput = {
   id?: string
-  slug: string
   title: string
   normalizedTitle: string
-  releaseDate?: Date | string | null
-  durationSeconds?: number | null
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
   isrc?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
-  credits?: Prisma.TrackCreditUncheckedCreateNestedManyWithoutTrackInput
+  artists?: Prisma.TrackArtistUncheckedCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackUncheckedCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemUncheckedCreateNestedManyWithoutMatchedTrackInput
 }
 
 export type TrackUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  credits?: Prisma.TrackCreditUpdateManyWithoutTrackNestedInput
+  artists?: Prisma.TrackArtistUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUpdateManyWithoutMatchedTrackNestedInput
 }
 
 export type TrackUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  credits?: Prisma.TrackCreditUncheckedUpdateManyWithoutTrackNestedInput
+  artists?: Prisma.TrackArtistUncheckedUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUncheckedUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUncheckedUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUncheckedUpdateManyWithoutMatchedTrackNestedInput
 }
 
 export type TrackCreateManyInput = {
   id?: string
-  slug: string
   title: string
   normalizedTitle: string
-  releaseDate?: Date | string | null
-  durationSeconds?: number | null
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
   isrc?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type TrackUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TrackUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type TrackCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   normalizedTitle?: Prisma.SortOrder
-  releaseDate?: Prisma.SortOrder
-  durationSeconds?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  bpm?: Prisma.SortOrder
+  musicalKey?: Prisma.SortOrder
+  camelotKey?: Prisma.SortOrder
   isrc?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
+  releaseDate?: Prisma.SortOrder
+  explicit?: Prisma.SortOrder
+  artworkUrl?: Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrder
+  metadata?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type TrackAvgOrderByAggregateInput = {
-  durationSeconds?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  bpm?: Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrder
 }
 
 export type TrackMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   normalizedTitle?: Prisma.SortOrder
-  releaseDate?: Prisma.SortOrder
-  durationSeconds?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  bpm?: Prisma.SortOrder
+  musicalKey?: Prisma.SortOrder
+  camelotKey?: Prisma.SortOrder
   isrc?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
+  releaseDate?: Prisma.SortOrder
+  explicit?: Prisma.SortOrder
+  artworkUrl?: Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type TrackMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   normalizedTitle?: Prisma.SortOrder
-  releaseDate?: Prisma.SortOrder
-  durationSeconds?: Prisma.SortOrder
+  version?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  bpm?: Prisma.SortOrder
+  musicalKey?: Prisma.SortOrder
+  camelotKey?: Prisma.SortOrder
   isrc?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
+  releaseDate?: Prisma.SortOrder
+  explicit?: Prisma.SortOrder
+  artworkUrl?: Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type TrackSumOrderByAggregateInput = {
-  durationSeconds?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  bpm?: Prisma.SortOrder
+  canonicalConfidence?: Prisma.SortOrder
 }
 
 export type TrackScalarRelationFilter = {
@@ -515,94 +644,783 @@ export type TrackScalarRelationFilter = {
   isNot?: Prisma.TrackWhereInput
 }
 
-export type TrackCreateNestedOneWithoutCreditsInput = {
-  create?: Prisma.XOR<Prisma.TrackCreateWithoutCreditsInput, Prisma.TrackUncheckedCreateWithoutCreditsInput>
-  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutCreditsInput
+export type TrackNullableScalarRelationFilter = {
+  is?: Prisma.TrackWhereInput | null
+  isNot?: Prisma.TrackWhereInput | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
+}
+
+export type TrackCreateNestedOneWithoutArtistsInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutArtistsInput, Prisma.TrackUncheckedCreateWithoutArtistsInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutArtistsInput
   connect?: Prisma.TrackWhereUniqueInput
 }
 
-export type TrackUpdateOneRequiredWithoutCreditsNestedInput = {
-  create?: Prisma.XOR<Prisma.TrackCreateWithoutCreditsInput, Prisma.TrackUncheckedCreateWithoutCreditsInput>
-  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutCreditsInput
-  upsert?: Prisma.TrackUpsertWithoutCreditsInput
+export type TrackUpdateOneRequiredWithoutArtistsNestedInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutArtistsInput, Prisma.TrackUncheckedCreateWithoutArtistsInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutArtistsInput
+  upsert?: Prisma.TrackUpsertWithoutArtistsInput
   connect?: Prisma.TrackWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutCreditsInput, Prisma.TrackUpdateWithoutCreditsInput>, Prisma.TrackUncheckedUpdateWithoutCreditsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutArtistsInput, Prisma.TrackUpdateWithoutArtistsInput>, Prisma.TrackUncheckedUpdateWithoutArtistsInput>
 }
 
-export type TrackCreateWithoutCreditsInput = {
+export type TrackCreateNestedOneWithoutGenresInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutGenresInput, Prisma.TrackUncheckedCreateWithoutGenresInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutGenresInput
+  connect?: Prisma.TrackWhereUniqueInput
+}
+
+export type TrackUpdateOneRequiredWithoutGenresNestedInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutGenresInput, Prisma.TrackUncheckedCreateWithoutGenresInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutGenresInput
+  upsert?: Prisma.TrackUpsertWithoutGenresInput
+  connect?: Prisma.TrackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutGenresInput, Prisma.TrackUpdateWithoutGenresInput>, Prisma.TrackUncheckedUpdateWithoutGenresInput>
+}
+
+export type TrackCreateNestedOneWithoutReleasesInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutReleasesInput, Prisma.TrackUncheckedCreateWithoutReleasesInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutReleasesInput
+  connect?: Prisma.TrackWhereUniqueInput
+}
+
+export type TrackUpdateOneRequiredWithoutReleasesNestedInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutReleasesInput, Prisma.TrackUncheckedCreateWithoutReleasesInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutReleasesInput
+  upsert?: Prisma.TrackUpsertWithoutReleasesInput
+  connect?: Prisma.TrackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutReleasesInput, Prisma.TrackUpdateWithoutReleasesInput>, Prisma.TrackUncheckedUpdateWithoutReleasesInput>
+}
+
+export type TrackCreateNestedOneWithoutIngestionItemsInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutIngestionItemsInput, Prisma.TrackUncheckedCreateWithoutIngestionItemsInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutIngestionItemsInput
+  connect?: Prisma.TrackWhereUniqueInput
+}
+
+export type TrackUpdateOneWithoutIngestionItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutIngestionItemsInput, Prisma.TrackUncheckedCreateWithoutIngestionItemsInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutIngestionItemsInput
+  upsert?: Prisma.TrackUpsertWithoutIngestionItemsInput
+  disconnect?: Prisma.TrackWhereInput | boolean
+  delete?: Prisma.TrackWhereInput | boolean
+  connect?: Prisma.TrackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutIngestionItemsInput, Prisma.TrackUpdateWithoutIngestionItemsInput>, Prisma.TrackUncheckedUpdateWithoutIngestionItemsInput>
+}
+
+export type TrackCreateNestedOneWithoutUserTracksInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutUserTracksInput, Prisma.TrackUncheckedCreateWithoutUserTracksInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutUserTracksInput
+  connect?: Prisma.TrackWhereUniqueInput
+}
+
+export type TrackUpdateOneRequiredWithoutUserTracksNestedInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutUserTracksInput, Prisma.TrackUncheckedCreateWithoutUserTracksInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutUserTracksInput
+  upsert?: Prisma.TrackUpsertWithoutUserTracksInput
+  connect?: Prisma.TrackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutUserTracksInput, Prisma.TrackUpdateWithoutUserTracksInput>, Prisma.TrackUncheckedUpdateWithoutUserTracksInput>
+}
+
+export type TrackCreateNestedOneWithoutPlaylistTracksInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutPlaylistTracksInput, Prisma.TrackUncheckedCreateWithoutPlaylistTracksInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutPlaylistTracksInput
+  connect?: Prisma.TrackWhereUniqueInput
+}
+
+export type TrackUpdateOneRequiredWithoutPlaylistTracksNestedInput = {
+  create?: Prisma.XOR<Prisma.TrackCreateWithoutPlaylistTracksInput, Prisma.TrackUncheckedCreateWithoutPlaylistTracksInput>
+  connectOrCreate?: Prisma.TrackCreateOrConnectWithoutPlaylistTracksInput
+  upsert?: Prisma.TrackUpsertWithoutPlaylistTracksInput
+  connect?: Prisma.TrackWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TrackUpdateToOneWithWhereWithoutPlaylistTracksInput, Prisma.TrackUpdateWithoutPlaylistTracksInput>, Prisma.TrackUncheckedUpdateWithoutPlaylistTracksInput>
+}
+
+export type TrackCreateWithoutArtistsInput = {
   id?: string
-  slug: string
   title: string
   normalizedTitle: string
-  releaseDate?: Date | string | null
-  durationSeconds?: number | null
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
   isrc?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  genres?: Prisma.TrackGenreCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemCreateNestedManyWithoutMatchedTrackInput
 }
 
-export type TrackUncheckedCreateWithoutCreditsInput = {
+export type TrackUncheckedCreateWithoutArtistsInput = {
   id?: string
-  slug: string
   title: string
   normalizedTitle: string
-  releaseDate?: Date | string | null
-  durationSeconds?: number | null
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
   isrc?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  genres?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackUncheckedCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemUncheckedCreateNestedManyWithoutMatchedTrackInput
 }
 
-export type TrackCreateOrConnectWithoutCreditsInput = {
+export type TrackCreateOrConnectWithoutArtistsInput = {
   where: Prisma.TrackWhereUniqueInput
-  create: Prisma.XOR<Prisma.TrackCreateWithoutCreditsInput, Prisma.TrackUncheckedCreateWithoutCreditsInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutArtistsInput, Prisma.TrackUncheckedCreateWithoutArtistsInput>
 }
 
-export type TrackUpsertWithoutCreditsInput = {
-  update: Prisma.XOR<Prisma.TrackUpdateWithoutCreditsInput, Prisma.TrackUncheckedUpdateWithoutCreditsInput>
-  create: Prisma.XOR<Prisma.TrackCreateWithoutCreditsInput, Prisma.TrackUncheckedCreateWithoutCreditsInput>
+export type TrackUpsertWithoutArtistsInput = {
+  update: Prisma.XOR<Prisma.TrackUpdateWithoutArtistsInput, Prisma.TrackUncheckedUpdateWithoutArtistsInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutArtistsInput, Prisma.TrackUncheckedCreateWithoutArtistsInput>
   where?: Prisma.TrackWhereInput
 }
 
-export type TrackUpdateToOneWithWhereWithoutCreditsInput = {
+export type TrackUpdateToOneWithWhereWithoutArtistsInput = {
   where?: Prisma.TrackWhereInput
-  data: Prisma.XOR<Prisma.TrackUpdateWithoutCreditsInput, Prisma.TrackUncheckedUpdateWithoutCreditsInput>
+  data: Prisma.XOR<Prisma.TrackUpdateWithoutArtistsInput, Prisma.TrackUncheckedUpdateWithoutArtistsInput>
 }
 
-export type TrackUpdateWithoutCreditsInput = {
+export type TrackUpdateWithoutArtistsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  genres?: Prisma.TrackGenreUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUpdateManyWithoutMatchedTrackNestedInput
 }
 
-export type TrackUncheckedUpdateWithoutCreditsInput = {
+export type TrackUncheckedUpdateWithoutArtistsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  genres?: Prisma.TrackGenreUncheckedUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUncheckedUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUncheckedUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackCreateWithoutGenresInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackUncheckedCreateWithoutGenresInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistUncheckedCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackUncheckedCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemUncheckedCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackCreateOrConnectWithoutGenresInput = {
+  where: Prisma.TrackWhereUniqueInput
+  create: Prisma.XOR<Prisma.TrackCreateWithoutGenresInput, Prisma.TrackUncheckedCreateWithoutGenresInput>
+}
+
+export type TrackUpsertWithoutGenresInput = {
+  update: Prisma.XOR<Prisma.TrackUpdateWithoutGenresInput, Prisma.TrackUncheckedUpdateWithoutGenresInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutGenresInput, Prisma.TrackUncheckedCreateWithoutGenresInput>
+  where?: Prisma.TrackWhereInput
+}
+
+export type TrackUpdateToOneWithWhereWithoutGenresInput = {
+  where?: Prisma.TrackWhereInput
+  data: Prisma.XOR<Prisma.TrackUpdateWithoutGenresInput, Prisma.TrackUncheckedUpdateWithoutGenresInput>
+}
+
+export type TrackUpdateWithoutGenresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackUncheckedUpdateWithoutGenresInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUncheckedUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUncheckedUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUncheckedUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackCreateWithoutReleasesInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackUncheckedCreateWithoutReleasesInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistUncheckedCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemUncheckedCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackCreateOrConnectWithoutReleasesInput = {
+  where: Prisma.TrackWhereUniqueInput
+  create: Prisma.XOR<Prisma.TrackCreateWithoutReleasesInput, Prisma.TrackUncheckedCreateWithoutReleasesInput>
+}
+
+export type TrackUpsertWithoutReleasesInput = {
+  update: Prisma.XOR<Prisma.TrackUpdateWithoutReleasesInput, Prisma.TrackUncheckedUpdateWithoutReleasesInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutReleasesInput, Prisma.TrackUncheckedCreateWithoutReleasesInput>
+  where?: Prisma.TrackWhereInput
+}
+
+export type TrackUpdateToOneWithWhereWithoutReleasesInput = {
+  where?: Prisma.TrackWhereInput
+  data: Prisma.XOR<Prisma.TrackUpdateWithoutReleasesInput, Prisma.TrackUncheckedUpdateWithoutReleasesInput>
+}
+
+export type TrackUpdateWithoutReleasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackUncheckedUpdateWithoutReleasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUncheckedUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUncheckedUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUncheckedUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackCreateWithoutIngestionItemsInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackCreateNestedManyWithoutTrackInput
+}
+
+export type TrackUncheckedCreateWithoutIngestionItemsInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistUncheckedCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackUncheckedCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutTrackInput
+}
+
+export type TrackCreateOrConnectWithoutIngestionItemsInput = {
+  where: Prisma.TrackWhereUniqueInput
+  create: Prisma.XOR<Prisma.TrackCreateWithoutIngestionItemsInput, Prisma.TrackUncheckedCreateWithoutIngestionItemsInput>
+}
+
+export type TrackUpsertWithoutIngestionItemsInput = {
+  update: Prisma.XOR<Prisma.TrackUpdateWithoutIngestionItemsInput, Prisma.TrackUncheckedUpdateWithoutIngestionItemsInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutIngestionItemsInput, Prisma.TrackUncheckedCreateWithoutIngestionItemsInput>
+  where?: Prisma.TrackWhereInput
+}
+
+export type TrackUpdateToOneWithWhereWithoutIngestionItemsInput = {
+  where?: Prisma.TrackWhereInput
+  data: Prisma.XOR<Prisma.TrackUpdateWithoutIngestionItemsInput, Prisma.TrackUncheckedUpdateWithoutIngestionItemsInput>
+}
+
+export type TrackUpdateWithoutIngestionItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUpdateManyWithoutTrackNestedInput
+}
+
+export type TrackUncheckedUpdateWithoutIngestionItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUncheckedUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUncheckedUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUncheckedUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutTrackNestedInput
+}
+
+export type TrackCreateWithoutUserTracksInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackUncheckedCreateWithoutUserTracksInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistUncheckedCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackUncheckedCreateNestedManyWithoutTrackInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemUncheckedCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackCreateOrConnectWithoutUserTracksInput = {
+  where: Prisma.TrackWhereUniqueInput
+  create: Prisma.XOR<Prisma.TrackCreateWithoutUserTracksInput, Prisma.TrackUncheckedCreateWithoutUserTracksInput>
+}
+
+export type TrackUpsertWithoutUserTracksInput = {
+  update: Prisma.XOR<Prisma.TrackUpdateWithoutUserTracksInput, Prisma.TrackUncheckedUpdateWithoutUserTracksInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutUserTracksInput, Prisma.TrackUncheckedCreateWithoutUserTracksInput>
+  where?: Prisma.TrackWhereInput
+}
+
+export type TrackUpdateToOneWithWhereWithoutUserTracksInput = {
+  where?: Prisma.TrackWhereInput
+  data: Prisma.XOR<Prisma.TrackUpdateWithoutUserTracksInput, Prisma.TrackUncheckedUpdateWithoutUserTracksInput>
+}
+
+export type TrackUpdateWithoutUserTracksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackUncheckedUpdateWithoutUserTracksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUncheckedUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUncheckedUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUncheckedUpdateManyWithoutTrackNestedInput
+  playlistTracks?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUncheckedUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackCreateWithoutPlaylistTracksInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackUncheckedCreateWithoutPlaylistTracksInput = {
+  id?: string
+  title: string
+  normalizedTitle: string
+  version?: string | null
+  durationMs?: number | null
+  bpm?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: string | null
+  camelotKey?: string | null
+  isrc?: string | null
+  releaseDate?: Date | string | null
+  explicit?: boolean | null
+  artworkUrl?: string | null
+  canonicalConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artists?: Prisma.TrackArtistUncheckedCreateNestedManyWithoutTrackInput
+  genres?: Prisma.TrackGenreUncheckedCreateNestedManyWithoutTrackInput
+  releases?: Prisma.ReleaseTrackUncheckedCreateNestedManyWithoutTrackInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutTrackInput
+  ingestionItems?: Prisma.IngestionItemUncheckedCreateNestedManyWithoutMatchedTrackInput
+}
+
+export type TrackCreateOrConnectWithoutPlaylistTracksInput = {
+  where: Prisma.TrackWhereUniqueInput
+  create: Prisma.XOR<Prisma.TrackCreateWithoutPlaylistTracksInput, Prisma.TrackUncheckedCreateWithoutPlaylistTracksInput>
+}
+
+export type TrackUpsertWithoutPlaylistTracksInput = {
+  update: Prisma.XOR<Prisma.TrackUpdateWithoutPlaylistTracksInput, Prisma.TrackUncheckedUpdateWithoutPlaylistTracksInput>
+  create: Prisma.XOR<Prisma.TrackCreateWithoutPlaylistTracksInput, Prisma.TrackUncheckedCreateWithoutPlaylistTracksInput>
+  where?: Prisma.TrackWhereInput
+}
+
+export type TrackUpdateToOneWithWhereWithoutPlaylistTracksInput = {
+  where?: Prisma.TrackWhereInput
+  data: Prisma.XOR<Prisma.TrackUpdateWithoutPlaylistTracksInput, Prisma.TrackUncheckedUpdateWithoutPlaylistTracksInput>
+}
+
+export type TrackUpdateWithoutPlaylistTracksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUpdateManyWithoutMatchedTrackNestedInput
+}
+
+export type TrackUncheckedUpdateWithoutPlaylistTracksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpm?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  musicalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  camelotKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isrc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  explicit?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  artworkUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  canonicalConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  metadata?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artists?: Prisma.TrackArtistUncheckedUpdateManyWithoutTrackNestedInput
+  genres?: Prisma.TrackGenreUncheckedUpdateManyWithoutTrackNestedInput
+  releases?: Prisma.ReleaseTrackUncheckedUpdateManyWithoutTrackNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutTrackNestedInput
+  ingestionItems?: Prisma.IngestionItemUncheckedUpdateManyWithoutMatchedTrackNestedInput
 }
 
 
@@ -611,11 +1429,21 @@ export type TrackUncheckedUpdateWithoutCreditsInput = {
  */
 
 export type TrackCountOutputType = {
-  credits: number
+  artists: number
+  genres: number
+  releases: number
+  userTracks: number
+  playlistTracks: number
+  ingestionItems: number
 }
 
 export type TrackCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  credits?: boolean | TrackCountOutputTypeCountCreditsArgs
+  artists?: boolean | TrackCountOutputTypeCountArtistsArgs
+  genres?: boolean | TrackCountOutputTypeCountGenresArgs
+  releases?: boolean | TrackCountOutputTypeCountReleasesArgs
+  userTracks?: boolean | TrackCountOutputTypeCountUserTracksArgs
+  playlistTracks?: boolean | TrackCountOutputTypeCountPlaylistTracksArgs
+  ingestionItems?: boolean | TrackCountOutputTypeCountIngestionItemsArgs
 }
 
 /**
@@ -631,76 +1459,137 @@ export type TrackCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * TrackCountOutputType without action
  */
-export type TrackCountOutputTypeCountCreditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TrackCreditWhereInput
+export type TrackCountOutputTypeCountArtistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrackArtistWhereInput
+}
+
+/**
+ * TrackCountOutputType without action
+ */
+export type TrackCountOutputTypeCountGenresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TrackGenreWhereInput
+}
+
+/**
+ * TrackCountOutputType without action
+ */
+export type TrackCountOutputTypeCountReleasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReleaseTrackWhereInput
+}
+
+/**
+ * TrackCountOutputType without action
+ */
+export type TrackCountOutputTypeCountUserTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserTrackWhereInput
+}
+
+/**
+ * TrackCountOutputType without action
+ */
+export type TrackCountOutputTypeCountPlaylistTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlaylistTrackWhereInput
+}
+
+/**
+ * TrackCountOutputType without action
+ */
+export type TrackCountOutputTypeCountIngestionItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IngestionItemWhereInput
 }
 
 
 export type TrackSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  slug?: boolean
   title?: boolean
   normalizedTitle?: boolean
-  releaseDate?: boolean
-  durationSeconds?: boolean
+  version?: boolean
+  durationMs?: boolean
+  bpm?: boolean
+  musicalKey?: boolean
+  camelotKey?: boolean
   isrc?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  releaseDate?: boolean
+  explicit?: boolean
+  artworkUrl?: boolean
+  canonicalConfidence?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  credits?: boolean | Prisma.Track$creditsArgs<ExtArgs>
+  artists?: boolean | Prisma.Track$artistsArgs<ExtArgs>
+  genres?: boolean | Prisma.Track$genresArgs<ExtArgs>
+  releases?: boolean | Prisma.Track$releasesArgs<ExtArgs>
+  userTracks?: boolean | Prisma.Track$userTracksArgs<ExtArgs>
+  playlistTracks?: boolean | Prisma.Track$playlistTracksArgs<ExtArgs>
+  ingestionItems?: boolean | Prisma.Track$ingestionItemsArgs<ExtArgs>
   _count?: boolean | Prisma.TrackCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["track"]>
 
 export type TrackSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  slug?: boolean
   title?: boolean
   normalizedTitle?: boolean
-  releaseDate?: boolean
-  durationSeconds?: boolean
+  version?: boolean
+  durationMs?: boolean
+  bpm?: boolean
+  musicalKey?: boolean
+  camelotKey?: boolean
   isrc?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  releaseDate?: boolean
+  explicit?: boolean
+  artworkUrl?: boolean
+  canonicalConfidence?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["track"]>
 
 export type TrackSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  slug?: boolean
   title?: boolean
   normalizedTitle?: boolean
-  releaseDate?: boolean
-  durationSeconds?: boolean
+  version?: boolean
+  durationMs?: boolean
+  bpm?: boolean
+  musicalKey?: boolean
+  camelotKey?: boolean
   isrc?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  releaseDate?: boolean
+  explicit?: boolean
+  artworkUrl?: boolean
+  canonicalConfidence?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["track"]>
 
 export type TrackSelectScalar = {
   id?: boolean
-  slug?: boolean
   title?: boolean
   normalizedTitle?: boolean
-  releaseDate?: boolean
-  durationSeconds?: boolean
+  version?: boolean
+  durationMs?: boolean
+  bpm?: boolean
+  musicalKey?: boolean
+  camelotKey?: boolean
   isrc?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  releaseDate?: boolean
+  explicit?: boolean
+  artworkUrl?: boolean
+  canonicalConfidence?: boolean
+  metadata?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TrackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "normalizedTitle" | "releaseDate" | "durationSeconds" | "isrc" | "editorialStatus" | "publishedAt" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["track"]>
+export type TrackOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "normalizedTitle" | "version" | "durationMs" | "bpm" | "musicalKey" | "camelotKey" | "isrc" | "releaseDate" | "explicit" | "artworkUrl" | "canonicalConfidence" | "metadata" | "createdAt" | "updatedAt", ExtArgs["result"]["track"]>
 export type TrackInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  credits?: boolean | Prisma.Track$creditsArgs<ExtArgs>
+  artists?: boolean | Prisma.Track$artistsArgs<ExtArgs>
+  genres?: boolean | Prisma.Track$genresArgs<ExtArgs>
+  releases?: boolean | Prisma.Track$releasesArgs<ExtArgs>
+  userTracks?: boolean | Prisma.Track$userTracksArgs<ExtArgs>
+  playlistTracks?: boolean | Prisma.Track$playlistTracksArgs<ExtArgs>
+  ingestionItems?: boolean | Prisma.Track$ingestionItemsArgs<ExtArgs>
   _count?: boolean | Prisma.TrackCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TrackIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -709,19 +1598,28 @@ export type TrackIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $TrackPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Track"
   objects: {
-    credits: Prisma.$TrackCreditPayload<ExtArgs>[]
+    artists: Prisma.$TrackArtistPayload<ExtArgs>[]
+    genres: Prisma.$TrackGenrePayload<ExtArgs>[]
+    releases: Prisma.$ReleaseTrackPayload<ExtArgs>[]
+    userTracks: Prisma.$UserTrackPayload<ExtArgs>[]
+    playlistTracks: Prisma.$PlaylistTrackPayload<ExtArgs>[]
+    ingestionItems: Prisma.$IngestionItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    slug: string
     title: string
     normalizedTitle: string
-    releaseDate: Date | null
-    durationSeconds: number | null
+    version: string | null
+    durationMs: number | null
+    bpm: runtime.Decimal | null
+    musicalKey: string | null
+    camelotKey: string | null
     isrc: string | null
-    editorialStatus: $Enums.EditorialStatus
-    publishedAt: Date | null
-    deletedAt: Date | null
+    releaseDate: Date | null
+    explicit: boolean | null
+    artworkUrl: string | null
+    canonicalConfidence: runtime.Decimal | null
+    metadata: runtime.JsonValue
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["track"]>
@@ -1118,7 +2016,12 @@ readonly fields: TrackFieldRefs;
  */
 export interface Prisma__TrackClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  credits<T extends Prisma.Track$creditsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$creditsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackCreditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  artists<T extends Prisma.Track$artistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$artistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackArtistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  genres<T extends Prisma.Track$genresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$genresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrackGenrePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  releases<T extends Prisma.Track$releasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$releasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleaseTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userTracks<T extends Prisma.Track$userTracksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$userTracksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  playlistTracks<T extends Prisma.Track$playlistTracksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$playlistTracksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ingestionItems<T extends Prisma.Track$ingestionItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Track$ingestionItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IngestionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1149,15 +2052,19 @@ export interface Prisma__TrackClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface TrackFieldRefs {
   readonly id: Prisma.FieldRef<"Track", 'String'>
-  readonly slug: Prisma.FieldRef<"Track", 'String'>
   readonly title: Prisma.FieldRef<"Track", 'String'>
   readonly normalizedTitle: Prisma.FieldRef<"Track", 'String'>
-  readonly releaseDate: Prisma.FieldRef<"Track", 'DateTime'>
-  readonly durationSeconds: Prisma.FieldRef<"Track", 'Int'>
+  readonly version: Prisma.FieldRef<"Track", 'String'>
+  readonly durationMs: Prisma.FieldRef<"Track", 'Int'>
+  readonly bpm: Prisma.FieldRef<"Track", 'Decimal'>
+  readonly musicalKey: Prisma.FieldRef<"Track", 'String'>
+  readonly camelotKey: Prisma.FieldRef<"Track", 'String'>
   readonly isrc: Prisma.FieldRef<"Track", 'String'>
-  readonly editorialStatus: Prisma.FieldRef<"Track", 'EditorialStatus'>
-  readonly publishedAt: Prisma.FieldRef<"Track", 'DateTime'>
-  readonly deletedAt: Prisma.FieldRef<"Track", 'DateTime'>
+  readonly releaseDate: Prisma.FieldRef<"Track", 'DateTime'>
+  readonly explicit: Prisma.FieldRef<"Track", 'Boolean'>
+  readonly artworkUrl: Prisma.FieldRef<"Track", 'String'>
+  readonly canonicalConfidence: Prisma.FieldRef<"Track", 'Decimal'>
+  readonly metadata: Prisma.FieldRef<"Track", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Track", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Track", 'DateTime'>
 }
@@ -1553,27 +2460,147 @@ export type TrackDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Track.credits
+ * Track.artists
  */
-export type Track$creditsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Track$artistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the TrackCredit
+   * Select specific fields to fetch from the TrackArtist
    */
-  select?: Prisma.TrackCreditSelect<ExtArgs> | null
+  select?: Prisma.TrackArtistSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the TrackCredit
+   * Omit specific fields from the TrackArtist
    */
-  omit?: Prisma.TrackCreditOmit<ExtArgs> | null
+  omit?: Prisma.TrackArtistOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TrackCreditInclude<ExtArgs> | null
-  where?: Prisma.TrackCreditWhereInput
-  orderBy?: Prisma.TrackCreditOrderByWithRelationInput | Prisma.TrackCreditOrderByWithRelationInput[]
-  cursor?: Prisma.TrackCreditWhereUniqueInput
+  include?: Prisma.TrackArtistInclude<ExtArgs> | null
+  where?: Prisma.TrackArtistWhereInput
+  orderBy?: Prisma.TrackArtistOrderByWithRelationInput | Prisma.TrackArtistOrderByWithRelationInput[]
+  cursor?: Prisma.TrackArtistWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TrackCreditScalarFieldEnum | Prisma.TrackCreditScalarFieldEnum[]
+  distinct?: Prisma.TrackArtistScalarFieldEnum | Prisma.TrackArtistScalarFieldEnum[]
+}
+
+/**
+ * Track.genres
+ */
+export type Track$genresArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TrackGenre
+   */
+  select?: Prisma.TrackGenreSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TrackGenre
+   */
+  omit?: Prisma.TrackGenreOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TrackGenreInclude<ExtArgs> | null
+  where?: Prisma.TrackGenreWhereInput
+  orderBy?: Prisma.TrackGenreOrderByWithRelationInput | Prisma.TrackGenreOrderByWithRelationInput[]
+  cursor?: Prisma.TrackGenreWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TrackGenreScalarFieldEnum | Prisma.TrackGenreScalarFieldEnum[]
+}
+
+/**
+ * Track.releases
+ */
+export type Track$releasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReleaseTrack
+   */
+  select?: Prisma.ReleaseTrackSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReleaseTrack
+   */
+  omit?: Prisma.ReleaseTrackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReleaseTrackInclude<ExtArgs> | null
+  where?: Prisma.ReleaseTrackWhereInput
+  orderBy?: Prisma.ReleaseTrackOrderByWithRelationInput | Prisma.ReleaseTrackOrderByWithRelationInput[]
+  cursor?: Prisma.ReleaseTrackWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReleaseTrackScalarFieldEnum | Prisma.ReleaseTrackScalarFieldEnum[]
+}
+
+/**
+ * Track.userTracks
+ */
+export type Track$userTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserTrack
+   */
+  select?: Prisma.UserTrackSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserTrack
+   */
+  omit?: Prisma.UserTrackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTrackInclude<ExtArgs> | null
+  where?: Prisma.UserTrackWhereInput
+  orderBy?: Prisma.UserTrackOrderByWithRelationInput | Prisma.UserTrackOrderByWithRelationInput[]
+  cursor?: Prisma.UserTrackWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserTrackScalarFieldEnum | Prisma.UserTrackScalarFieldEnum[]
+}
+
+/**
+ * Track.playlistTracks
+ */
+export type Track$playlistTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlaylistTrack
+   */
+  select?: Prisma.PlaylistTrackSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlaylistTrack
+   */
+  omit?: Prisma.PlaylistTrackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlaylistTrackInclude<ExtArgs> | null
+  where?: Prisma.PlaylistTrackWhereInput
+  orderBy?: Prisma.PlaylistTrackOrderByWithRelationInput | Prisma.PlaylistTrackOrderByWithRelationInput[]
+  cursor?: Prisma.PlaylistTrackWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlaylistTrackScalarFieldEnum | Prisma.PlaylistTrackScalarFieldEnum[]
+}
+
+/**
+ * Track.ingestionItems
+ */
+export type Track$ingestionItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IngestionItem
+   */
+  select?: Prisma.IngestionItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IngestionItem
+   */
+  omit?: Prisma.IngestionItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IngestionItemInclude<ExtArgs> | null
+  where?: Prisma.IngestionItemWhereInput
+  orderBy?: Prisma.IngestionItemOrderByWithRelationInput | Prisma.IngestionItemOrderByWithRelationInput[]
+  cursor?: Prisma.IngestionItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IngestionItemScalarFieldEnum | Prisma.IngestionItemScalarFieldEnum[]
 }
 
 /**

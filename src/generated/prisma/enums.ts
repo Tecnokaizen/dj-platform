@@ -9,245 +9,201 @@
 * 🟢 You can import this file directly.
 */
 
-export const EditorialStatus = {
-  DRAFT: 'DRAFT',
-  IN_REVIEW: 'IN_REVIEW',
-  PUBLISHED: 'PUBLISHED',
-  ARCHIVED: 'ARCHIVED'
+export const ExperienceLevel = {
+  BEGINNER: 'BEGINNER',
+  INTERMEDIATE: 'INTERMEDIATE',
+  ADVANCED: 'ADVANCED',
+  PROFESSIONAL: 'PROFESSIONAL'
 } as const
 
-export type EditorialStatus = (typeof EditorialStatus)[keyof typeof EditorialStatus]
+export type ExperienceLevel = (typeof ExperienceLevel)[keyof typeof ExperienceLevel]
 
 
-export const ActivityStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  RETIRED: 'RETIRED',
+export const ArtistType = {
+  PERSON: 'PERSON',
+  GROUP: 'GROUP',
+  PROJECT: 'PROJECT',
+  ORCHESTRA: 'ORCHESTRA',
+  COLLECTIVE: 'COLLECTIVE',
   UNKNOWN: 'UNKNOWN'
 } as const
 
-export type ActivityStatus = (typeof ActivityStatus)[keyof typeof ActivityStatus]
+export type ArtistType = (typeof ArtistType)[keyof typeof ArtistType]
 
 
-export const UserStatus = {
-  INVITED: 'INVITED',
-  ACTIVE: 'ACTIVE',
-  SUSPENDED: 'SUSPENDED',
-  DISABLED: 'DISABLED'
-} as const
-
-export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
-
-
-export const UserRole = {
-  READER: 'READER',
-  EDITOR: 'EDITOR',
-  ADMIN: 'ADMIN',
-  SUPER_ADMIN: 'SUPER_ADMIN'
-} as const
-
-export type UserRole = (typeof UserRole)[keyof typeof UserRole]
-
-
-export const GenreRole = {
+export const ArtistRole = {
   PRIMARY: 'PRIMARY',
-  SECONDARY: 'SECONDARY',
-  INFLUENCE: 'INFLUENCE',
-  HISTORICAL: 'HISTORICAL'
-} as const
-
-export type GenreRole = (typeof GenreRole)[keyof typeof GenreRole]
-
-
-export const AliasType = {
-  ALTERNATIVE: 'ALTERNATIVE',
-  FORMER: 'FORMER',
-  LEGAL: 'LEGAL',
-  COLLECTIVE: 'COLLECTIVE',
+  FEATURED: 'FEATURED',
+  REMIXER: 'REMIXER',
+  PRODUCER: 'PRODUCER',
+  COMPOSER: 'COMPOSER',
+  VOCALIST: 'VOCALIST',
+  DJ_MIXER: 'DJ_MIXER',
   OTHER: 'OTHER'
 } as const
 
-export type AliasType = (typeof AliasType)[keyof typeof AliasType]
+export type ArtistRole = (typeof ArtistRole)[keyof typeof ArtistRole]
 
 
-export const RankingType = {
-  EDITORIAL: 'EDITORIAL',
-  POPULARITY: 'POPULARITY',
-  GENRE: 'GENRE',
-  COUNTRY: 'COUNTRY',
-  EMERGING: 'EMERGING',
-  HISTORICAL: 'HISTORICAL'
-} as const
-
-export type RankingType = (typeof RankingType)[keyof typeof RankingType]
-
-
-export const SessionType = {
-  DJ_SET: 'DJ_SET',
-  LIVE_SET: 'LIVE_SET',
-  RADIO_SHOW: 'RADIO_SHOW',
-  PODCAST: 'PODCAST',
-  MIX: 'MIX',
+export const ReleaseType = {
+  SINGLE: 'SINGLE',
+  EP: 'EP',
+  ALBUM: 'ALBUM',
+  COMPILATION: 'COMPILATION',
+  DJ_MIX: 'DJ_MIX',
+  SOUNDTRACK: 'SOUNDTRACK',
+  LIVE: 'LIVE',
   OTHER: 'OTHER'
 } as const
 
-export type SessionType = (typeof SessionType)[keyof typeof SessionType]
+export type ReleaseType = (typeof ReleaseType)[keyof typeof ReleaseType]
 
 
-export const ExternalPlatform = {
-  SPOTIFY: 'SPOTIFY',
-  YOUTUBE: 'YOUTUBE',
-  YOUTUBE_MUSIC: 'YOUTUBE_MUSIC',
-  SOUNDCLOUD: 'SOUNDCLOUD',
-  APPLE_MUSIC: 'APPLE_MUSIC',
-  BEATPORT: 'BEATPORT',
-  DISCOGS: 'DISCOGS',
-  MUSICBRAINZ: 'MUSICBRAINZ',
-  BANDCAMP: 'BANDCAMP',
-  MIXCLOUD: 'MIXCLOUD',
-  OTHER: 'OTHER'
+export const AssignmentMethod = {
+  SOURCE: 'SOURCE',
+  AI: 'AI',
+  AUDIO_ANALYSIS: 'AUDIO_ANALYSIS',
+  MANUAL: 'MANUAL',
+  CONSENSUS: 'CONSENSUS'
 } as const
 
-export type ExternalPlatform = (typeof ExternalPlatform)[keyof typeof ExternalPlatform]
-
-
-export const SocialPlatform = {
-  INSTAGRAM: 'INSTAGRAM',
-  FACEBOOK: 'FACEBOOK',
-  X: 'X',
-  TIKTOK: 'TIKTOK',
-  THREADS: 'THREADS',
-  TWITCH: 'TWITCH',
-  WEBSITE: 'WEBSITE',
-  OTHER: 'OTHER'
-} as const
-
-export type SocialPlatform = (typeof SocialPlatform)[keyof typeof SocialPlatform]
-
-
-export const MediaType = {
-  IMAGE: 'IMAGE',
-  VIDEO: 'VIDEO',
-  AUDIO: 'AUDIO',
-  DOCUMENT: 'DOCUMENT'
-} as const
-
-export type MediaType = (typeof MediaType)[keyof typeof MediaType]
-
-
-export const MediaStatus = {
-  PENDING: 'PENDING',
-  ACTIVE: 'ACTIVE',
-  BLOCKED: 'BLOCKED',
-  ARCHIVED: 'ARCHIVED'
-} as const
-
-export type MediaStatus = (typeof MediaStatus)[keyof typeof MediaStatus]
+export type AssignmentMethod = (typeof AssignmentMethod)[keyof typeof AssignmentMethod]
 
 
 export const SourceType = {
-  OFFICIAL_WEBSITE: 'OFFICIAL_WEBSITE',
-  INTERVIEW: 'INTERVIEW',
-  PRESS: 'PRESS',
-  DATABASE: 'DATABASE',
-  SOCIAL: 'SOCIAL',
-  FESTIVAL: 'FESTIVAL',
-  LABEL: 'LABEL',
-  STREAMING: 'STREAMING',
-  OTHER: 'OTHER'
+  API: 'API',
+  WEB: 'WEB',
+  FILE: 'FILE',
+  AI: 'AI',
+  MANUAL: 'MANUAL',
+  INTERNAL: 'INTERNAL'
 } as const
 
 export type SourceType = (typeof SourceType)[keyof typeof SourceType]
 
 
-export const VerificationStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  PARTIALLY_VERIFIED: 'PARTIALLY_VERIFIED',
-  VERIFIED: 'VERIFIED',
-  REJECTED: 'REJECTED'
+export const EntityType = {
+  ARTIST: 'ARTIST',
+  TRACK: 'TRACK',
+  RELEASE: 'RELEASE',
+  LABEL: 'LABEL',
+  GENRE: 'GENRE',
+  PLAYLIST: 'PLAYLIST',
+  DJ_SET: 'DJ_SET'
 } as const
 
-export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus]
+export type EntityType = (typeof EntityType)[keyof typeof EntityType]
 
 
-export const ArticleType = {
-  NEWS: 'NEWS',
-  GUIDE: 'GUIDE',
-  LIST: 'LIST',
-  BIOGRAPHY: 'BIOGRAPHY',
-  INTERVIEW: 'INTERVIEW',
-  REVIEW: 'REVIEW',
-  FEATURE: 'FEATURE',
-  EVERGREEN: 'EVERGREEN'
+export const AvailabilityStatus = {
+  UNKNOWN: 'UNKNOWN',
+  AVAILABLE: 'AVAILABLE',
+  UNAVAILABLE: 'UNAVAILABLE',
+  REGION_RESTRICTED: 'REGION_RESTRICTED',
+  REMOVED: 'REMOVED',
+  PRIVATE: 'PRIVATE'
 } as const
 
-export type ArticleType = (typeof ArticleType)[keyof typeof ArticleType]
+export type AvailabilityStatus = (typeof AvailabilityStatus)[keyof typeof AvailabilityStatus]
 
 
-export const ImportStatus = {
+export const ExtractionMethod = {
+  API_RESPONSE: 'API_RESPONSE',
+  HTML_PARSER: 'HTML_PARSER',
+  STRUCTURED_DATA: 'STRUCTURED_DATA',
+  METADATA: 'METADATA',
+  AUDIO_ANALYSIS: 'AUDIO_ANALYSIS',
+  AI_EXTRACTION: 'AI_EXTRACTION',
+  AI_INFERENCE: 'AI_INFERENCE',
+  MANUAL: 'MANUAL',
+  DERIVED: 'DERIVED'
+} as const
+
+export type ExtractionMethod = (typeof ExtractionMethod)[keyof typeof ExtractionMethod]
+
+
+export const JobStatus = {
   PENDING: 'PENDING',
-  VALIDATING: 'VALIDATING',
-  READY: 'READY',
-  PROCESSING: 'PROCESSING',
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  PARTIALLY_COMPLETED: 'PARTIALLY_COMPLETED',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
   CANCELLED: 'CANCELLED'
 } as const
 
-export type ImportStatus = (typeof ImportStatus)[keyof typeof ImportStatus]
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus]
 
 
-export const ImportRowStatus = {
+export const IngestionJobType = {
+  TRACKLIST_URL: 'TRACKLIST_URL',
+  TRACKLIST_TEXT: 'TRACKLIST_TEXT',
+  PLAYLIST_URL: 'PLAYLIST_URL',
+  CHANNEL_SCAN: 'CHANNEL_SCAN',
+  SOURCE_SYNC: 'SOURCE_SYNC',
+  FILE_IMPORT: 'FILE_IMPORT',
+  MANUAL_BATCH: 'MANUAL_BATCH'
+} as const
+
+export type IngestionJobType = (typeof IngestionJobType)[keyof typeof IngestionJobType]
+
+
+export const IngestionItemStatus = {
   PENDING: 'PENDING',
-  VALID: 'VALID',
-  INVALID: 'INVALID',
-  DUPLICATE: 'DUPLICATE',
-  IMPORTED: 'IMPORTED',
+  PARSED: 'PARSED',
+  MATCHED: 'MATCHED',
+  CREATED: 'CREATED',
+  NEEDS_REVIEW: 'NEEDS_REVIEW',
   SKIPPED: 'SKIPPED',
   FAILED: 'FAILED'
 } as const
 
-export type ImportRowStatus = (typeof ImportRowStatus)[keyof typeof ImportRowStatus]
+export type IngestionItemStatus = (typeof IngestionItemStatus)[keyof typeof IngestionItemStatus]
 
 
-export const AiValidationStatus = {
-  PENDING: 'PENDING',
-  VALID: 'VALID',
-  INVALID: 'INVALID',
-  REVIEWED: 'REVIEWED',
+export const EnrichmentJobType = {
+  METADATA_ENRICHMENT: 'METADATA_ENRICHMENT',
+  TRACK_MATCHING: 'TRACK_MATCHING',
+  GENRE_CLASSIFICATION: 'GENRE_CLASSIFICATION',
+  BPM_ANALYSIS: 'BPM_ANALYSIS',
+  KEY_ANALYSIS: 'KEY_ANALYSIS',
+  MOOD_CLASSIFICATION: 'MOOD_CLASSIFICATION',
+  ENERGY_CLASSIFICATION: 'ENERGY_CLASSIFICATION',
+  ARTIST_RESOLUTION: 'ARTIST_RESOLUTION',
+  DUPLICATE_DETECTION: 'DUPLICATE_DETECTION',
+  SOURCE_DISCOVERY: 'SOURCE_DISCOVERY',
+  PLAYLIST_ANALYSIS: 'PLAYLIST_ANALYSIS',
+  TRANSITION_RECOMMENDATION: 'TRANSITION_RECOMMENDATION'
+} as const
+
+export type EnrichmentJobType = (typeof EnrichmentJobType)[keyof typeof EnrichmentJobType]
+
+
+export const UserTrackStatus = {
+  LIBRARY: 'LIBRARY',
+  WISHLIST: 'WISHLIST',
+  ARCHIVED: 'ARCHIVED',
   REJECTED: 'REJECTED'
 } as const
 
-export type AiValidationStatus = (typeof AiValidationStatus)[keyof typeof AiValidationStatus]
+export type UserTrackStatus = (typeof UserTrackStatus)[keyof typeof UserTrackStatus]
 
 
-export const SimilarityType = {
-  EDITORIAL: 'EDITORIAL',
-  GENRE: 'GENRE',
-  STYLE: 'STYLE',
-  AUDIENCE: 'AUDIENCE',
-  COLLABORATION: 'COLLABORATION',
-  AI_SUGGESTED: 'AI_SUGGESTED'
+export const PlaylistType = {
+  MANUAL: 'MANUAL',
+  IMPORTED: 'IMPORTED',
+  SMART: 'SMART',
+  AI_GENERATED: 'AI_GENERATED',
+  CRATE: 'CRATE'
 } as const
 
-export type SimilarityType = (typeof SimilarityType)[keyof typeof SimilarityType]
+export type PlaylistType = (typeof PlaylistType)[keyof typeof PlaylistType]
 
 
-export const RelationReviewStatus = {
-  PENDING: 'PENDING',
-  APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED'
+export const Visibility = {
+  PRIVATE: 'PRIVATE',
+  UNLISTED: 'UNLISTED',
+  PUBLIC: 'PUBLIC'
 } as const
 
-export type RelationReviewStatus = (typeof RelationReviewStatus)[keyof typeof RelationReviewStatus]
-
-
-export const TrackCreditType = {
-  PRIMARY_ARTIST: 'PRIMARY_ARTIST',
-  FEATURED_ARTIST: 'FEATURED_ARTIST',
-  REMIXER: 'REMIXER',
-  PRODUCER: 'PRODUCER',
-  COMPOSER: 'COMPOSER'
-} as const
-
-export type TrackCreditType = (typeof TrackCreditType)[keyof typeof TrackCreditType]
+export type Visibility = (typeof Visibility)[keyof typeof Visibility]
