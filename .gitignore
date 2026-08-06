@@ -5,5 +5,23 @@ node_modules
 .env.*.local
 dist
 coverage
+next-env.d.ts
+tsconfig.tsbuildinfo
 .DS_Store
 *.log
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+
+# Turbopack
+.turbo
+
+# TypeScript
+*.tsbuildinfo
+
+# Cursor
+.cursor/SESSION.md
+
+# IDE
+.vscode/settings.json
