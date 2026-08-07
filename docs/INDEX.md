@@ -1,144 +1,64 @@
+
+
 # Documentation Index
 
-This file provides a complete map of the DJ Platform knowledge base.
+## Platform Core
+
+### Architecture
+
+- [Architecture](architecture/ARCHITECTURE.md)
+- [Core](architecture/CORE.md)
+- [Domains](architecture/DOMAINS.md)
+- [Project Structure](architecture/PROJECT_STRUCTURE.md)
+- [Folder Structure](architecture/FOLDER_STRUCTURE.md)
+- [Conventions](architecture/CONVENTIONS.md)
+
+### Infrastructure
+
+- [Tech Stack](architecture/TECH_STACK.md)
+- [Database](architecture/DATABASE.md)
+- [Prisma Implementation](architecture/PRISMA_IMPLEMENTATION.md)
+- [Authentication](architecture/AUTH.md)
+- [Security](architecture/SECURITY.md)
+- [API](architecture/API.md)
+- [Cache](architecture/CACHE.md)
+- [Deployment](architecture/DEPLOYMENT.md)
 
 ---
 
-# Foundation
+## DJ Domain
 
-| Document            | Purpose              | Status |
-| ------------------- | -------------------- | ------ |
-| VISION.md           | Product vision       | ✅      |
-| PRD.md              | Product requirements | ✅      |
-| ROADMAP.md          | Product roadmap      | ⏳      |
-| GLOSSARY.md         | Shared terminology   | ⏳      |
-| DEVELOPMENT_PLAN.md | Development strategy | ⏳      |
+### Product
 
----
+- [Vision](domains/dj/VISION.md)
+- [PRD](domains/dj/PRD.md)
 
-# Architecture
+### Architecture
 
-| Document        | Purpose                 | Status |
-| --------------- | ----------------------- | ------ |
-| ARCHITECTURE.md | System architecture     | ⏳      |
-| TECH_STACK.md   | Technologies            | ⏳      |
-| DATA_MODEL.md   | Global data model       | ⏳      |
-| DATABASE.md     | Database design         | ⏳      |
-| API.md          | API conventions         | ⏳      |
-| AUTH.md         | Authentication          | ⏳      |
-| DEPLOYMENT.md   | Infrastructure          | ⏳      |
-| DECISIONS.md    | Architectural decisions | ⏳      |
+- [AI Architecture](domains/dj/architecture/AI.md)
+- [Domain Data Model](domains/dj/architecture/DATA_MODEL.md)
+
+### Database
+
+- [Data Model](domains/dj/database/DATA_MODEL.md)
+- [Enums](domains/dj/database/ENUMS.md)
+- [ERD](domains/dj/database/ERD.md)
+- [Data Ingestion Model](domains/dj/database/DATA_INGESTION_MODEL.md)
+- [RLS](domains/dj/database/RLS.md)
+- [Auth Architecture](domains/dj/database/AUTH_ARCHITECTURE.md)
 
 ---
 
-# Domain
+## Business
 
-| Document    | Purpose           | Status |
-| ----------- | ----------------- | ------ |
-| DJ.md       | DJ entity         | ⏳      |
-| GENRE.md    | Genre entity      | ⏳      |
-| FESTIVAL.md | Festival entity   | ⏳      |
-| TRACK.md    | Track entity      | ⏳      |
-| RANKING.md  | Ranking entity    | ⏳      |
-| CONTENT.md  | Editorial content | ⏳      |
+Business documentation will live under:
 
----
+`docs/business/`
 
-# Frontend
+Future documents may include:
 
-| Document         | Purpose           | Status |
-| ---------------- | ----------------- | ------ |
-| DESIGN_SYSTEM.md | UI system         | ⏳      |
-| COMPONENTS.md    | Shared components | ⏳      |
-| PAGES.md         | Public pages      | ⏳      |
-| ADMIN.md         | Admin interface   | ⏳      |
-
----
-
-# Backend
-
-| Document      | Purpose             | Status |
-| ------------- | ------------------- | ------ |
-| SERVICES.md   | Service layer       | ⏳      |
-| VALIDATION.md | Validation strategy | ⏳      |
-| IMPORTERS.md  | Data import system  | ⏳      |
-| AI.md         | AI integrations     | ⏳      |
-
----
-
-# SEO
-
-| Document            | Purpose          | Status |
-| ------------------- | ---------------- | ------ |
-| SEO_STRATEGY.md     | SEO architecture | ⏳      |
-| URLS.md             | URL conventions  | ⏳      |
-| SCHEMA.md           | Structured data  | ⏳      |
-| INTERNAL_LINKING.md | Internal links   | ⏳      |
-
----
-
-# Operations
-
-| Document       | Purpose                | Status |
-| -------------- | ---------------------- | ------ |
-| DEPLOYMENT.md  | Deployment process     | ⏳      |
-| SECURITY.md    | Security policies      | ⏳      |
-| MONITORING.md  | Monitoring             | ⏳      |
-| BACKUPS.md     | Backup strategy        | ⏳      |
-| MAINTENANCE.md | Maintenance procedures | ⏳      |
-
----
-
-# ADR
-
-Architecture Decision Records.
-
-| Document                   | Purpose                  |
-| -------------------------- | ------------------------ |
-| 0001-project-foundation.md | Project initialization   |
-| 0002-tech-stack.md         | Technology selection     |
-| 0003-database.md           | Database decisions       |
-| 0004-authentication.md     | Authentication decisions |
-| 0005-deployment.md         | Infrastructure decisions |
-
----
-
-# Legend
-
-| Symbol | Meaning     |
-| ------ | ----------- |
-| ✅      | Completed   |
-| 🚧      | In Progress |
-| ⏳      | Planned     |
-| ❌      | Deprecated  |
-
----
-
-# Maintenance
-
-Whenever a new document is created:
-
-1. Add it to this index.
-2. Link related documents.
-3. Update its status.
-4. Verify that no duplicated documentation exists.
-
-This file should always reflect the current state of the project documentation.
-
-## Architecture
-
-| Document            | Purpose                            | Status |
-| ------------------- | ---------------------------------- | ------ |
-| README.md           | Architecture reading guide         | ✅      |
-| ARCHITECTURE.md     | System architecture blueprint      | ✅      |
-| TECH_STACK.md       | Technology boundaries              | ✅      |
-| FOLDER_STRUCTURE.md | Repository and module structure    | ✅      |
-| DATABASE.md         | PostgreSQL and Prisma architecture | ✅      |
-| DATA_MODEL.md       | Domain entities and relationships  | ✅      |
-| API.md              | Server Actions and HTTP contracts  | ✅      |
-| AUTH.md             | Authentication and authorization   | ✅      |
-| AI.md               | AI provider and editorial workflow | ✅      |
-| CACHE.md            | Caching and invalidation           | ✅      |
-| SECURITY.md         | Security architecture              | ✅      |
-| DEPLOYMENT.md       | Docker and Coolify deployment      | ✅      |
-
+- Vision
+- Pricing
+- Monetization
+- Go-to-market
+- Competitor analysis

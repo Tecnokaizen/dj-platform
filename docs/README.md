@@ -1,241 +1,52 @@
-# Documentation Guide
+# Documentation
 
-Welcome to the DJ Platform documentation.
+DJ Platform is the first product built on top of a reusable SaaS architecture.
 
-This directory contains the complete knowledge base of the project.
-
-The documentation is organized by domains rather than by chronology.
-
-Every contributor—human or AI—should consult the relevant documentation before implementing new functionality.
-
----
-
-# Documentation Principles
-
-The documentation is considered part of the product.
-
-Code and documentation evolve together.
-
-If implementation changes but documentation does not, the task is incomplete.
-
----
-
-# Reading Order
-
-New contributors should follow this order.
-
-1. `/PROJECT_CONTEXT.md`
-2. `/AGENTS.md`
-3. `/README.md`
-4. `/docs/foundation/`
-5. `/docs/architecture/`
-6. `/docs/domain/`
-7. `/docs/frontend/`
-8. `/docs/backend/`
-9. `/docs/seo/`
-10. `/docs/operations/`
-
----
-
-# Documentation Domains
-
-## Foundation
-
-Defines the product itself.
-
-Includes:
-
-- Vision
-- PRD
-- Roadmap
-- Glossary
-
----
+The documentation is split into three layers:
 
 ## Architecture
 
-Explains how the system is built.
+Reusable platform architecture shared by any SaaS product built on this codebase.
 
-Includes:
+See:
 
-- System Architecture
-- Tech Stack
-- Database
-- APIs
-- Authentication
-- Deployment
-- Architectural Decisions
+- `docs/architecture/CORE.md`
+- `docs/architecture/DOMAINS.md`
+- `docs/architecture/PROJECT_STRUCTURE.md`
+- `docs/architecture/CONVENTIONS.md`
 
----
+## Domains
 
-## Domain
+Product-specific documentation.
 
-Defines the business entities.
+Current domains:
 
-Examples:
+- `docs/domains/dj/`
 
-- DJ
-- Genre
-- Festival
-- Ranking
-- Track
-- Playlist
-- Label
+The DJ domain contains:
 
----
+- Product vision
+- PRD
+- Music data model
+- AI architecture
+- Data ingestion
+- RLS
+- Domain-specific authentication notes
 
-## Frontend
+## Business
 
-Documents:
+Reserved for business-level documentation such as:
 
-- Design System
-- Components
-- Pages
-- UI patterns
-- Accessibility
+- Monetization
+- Pricing
+- Go-to-market
+- Market research
+- Competitors
 
----
+## Principle
 
-## Backend
+The platform core must remain independent from any specific business domain.
 
-Documents:
+Domains may depend on the Core and Shared layers.
 
-- Services
-- Validation
-- Importers
-- AI integrations
-- Business logic
-
----
-
-## SEO
-
-Contains:
-
-- URL Strategy
-- Metadata
-- Structured Data
-- Internal Linking
-- Content Strategy
-
----
-
-## Operations
-
-Contains:
-
-- Deployment
-- Monitoring
-- Security
-- Backups
-- Maintenance
-
----
-
-## ADR
-
-Architecture Decision Records.
-
-Every important technical decision must be documented before implementation.
-
-Examples:
-
-- Why Prisma was selected.
-- Why PostgreSQL was selected.
-- Why Coolify was selected.
-
----
-
-# Documentation Rules
-
-Every document should:
-
-- solve one problem
-- have a single responsibility
-- avoid duplication
-- reference related documents
-- remain concise when possible
-
----
-
-# Naming Convention
-
-Use:
-
-UPPER_CASE.md
-
-Examples:
-
-```
-PRD.md
-
-VISION.md
-
-DATABASE.md
-
-AUTH.md
-```
-
-Avoid:
-
-```
-prd-final.md
-
-new-document.md
-
-document-v2.md
-```
-
-Versioning belongs inside the document, not in the filename.
-
----
-
-# Ownership
-
-Documentation belongs to the project.
-
-Not to a developer.
-
-Not to an AI.
-
-Every contributor is responsible for keeping it accurate.
-
----
-
-# Documentation Workflow
-
-```
-Idea
-
-↓
-
-Documentation
-
-↓
-
-Review
-
-↓
-
-Architecture
-
-↓
-
-Implementation
-
-↓
-
-Testing
-
-↓
-
-Deployment
-```
-
-Implementation never comes first.
-
----
-
-# Golden Rule
-
-If a future developer cannot understand the project by reading this documentation, then the documentation is incomplete.
+The Core must never depend on a domain.
