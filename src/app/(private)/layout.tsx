@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 
-import { LogoutButton } from '@/modules/auth/components/logout-button'
-import { getCurrentProfile } from '@/modules/profile/services/get-current-profile'
+import { LogoutButton } from '@/core/auth/components/logout-button'
+import { getCurrentProfile } from '@/core/profile/services/get-current-profile'
 
 type PrivateLayoutProps = {
   children: ReactNode
@@ -54,7 +54,12 @@ export default async function PrivateLayout({
             >
               Dashboard
             </Link>
-
+            <Link
+             href="/profile"
+             className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
+            >
+              Perfil
+            </Link>
             <span className="block rounded-lg px-3 py-2 text-neutral-500">
               Biblioteca (próximamente)
             </span>
