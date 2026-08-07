@@ -1,64 +1,81 @@
-
-
 # Documentation Index
 
-## Platform Core
+---
 
-### Architecture
+# Platform Core
 
-- [Architecture](architecture/ARCHITECTURE.md)
-- [Core](architecture/CORE.md)
-- [Domains](architecture/DOMAINS.md)
-- [Project Structure](architecture/PROJECT_STRUCTURE.md)
-- [Folder Structure](architecture/FOLDER_STRUCTURE.md)
-- [Conventions](architecture/CONVENTIONS.md)
+## Foundation
 
-### Infrastructure
-
-- [Tech Stack](architecture/TECH_STACK.md)
-- [Database](architecture/DATABASE.md)
-- [Prisma Implementation](architecture/PRISMA_IMPLEMENTATION.md)
-- [Authentication](architecture/AUTH.md)
-- [Security](architecture/SECURITY.md)
-- [API](architecture/API.md)
-- [Cache](architecture/CACHE.md)
-- [Deployment](architecture/DEPLOYMENT.md)
+- CORE.md
+- DOMAINS.md
+- ARCHITECTURE.md
 
 ---
 
-## DJ Domain
+## Development
 
-### Product
-
-- [Vision](domains/dj/VISION.md)
-- [PRD](domains/dj/PRD.md)
-
-### Architecture
-
-- [AI Architecture](domains/dj/architecture/AI.md)
-- [Domain Data Model](domains/dj/architecture/DATA_MODEL.md)
-
-### Database
-
-- [Data Model](domains/dj/database/DATA_MODEL.md)
-- [Enums](domains/dj/database/ENUMS.md)
-- [ERD](domains/dj/database/ERD.md)
-- [Data Ingestion Model](domains/dj/database/DATA_INGESTION_MODEL.md)
-- [RLS](domains/dj/database/RLS.md)
-- [Auth Architecture](domains/dj/database/AUTH_ARCHITECTURE.md)
+- PROJECT_STRUCTURE.md
+- SOURCE_STRUCTURE.md
+- CONVENTIONS.md
 
 ---
 
-## Business
+## Platform Services
 
-Business documentation will live under:
+- IDENTITY.md
+- DATA.md
+- SECURITY.md
 
-`docs/business/`
+---
 
-Future documents may include:
+## Infrastructure
+
+- API.md
+- CACHE.md
+- DEPLOYMENT.md
+- TECH_STACK.md
+- PRISMA_IMPLEMENTATION.md
+
+---
+
+## Architecture Decisions
+
+See:
+
+```
+docs/adr/
+```
+
+---
+
+# Domains
+
+Current business domains:
+
+```
+docs/domains/
+
+dj/
+```
+
+DJ Domain documentation includes:
 
 - Vision
+- PRD
+- Architecture
+- Database
+- AI
+
+---
+
+# Business
+
+Reserved for future business documentation.
+
+Examples:
+
 - Pricing
+- Marketing
 - Monetization
-- Go-to-market
-- Competitor analysis
+- Roadmap
+- Competitor Research

@@ -1,7 +1,7 @@
 ---
 title: Deployment Architecture
 version: 1.0.0
-status: Draft
+status: Living Document
 owner: Architecture
 updated: 2026-08-04
 ---
@@ -10,20 +10,20 @@ updated: 2026-08-04
 
 ## Initial model
 
-DJ Platform is deployed as a containerized monolith managed by Coolify.
+Platform Core applications are deployed as a containerized monolith managed by Coolify.
 
 Initial resources:
 
 ```text
-dj-platform-web
-dj-platform-postgres
+platform-web
+platform-postgres
 ```
 
 Optional later:
 
 ```text
-dj-platform-redis
-dj-platform-worker
+platform-redis
+platform-worker
 object-storage
 ```
 
@@ -56,15 +56,27 @@ Staging and production never share:
 Recommended initial flow:
 
 ```text
+The project follows a feature branch workflow.
+
+Typical lifecycle:
+
+```text
+main
+  ↓
 feature/*
   ↓
-develop
-  ↓
-staging
+Pull Request
   ↓
 main
   ↓
-production
+CI/CD
+  ↓
+Deployment
+```
+
+Long-lived branches such as `develop` or `staging` are optional and depend on the project's deployment strategy.
+
+The deployment model should remain independent from the branching strategy.
 ```
 
 ## Docker requirements
@@ -135,9 +147,9 @@ A database change may make an old application version incompatible. Risky deploy
 
 ## Storage
 
-Editorial media uses S3-compatible object storage in production.
+Persistent binary assets should use S3-compatible object storage in production.
 
-Container filesystem is ephemeral and must not be the primary media store.
+The container filesystem is ephemeral and must never be considered persistent storage.
 
 ## Backups
 
@@ -174,11 +186,13 @@ Horizontal scaling requires stateless application design and shared external sto
 
 Long tasks should eventually move outside web requests:
 
-- imports
-- AI batches
-- image processing
-- synchronization
-- heavy sitemap generation
+Examples:
+
+- large imports
+- AI processing
+- media processing
+- synchronization jobs
+- scheduled maintenance
 
 Queues and workers require ADR approval.
 
@@ -192,7 +206,7 @@ Queues and workers require ADR approval.
 - health checks active
 - logs and error tracking available
 - rate limits enabled
-- robots and sitemap correct
+- public endpoints verified when applicable
 - no test accounts exposed
 
 ## Forbidden practices

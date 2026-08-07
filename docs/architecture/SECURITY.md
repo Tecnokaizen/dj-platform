@@ -1,189 +1,343 @@
 ---
 title: Security Architecture
-version: 1.0.0
-status: Draft
-owner: Architecture
-updated: 2026-08-04
+version: 2.0.0
+status: Living Document
+owner: Platform Core
+updated: 2026-08-07
+related:
+  - IDENTITY.md
+  - DATA.md
+  - ARCHITECTURE.md
 ---
 
 # Security Architecture
 
-## Principles
+## Purpose
 
-- least privilege
-- defense in depth
-- secure defaults
-- explicit trust boundaries
-- minimal data collection
-- server-side authorization
-- auditable sensitive actions
+This document defines the security architecture of Platform Core.
 
-## Trust boundaries
+Security is implemented as a cross-cutting concern and applies to every layer of the platform.
+
+Business Domains inherit Platform Core security capabilities and may introduce additional business-specific restrictions when required.
+
+---
+
+# Security Principles
+
+Platform Core follows these principles:
+
+- Least Privilege
+- Defense in Depth
+- Secure by Default
+- Zero Trust
+- Explicit Trust Boundaries
+- Minimal Data Collection
+- Server-side Enforcement
+- Auditability
+
+Security is everyone's responsibility.
+
+---
+
+# Trust Boundaries
 
 ```text
-Browser              untrusted
-Next.js server       trusted application boundary
-External providers   partially trusted
-Database             protected infrastructure
-Object storage       protected infrastructure
+Browser                 Untrusted
+
+↓
+
+Next.js Server          Trusted Application Boundary
+
+↓
+
+Platform Core
+
+↓
+
+Infrastructure
+
+↓
+
+Database / Storage
 ```
 
-## Secrets
+External providers are considered partially trusted.
 
-Secrets live only in:
+Every boundary must validate incoming data.
 
-- local `.env` excluded from Git
+---
+
+# Secrets Management
+
+Secrets must exist only in approved locations:
+
+- Local `.env` files (excluded from Git)
 - Coolify environment variables
-- an approved secret manager if later introduced
+- Approved secret managers
 
-Never in code, screenshots, logs, documentation or test fixtures.
+Secrets must never appear in:
 
-## Environment validation
+- Source code
+- Git history
+- Documentation
+- Screenshots
+- Logs
+- Error messages
+- Test fixtures
 
-Server startup validates required variables with Zod and fails fast when critical configuration is missing.
+---
 
-## Input validation
+# Environment Validation
 
-Validate:
+Application startup validates all required configuration.
 
-- forms
+Critical configuration errors should stop the application immediately.
+
+Configuration validation should be performed using runtime schemas.
+
+---
+
+# Authentication
+
+Authentication is implemented by Platform Core.
+
+Current implementation:
+
+- Supabase Authentication
+- Secure Cookies
+- Server-side Sessions
+
+Future providers should remain replaceable.
+
+Authentication never grants permissions by itself.
+
+---
+
+# Authorization
+
+Every protected operation validates:
+
+- Authentication
+- Organization Membership
+- Role
+- Permission
+- Object Ownership (when applicable)
+
+Authorization is always enforced server-side.
+
+Client-side visibility is never considered a security boundary.
+
+---
+
+# Input Validation
+
+Validate every external input.
+
+Examples:
+
+- Forms
 - JSON
-- query parameters
-- route parameters
-- file metadata
-- webhooks
-- provider responses
-- AI output
+- Route Parameters
+- Query Parameters
+- Headers
+- Cookies
+- File Metadata
+- Webhooks
+- AI Responses
 
-## Rich content
+TypeScript types never replace runtime validation.
 
-Do not render arbitrary HTML from users or models.
+---
 
-Any allowed HTML requires maintained sanitization and an explicit allowlist.
+# File Upload Security
 
-## Authentication and authorization
+Every uploaded file should be validated.
 
-- server-side checks for every mutation
-- object-level authorization
-- secure cookies
-- HTTPS in staging and production
-- rate-limited login flows
-- MFA decision for privileged accounts
+Minimum checks:
 
-## SSRF protection
+- Maximum Size
+- MIME Allowlist
+- File Signature
+- Safe Filename
+- Destination Validation
 
-External URL ingestion must:
+Recommended:
 
-- allow only HTTP/HTTPS
-- block private and loopback networks
-- limit redirects
-- apply timeout
-- limit response size
-- revalidate destination after redirects
+- Malware Scanning
+- Image Re-encoding
+- Private/Public Storage Separation
 
-## Upload security
+---
 
-- file size limit
-- MIME allowlist
-- signature inspection
-- randomized storage key
-- no executable serving
-- public/private bucket separation
-- image re-encoding where useful
+# Database Security
 
-## Database security
+Database access follows Platform Core architecture.
 
-- separate credentials per environment
-- minimal privileges
-- encrypted connection where supported
-- no open public exposure
-- encrypted backups
-- credential rotation
+Only Repositories communicate with Prisma.
 
-## Dependency security
+Recommendations:
 
-Before installation:
+- Separate credentials per environment
+- Encrypted connections
+- Least privilege
+- Credential rotation
+- No public database exposure
+- Encrypted backups
 
-- verify maintenance
-- review license
-- inspect security history
-- prefer fewer dependencies
+---
 
-CI should run vulnerability and secret scans.
+# External Providers
 
-## Logging
+Every external provider should be treated as untrusted.
 
-Log:
+Examples:
 
-- request ID
-- error category
-- actor ID when appropriate
-- action
-- entity reference
+- AI Providers
+- Payment Providers
+- Email Providers
+- Storage Providers
+- OAuth Providers
+
+Responses should always be validated.
+
+---
+
+# SSRF Protection
+
+External URL ingestion should:
+
+- Allow only HTTP/HTTPS
+- Block private networks
+- Block loopback addresses
+- Limit redirects
+- Limit response size
+- Apply request timeouts
+- Revalidate redirected destinations
+
+---
+
+# Logging
+
+Application logs should contain:
+
+- Request ID
+- Error Category
+- User ID (when appropriate)
+- Organization ID (when appropriate)
+- Action
+- Resource Reference
 
 Never log:
 
-- passwords
-- tokens
-- cookies
-- API keys
-- unnecessary personal data
-- sensitive prompts
+- Passwords
+- Tokens
+- Cookies
+- Secret Keys
+- Sensitive Personal Data
 
-## Audit events
+---
 
-Required for:
+# Audit
 
-- role changes
-- publication
-- archival or deletion
-- import execution
-- settings changes
-- key rotation
-- account suspension
+Sensitive actions should always create audit events.
 
-## Security headers
+Examples:
 
-Before production:
+- Login
+- Logout
+- Permission Changes
+- Membership Changes
+- Organization Updates
+- Billing Changes
+- Security Configuration
+- Administrative Actions
+
+Domains may define additional audit events.
+
+---
+
+# Security Headers
+
+Production environments should enable:
 
 - HSTS
-- Content-Security-Policy
+- Content Security Policy (CSP)
 - X-Content-Type-Options
 - Referrer-Policy
 - Permissions-Policy
-- secure cookie attributes
+- Secure Cookie Attributes
 
-## Incident response
+---
 
-1. Identify.
-2. Contain.
-3. Rotate credentials.
-4. Preserve evidence.
-5. Assess impact.
-6. Recover.
-7. Notify when required.
-8. Document lessons.
-9. Prevent recurrence.
+# Dependency Security
 
-## Pre-production tests
+Before introducing dependencies:
 
-- dependency scan
-- secret scan
-- authorization tests
-- upload tests
-- webhook verification
-- rate-limit tests
-- OWASP review
-- backup restore test
+- Verify maintenance status
+- Review license
+- Review security history
+- Minimize dependency count
 
-## Forbidden practices
+CI should execute:
+
+- Vulnerability Scans
+- Secret Scans
+- Dependency Audits
+
+---
+
+# Incident Response
+
+Security incidents follow this lifecycle:
+
+1. Identify
+2. Contain
+3. Rotate Credentials
+4. Preserve Evidence
+5. Assess Impact
+6. Recover
+7. Notify (when required)
+8. Document Lessons Learned
+9. Prevent Recurrence
+
+---
+
+# Security Validation
+
+Before production deployment verify:
+
+- Authentication
+- Authorization
+- RLS Policies
+- File Uploads
+- Webhooks
+- Rate Limiting
+- Dependency Scan
+- Secret Scan
+- Backup Restore
+- OWASP Checklist
+
+---
+
+# Forbidden Practices
 
 Never:
 
-- authorize only in the client
-- store plaintext passwords
-- write custom cryptography
-- expose detailed production errors
-- accept unrestricted HTML
-- trust uploaded filenames
-- share one credential across environments
+- Trust client-side authorization
+- Store plaintext passwords
+- Implement custom cryptography
+- Expose detailed production errors
+- Render unsanitized HTML
+- Trust uploaded filenames
+- Share credentials across environments
+- Bypass Repository access to the database
+
+---
+
+# Final Principle
+
+Security is not a feature.
+
+Security is a Platform Core capability.
+
+Every Domain benefits from it without having to implement it again.

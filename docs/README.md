@@ -1,52 +1,110 @@
-# Documentation
+# Platform Core Documentation
 
-DJ Platform is the first product built on top of a reusable SaaS architecture.
+This repository contains the documentation for Platform Core and the business Domains built on top of it.
 
-The documentation is split into three layers:
+Platform Core is a reusable SaaS foundation designed to support multiple business applications without changing the underlying architecture.
 
-## Architecture
+---
 
-Reusable platform architecture shared by any SaaS product built on this codebase.
+# Documentation Structure
 
-See:
+```
+docs/
 
-- `docs/architecture/CORE.md`
-- `docs/architecture/DOMAINS.md`
-- `docs/architecture/PROJECT_STRUCTURE.md`
-- `docs/architecture/CONVENTIONS.md`
+README.md
+INDEX.md
 
-## Domains
+adr/
 
-Product-specific documentation.
+architecture/
+
+domains/
+
+business/
+```
+
+---
+
+# Architecture
+
+The **architecture** folder contains the reusable Platform Core documentation.
+
+Topics include:
+
+- Core Philosophy
+- Domains
+- Architecture
+- Identity
+- Data
+- Security
+- API
+- Deployment
+- Technology Stack
+- Development Conventions
+
+Platform documentation is business agnostic.
+
+---
+
+# Domains
+
+Every business application is implemented as an independent Domain.
 
 Current domains:
 
-- `docs/domains/dj/`
+```
+docs/domains/
 
-The DJ domain contains:
+dj/
+```
 
-- Product vision
+Each Domain owns its own:
+
+- Vision
 - PRD
-- Music data model
-- AI architecture
-- Data ingestion
-- RLS
-- Domain-specific authentication notes
+- Architecture
+- Database
+- AI
+- Business documentation
 
-## Business
+Platform Core never contains business logic.
 
-Reserved for business-level documentation such as:
+---
 
-- Monetization
+# ADR
+
+Architectural Decision Records document important technical decisions made during the evolution of the platform.
+
+Examples:
+
+- Authentication
+- Database
+- Storage
+- Organizations
+- Billing
+
+---
+
+# Business
+
+Reserved for business documentation that is independent from the platform implementation.
+
+Examples:
+
 - Pricing
-- Go-to-market
-- Market research
-- Competitors
+- Monetization
+- Marketing
+- Go-To-Market
+- Competitor Analysis
 
-## Principle
+---
 
-The platform core must remain independent from any specific business domain.
+# Philosophy
 
-Domains may depend on the Core and Shared layers.
+Platform Core provides reusable capabilities.
 
-The Core must never depend on a domain.
+Domains provide business knowledge.
+
+The Core should never depend on any Domain.
+
+Domains may use Platform Core but remain independent from one another.

@@ -10,7 +10,7 @@ updated: 2026-08-04
 
 ## Strategy
 
-DJ Platform is server-first.
+Platform Core follows a server-first architecture.
 
 Use Server Components for reads, Server Actions for internal authenticated mutations, and Route Handlers for stable HTTP contracts, integrations, webhooks, imports, exports and future public APIs.
 
@@ -95,8 +95,8 @@ Failure:
   "data": null,
   "meta": {},
   "error": {
-    "code": "DJ_NOT_FOUND",
-    "message": "DJ not found",
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "Resource not found",
     "requestId": "..."
   }
 }

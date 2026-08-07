@@ -1,127 +1,237 @@
 ---
 title: Caching Strategy
-version: 1.0.0
-status: Draft
-owner: Architecture
-updated: 2026-08-04
+version: 2.0.0
+status: Living Document
+owner: Platform Core
+updated: 2026-08-07
+related:
+  - ARCHITECTURE.md
+  - DATA.md
+  - API.md
 ---
 
 # Caching Strategy
 
-## Principles
+## Purpose
 
-- correctness before speed
-- server-side cache first
-- public data before personalized data
-- deterministic cache keys
-- explicit invalidation
-- no secrets in shared caches
+This document defines the caching strategy used by Platform Core.
 
-## Cache layers
+Caching is a performance optimization.
 
-Potential layers:
+Correctness always takes priority over speed.
 
-1. browser cache
-2. CDN or reverse proxy
-3. Next.js data cache
-4. application cache
-5. optimized database queries
-6. external provider cache
+---
 
-Not every layer is required for MVP.
+# Principles
 
-## Suitable public resources
+Platform Core follows these principles:
 
-- published DJ profiles
-- genre pages
-- ranking editions
-- festival pages
-- public articles
-- navigation taxonomies
+- Correctness before performance
+- Server-side cache first
+- Explicit invalidation
+- Deterministic cache keys
+- No secrets in shared caches
+- Cache only when justified
+- Measure before optimizing
 
-Do not publicly cache:
+Caching should never change application behavior.
 
-- drafts
-- admin pages
-- favorites
-- user profiles
-- permission-dependent data
+---
 
-## Invalidation
+# Cache Layers
 
-The service that completes a mutation owns cache invalidation.
-
-Conceptual tags:
+Platform Core may use multiple cache layers.
 
 ```text
-dj:{id}
-dj:slug:{slug}
-genre:{id}
-ranking:{id}
-festival:{id}
-article:{id}
-directory:djs
+Browser
+
+↓
+
+CDN / Reverse Proxy
+
+↓
+
+Next.js Cache
+
+↓
+
+Application Cache
+
+↓
+
+Database
+
+↓
+
+External Providers
 ```
 
-Publishing a DJ may invalidate:
+Not every layer is required for every deployment.
 
-- DJ profile
-- directory
-- related genres
-- search
-- sitemap
-- affected rankings
+---
 
-## Cache keys
+# Cacheable Resources
 
-Include:
+Typical cache candidates include:
 
-- resource type
-- identifier
-- locale
-- normalized filter set
-- page or cursor
-- version where needed
+- Public pages
+- Shared configuration
+- Reference data
+- Navigation
+- Public documentation
+- Static assets
 
-## AI cache
+Business Domains define their own cacheable resources.
 
-AI keys include:
+---
 
-- task
-- prompt version
-- normalized input hash
-- provider
-- model
+# Never Cache
 
-Invalidate when source data or prompt meaning changes.
+The following should never be publicly cached:
 
-## Redis
+- User-specific data
+- Authentication state
+- Authorization results
+- Private files
+- Administrative interfaces
+- Sensitive business information
 
-Redis is not required initially.
+---
 
-Introduce only for a documented need:
+# Cache Invalidation
 
-- distributed rate limiting
-- queues
-- cross-instance cache
-- idempotency
-- distributed locks
+The component performing the mutation owns cache invalidation.
 
-Requires ADR.
+Invalidate only the affected resources.
 
-## Failure behavior
+Avoid global cache invalidation whenever possible.
 
-Normal content cache failure should fall back to source retrieval.
+---
 
-Rate limits, locks and idempotency require explicit failure policies.
+# Cache Keys
 
-## Forbidden practices
+Cache keys should include:
+
+- Resource Type
+- Resource Identifier
+- Locale (when applicable)
+- Organization (when applicable)
+- Filters
+- Pagination
+- Version
+
+Keys should remain deterministic.
+
+---
+
+# AI Caching
+
+AI responses may be cached when appropriate.
+
+Cache keys should include:
+
+- Task
+- Prompt Version
+- Normalized Input
+- Provider
+- Model
+
+Invalidate cached AI responses whenever:
+
+- Source data changes
+- Prompt behavior changes
+- Provider output becomes invalid
+
+---
+
+# Redis
+
+Redis is optional.
+
+Introduce Redis only when a measurable need exists.
+
+Typical use cases:
+
+- Distributed Cache
+- Rate Limiting
+- Queues
+- Distributed Locks
+- Idempotency
+- Session Storage
+
+Redis adoption requires an ADR.
+
+---
+
+# Failure Strategy
+
+Cache failures should never make the application unavailable.
+
+Recommended behavior:
+
+```text
+Cache Miss
+
+↓
+
+Primary Data Source
+
+↓
+
+Optional Cache Refresh
+```
+
+Critical services should continue operating without cache.
+
+---
+
+# Performance Strategy
+
+Optimize in this order:
+
+1. Database queries
+2. Indexes
+3. Pagination
+4. Next.js Cache
+5. CDN
+6. Redis
+7. Horizontal Scaling
+
+Do not introduce caching to compensate for poor database design.
+
+---
+
+# Observability
+
+Monitor:
+
+- Cache Hit Rate
+- Cache Miss Rate
+- Latency
+- Memory Usage
+- Eviction Rate
+
+Caching effectiveness should be measurable.
+
+---
+
+# Forbidden Practices
 
 Never:
 
-- cache admin pages publicly
-- cache secrets
-- cache authorization indefinitely
-- use infinite TTL without versioning
-- add caching to hide poor query design
-- invalidate the entire application after every mutation
+- Cache sensitive information
+- Cache authorization indefinitely
+- Cache secrets
+- Use infinite TTL without versioning
+- Invalidate the entire application after every mutation
+- Introduce caching before measuring performance
+
+---
+
+# Final Principle
+
+Caching is an optimization layer.
+
+Business logic must never depend on cached data.
+
+The application should remain functionally correct even when every cache is disabled.

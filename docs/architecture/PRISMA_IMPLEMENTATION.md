@@ -1,163 +1,331 @@
 ---
 title: Prisma Implementation
-version: 1.0.0
-status: Draft
-owner: Architecture
-updated: 2026-08-04
+version: 2.0.0
+status: Living Document
+owner: Platform Core
+updated: 2026-08-07
 related:
-  - DATABASE.md
-  - DATA_MODEL.md
+  - DATA.md
   - ARCHITECTURE.md
+  - IDENTITY.md
 ---
 
 # Prisma Implementation
 
-## Scope
+## Purpose
 
-The first schema covers the platform's editorial and discovery foundation:
+This document defines how Prisma is used within Platform Core.
 
-- DJs and aliases
-- genres and genre relationships
-- festivals and appearances
-- rankings and editions
-- sessions
-- articles
-- media
-- external and social profiles
-- sources
-- users, roles and favorites
-- audit events
-- imports
-- AI-generation records
-- optional tracks and labels
-- DJ similarity relationships
+It establishes conventions for schema management, migrations, code generation and database access.
 
-## Identifier decision
+Business-specific models belong to each Domain.
 
-The first draft uses `cuid()` for internal IDs.
+---
 
-This is practical for distributed application-generated identifiers and avoids exposing sequential IDs. It must be recorded in an ADR before the first production migration.
+# Scope
 
-## Prisma ORM 7 layout
+Prisma is the persistence layer for Platform Core.
+
+It is responsible for:
+
+- Schema definition
+- Database migrations
+- Type generation
+- Database client generation
+- Repository access
+
+Prisma is never accessed directly from Pages, Components or Server Actions.
+
+---
+
+# Prisma Project Layout
+
+```text
+prisma/
+├── schema.prisma
+├── seed.ts
+└── migrations/
+
+prisma.config.ts
+
+src/generated/prisma/
+
+src/lib/prisma/
+└── client.ts
+```
+
+The generated client must never be edited manually.
+
+---
+
+# Configuration
+
+Database configuration is managed through:
 
 ```text
 prisma.config.ts
-prisma/schema.prisma
-prisma/seed.ts
+```
+
+Environment variables remain outside the schema whenever possible.
+
+---
+
+# Driver
+
+Current database:
+
+- PostgreSQL
+
+Current adapter:
+
+- @prisma/adapter-pg
+
+The adapter should remain replaceable.
+
+---
+
+# Generated Client
+
+The Prisma Client is generated into:
+
+```text
 src/generated/prisma/
 ```
 
-The connection URL is defined through `prisma.config.ts`, not inside the schema datasource block.
-
-## Driver adapter
-
-The seed is prepared for PostgreSQL through `@prisma/adapter-pg`.
-
-The runtime Prisma singleton must later use the same adapter approach in:
+Application code should import the generated client through:
 
 ```text
 src/lib/prisma/client.ts
 ```
 
-## Installation dependencies
+The singleton implementation must be shared across the application.
 
-Install only when bootstrapping the application:
+---
+
+# Repository Pattern
+
+Database access always follows this flow:
+
+```text
+Server Action
+
+↓
+
+Service
+
+↓
+
+Repository
+
+↓
+
+Prisma Client
+
+↓
+
+PostgreSQL
+```
+
+Repositories are the only layer allowed to communicate with Prisma.
+
+Business logic belongs to Services.
+
+---
+
+# Installation
+
+Core dependencies:
 
 ```bash
 npm install @prisma/client @prisma/adapter-pg pg
+```
+
+Development dependencies:
+
+```bash
 npm install -D prisma tsx @types/pg
 ```
 
-Use the chosen package manager consistently. Do not mix npm, pnpm, yarn and bun lockfiles.
+Use a single package manager across the repository.
 
-## Validation sequence
+---
 
-Before creating the initial migration:
+# Validation Workflow
+
+Before every migration:
 
 ```bash
 npx prisma format
+
 npx prisma validate
+
 npx prisma generate
 ```
 
-Then review:
+Review:
 
-- relation names
-- unique constraints
-- deletion behavior
-- indexes
-- optional versus required fields
-- models included in MVP
+- Model names
+- Relations
+- Constraints
+- Cascades
+- Indexes
+- Nullable fields
 
-## First migration
+---
 
-Only after approval:
+# Migration Workflow
+
+Typical workflow:
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev --name <migration-name>
 ```
 
-## Schema review items
+Rules:
 
-1. Confirm `cuid()` identifier strategy.
-2. Confirm Auth.js database models required by the selected session strategy.
-3. Confirm whether Track and Label remain in the first migration.
-4. Confirm article-body storage format.
-5. Confirm multilingual timing.
-6. Confirm whether permissions remain role-based initially.
-7. Confirm storage provider before using MediaAsset.
-8. Validate the self-relations for genres and DJs.
-9. Review all cascade deletions.
-10. Add PostgreSQL extensions only through an ADR.
+- One migration per schema change.
+- Never edit applied migrations.
+- Review destructive changes.
+- Test in staging before production.
+- Keep migrations small.
 
-## Soft deletion
+---
 
-Soft deletion fields exist on public editorial entities. Prisma does not automatically filter them.
+# Schema Design
 
-Repositories must explicitly enforce:
+Platform Core owns models such as:
+
+- User
+- Profile
+- Organization
+- Membership
+- Role
+- Permission
+- Notification
+- Audit
+- FeatureFlag
+
+Business entities belong to Domains.
+
+Examples:
 
 ```text
-deletedAt: null
+DJ Domain
+
+Track
+
+Artist
+
+Festival
 ```
-
-A shared repository helper or Prisma extension may be considered later, but must not hide behavior unexpectedly.
-
-## Public query rule
-
-A public DJ query requires:
 
 ```text
-editorialStatus = PUBLISHED
-publishedAt <= now
-deletedAt = null
+Commerce Domain
+
+Order
+
+Customer
+
+Product
 ```
 
-Equivalent rules apply to other public entities.
+The Core must never contain Domain entities.
 
-## Seed behavior
+---
 
-The seed is idempotent:
+# Identifiers
 
-- countries are upserted by ISO code
-- genres are upserted by slug
-- the initial administrator is created only when `INITIAL_ADMIN_EMAIL` is configured
+Internal identifiers should use:
 
-The seed does not publish genres automatically.
+```text
+cuid()
+```
 
-## Auth.js note
+Identifier strategy must remain consistent across Platform Core.
 
-The current User model is the product user model, not yet the complete Auth.js adapter schema.
+Any future change requires an ADR.
 
-Account, Session and VerificationToken models will be added after the authentication method and session strategy are approved.
+---
 
-## Definition of ready
+# Soft Deletion
 
-The Prisma layer is ready for migration only when:
+Soft deletion is optional.
 
-- dependencies are installed
-- schema formats successfully
-- schema validates
-- client generates
-- ADRs are approved
-- authentication model is settled
-- schema review items are resolved
+When used:
+
+```text
+deletedAt
+```
+
+Repositories are responsible for excluding deleted records.
+
+Prisma should never hide this behavior automatically.
+
+---
+
+# Seed Strategy
+
+Seeds should be:
+
+- Idempotent
+- Predictable
+- Repeatable
+
+Platform seeds initialize only Platform Core data.
+
+Domain-specific seeds belong inside the corresponding Domain.
+
+---
+
+# Performance
+
+Repositories should:
+
+- Select only required fields.
+- Avoid N+1 queries.
+- Prefer explicit projections.
+- Keep transactions short.
+
+Never expose raw Prisma models unnecessarily.
+
+---
+
+# Transactions
+
+Transactions should contain only database work.
+
+Never perform:
+
+- HTTP requests
+- Email
+- AI processing
+- File uploads
+- External API calls
+
+inside a transaction.
+
+---
+
+# Extensions
+
+Prisma extensions may be introduced when they:
+
+- Reduce duplication
+- Improve safety
+- Preserve transparency
+
+Hidden behavior should be avoided.
+
+---
+
+# Definition of Ready
+
+The Prisma layer is ready when:
+
+- Schema formats successfully.
+- Schema validates.
+- Client generates correctly.
+- Migrations are reviewed.
+- Repositories follow the defined architecture.
+- Platform Core models are stable.
+- Domain models are documented.
