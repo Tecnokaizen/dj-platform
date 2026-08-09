@@ -1,632 +1,644 @@
-# AUTH_ARCHITECTURE.md
+# DJ Platform — Authentication Architecture
 
-> DJ Platform – Authentication & Authorization Architecture
->
-> Version: 1.0
-> Status: Approved
-> Stack:
->
-> - Next.js 16 (App Router)
-> - React 19
-> - Supabase Self Hosted
-> - PostgreSQL
-> - Supabase Auth (GoTrue)
-> - Prisma ORM
-> - TypeScript
+**Status:** Living Document
+**Product:** DJ Platform
+**Scope:** Authentication, application identity and Product access boundaries
+**Stack:** Next.js App Router, Supabase Auth, PostgreSQL, Prisma, TypeScript
 
 ---
 
-# 1. Objetivo
+# 1. Purpose
 
-Diseñar una arquitectura de autenticación moderna, segura y escalable para DJ Platform.
+This document defines the authentication architecture currently used by DJ Platform.
 
-La autenticación deberá funcionar tanto para usuarios gratuitos como Premium y administradores, integrándose completamente con Supabase Auth, PostgreSQL y Row Level Security (RLS).
+It describes:
 
----
+- authentication identity;
+- application identity;
+- Supabase client boundaries;
+- session handling;
+- authenticated Product routes;
+- the separation between authentication and authorization;
+- current implementation state;
+- security rules that must remain valid as Platform Core evolves.
 
-# 2. Principios
+This document does not define Product-specific role models.
 
-La autenticación debe ser:
-
-- Stateless
-- SSR First
-- Edge Compatible
-- Segura
-- Escalable
-- Compatible con RLS
-- Compatible con Server Components
-- Compatible con Server Actions
-
-Nunca existirá una autenticación propia.
-
-Toda la autenticación será delegada a Supabase Auth.
+Authorization capabilities such as Organizations, Memberships, Roles and Permissions belong to Platform Core.
 
 ---
 
-# 3. Componentes
+# 2. Architectural Principles
 
-## Identity Provider
+DJ Platform follows these principles:
 
-Supabase Auth
-
-Responsable de:
-
-- usuarios
-- sesiones
-- JWT
-- OAuth
-- Magic Link
-- recuperación contraseña
-- refresh tokens
+- Supabase Auth is the canonical authentication identity provider.
+- `Profile` is the canonical application identity.
+- A DJ or Artist is not an authenticated User identity.
+- Authentication and authorization are separate concerns.
+- Product routes must enforce access server-side.
+- Client-side visibility is not an authorization mechanism.
+- Supabase provider details remain behind infrastructure adapters.
+- Core and Domain code must not depend directly on browser-only authentication state.
+- Future Product routes must not be treated as implemented merely because they appear in roadmap documentation.
 
 ---
 
-## Base de datos
+# 3. Identity Model
 
-PostgreSQL Self Hosted
+Authentication identity originates from:
 
-Responsable de:
+    Supabase Auth
+    └── auth.users
 
-- perfiles
-- roles
-- permisos
-- preferencias
-- relaciones
+Application identity is represented by:
 
----
+    Platform Core
+    └── Profile
 
-## Cliente
+Conceptually:
 
-Next.js 16
-
-Responsable de:
-
-- Login
-- Logout
-- Middleware
-- Cookies
-- SSR
-
----
-
-# 4. Métodos de Login
-
-## Magic Link
-
-Usuario introduce email.
-
-Supabase envía enlace.
-
-El usuario queda autenticado.
-
----
-
-## Google
-
-OAuth
-
----
-
-## GitHub
-
-OAuth
-
-Principalmente para desarrolladores.
-
----
-
-## Futuro
-
-Apple
-
-Discord
-
-Spotify
-
-Microsoft
-
----
-
-# 5. Flujo de autenticación
-
-Usuario
-
-↓
-
-Página Login
-
-↓
-
-Supabase Auth
-
-↓
-
-Validación
-
-↓
-
-JWT
-
-↓
-
-Cookie HttpOnly
-
-↓
-
-Middleware
-
-↓
-
-Server Components
-
-↓
-
-Dashboard
-
----
-
-# 6. Arquitectura de sesión
-
-Supabase mantiene:
-
-Access Token
-
-Refresh Token
-
-Los tokens se almacenan mediante cookies seguras.
-
-Nunca se almacenan manualmente.
-
----
-
-# 7. JWT
-
-El JWT contendrá:
-
-- user id
-- email
-- role
-- exp
-- iss
-
-Nunca contendrá:
-
-- datos personales
-- preferencias
-- playlists
-- permisos específicos
-
-Todo eso vive en PostgreSQL.
-
----
-
-# 8. Tabla auth.users
-
-Gestionada por Supabase.
-
-No debe modificarse.
-
-Información:
-
-- id
-- email
-- created_at
-- last_sign_in
-- metadata
-
----
-
-# 9. Tabla profiles
-
-Cada usuario tendrá un perfil.
-
-```
-auth.users
+    auth.users
         │
-        │ 1
-        │
-        ▼
-profiles
-```
+        └── Profile
 
-Campos:
+`auth.users` is managed by Supabase Auth.
 
-- id
-- username
-- display_name
-- avatar_url
-- bio
-- website
-- country
-- language
-- timezone
-- created_at
-- updated_at
+Prisma does not own or recreate Supabase internal Auth tables.
 
-El id coincide exactamente con auth.users.id.
+DJ Platform must not introduce a second canonical Prisma `User` model.
 
 ---
 
-# 10. Creación automática
+# 4. Profile
 
-Cuando Supabase crea un usuario:
+`Profile` represents application-level information associated with an authenticated identity.
 
-Trigger PostgreSQL
+Profile data may include Product-facing attributes such as:
 
-↓
+- display name;
+- DJ name;
+- experience level;
+- profile metadata.
 
-Insert
+The exact persistence model is defined by the active Prisma schema.
 
-↓
+`Profile` does not replace Supabase authentication identity.
 
-profiles
-
-No existe creación manual.
-
----
-
-# 11. Roles
-
-## USER
-
-Usuario estándar.
-
-Puede:
-
-- crear playlists
-- favoritos
-- seguir DJs
-
-No puede administrar contenido.
+It extends application identity.
 
 ---
 
-## PREMIUM
+# 5. Authentication and Authorization
 
-Todo USER
+Authentication answers:
 
-+
+    Who is this authenticated identity?
 
-- IA avanzada
-- recomendaciones
-- exports
-- sincronizaciones
+Authorization answers:
 
----
+    What may this identity do?
 
-## MODERATOR
+These concerns must remain separate.
 
-Puede:
+Authentication currently belongs to:
 
-- revisar contenido
+    Supabase Auth
+        +
+    Platform Core Identity
 
-- validar DJs
+Authorization evolves through Platform Core capabilities:
 
-- validar eventos
+    Organizations
+        ↓
+    Roles
+        ↓
+    Memberships
+        ↓
+    Permissions
 
-- ocultar contenido
+Organizations, Roles, Memberships and Permissions are specified capabilities but must not be considered implemented until corresponding source and persistence exist.
 
----
+The DJ Domain must not create its own competing:
 
-## ADMIN
-
-Acceso completo.
-
----
-
-# 12. Tabla user_roles
-
-```
-profiles
-
-↓
-
-user_roles
-
-↓
-
-roles
-```
-
-Permite múltiples roles futuros.
+- User model;
+- Role model;
+- Membership model;
+- Permission system;
+- organization ownership system.
 
 ---
 
-# 13. Middleware
+# 6. Ownership of DJ Entities
 
-Todas las rutas privadas pasan por middleware.
+A DJ or Artist is a DJ Domain entity.
 
-Ejemplo:
+It is not:
 
-```
-/
+- an authentication identity;
+- a Profile;
+- an Organization;
+- a Membership;
+- a Role.
 
-/dashboard
-
-/profile
-
-/settings
-
-/admin
-```
-
-El middleware:
-
-- verifica sesión
-
-- renueva token
-
-- redirige login
+One authenticated Profile may eventually interact with many DJ Domain entities without making those entities authentication identities.
 
 ---
 
-# 14. Rutas públicas
+# 7. Supabase Infrastructure Boundary
 
-```
-/
+Supabase integration currently lives under:
 
-/about
+    src/lib/supabase/
 
-/contact
+Current infrastructure files include:
 
-/djs
+    src/lib/supabase/client.ts
+    src/lib/supabase/server.ts
+    src/lib/supabase/proxy.ts
 
-/playlists
+These files are infrastructure adapters.
 
-/events
-```
+They may depend on Supabase SDKs and runtime-specific APIs.
 
-No requieren login.
-
----
-
-# 15. Rutas privadas
-
-```
-/dashboard
-
-/profile
-
-/library
-
-/settings
-```
-
-Requieren sesión válida.
+Core application logic should consume the appropriate adapter rather than reimplementing Supabase connectivity.
 
 ---
 
-# 16. Rutas Admin
+# 8. Browser Client
 
-```
-/admin
+Browser-side Supabase access belongs in:
 
-/admin/users
+    src/lib/supabase/client.ts
 
-/admin/djs
+Browser code may use public Supabase configuration required by the client SDK.
 
-/admin/labels
+Browser code must never receive privileged server credentials.
 
-/admin/events
-
-/admin/imports
-```
-
-Además del login requieren:
-
-role == ADMIN
+Client-side session state may improve UX, but it is not sufficient to authorize protected operations.
 
 ---
 
-# 17. Cliente Supabase
+# 9. Server Client
 
-Se crearán tres clientes.
+Server-side Supabase access belongs in:
 
-## Browser Client
+    src/lib/supabase/server.ts
 
-Uso:
+Current Core Identity services and actions use this server adapter.
 
-React Client Components
+Examples include:
 
----
+- login;
+- registration;
+- logout;
+- current profile resolution;
+- profile updates;
+- authentication callback handling.
 
-## Server Client
-
-Uso:
-
-Server Components
-
-Server Actions
-
----
-
-## Admin Client
-
-Utiliza:
-
-SERVICE_ROLE_KEY
-
-Nunca se expone al navegador.
+Server-side authentication checks are authoritative for protected application behavior.
 
 ---
 
-# 18. Variables de entorno
+# 10. Session Proxy
 
-## Públicas
+Session support is implemented through:
 
-```
-NEXT_PUBLIC_SUPABASE_URL
+    src/lib/supabase/proxy.ts
 
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-```
+and exposed to Next.js through:
 
----
+    src/proxy.ts
 
-## Privadas
+The proxy participates in Supabase session handling and global authentication-related redirects.
 
-```
-SUPABASE_SERVICE_ROLE_KEY
-```
+It must not become a speculative inventory of Product routes that do not yet exist.
 
-Nunca viajan al frontend.
+Route protection must remain aligned with actual application structure.
 
 ---
 
-# 19. Organización del código
+# 11. Authenticated Product Boundary
 
-```
-src/
+Current authenticated Product pages live under:
 
-lib/
+    src/app/(private)/
 
-supabase/
+Current implemented private pages include:
 
-browser.ts
+    /dashboard
+    /profile
 
-server.ts
+The current private layout is:
 
-admin.ts
+    src/app/(private)/layout.tsx
 
-middleware.ts
+It resolves the current Profile server-side.
 
-auth.ts
-```
+If no authenticated application identity is available, the request is redirected to:
 
----
+    /login
 
-# 20. Protección de datos
-
-Todo acceso a PostgreSQL utiliza:
-
-Row Level Security
-
-No existe seguridad únicamente desde el frontend.
+This layout is the current Product-level authentication boundary for pages inside the `(private)` route group.
 
 ---
 
-# 21. Eliminación de cuenta
+# 12. Public Authentication Routes
 
-Usuario
+Current authentication pages include:
 
-↓
+    /login
+    /register
 
-Solicita eliminación
+Current authentication callback:
 
-↓
+    /auth/callback
 
-Soft Delete
+These routes are implemented.
 
-↓
+Routes such as:
 
-Periodo recuperación
+    /forgot-password
 
-↓
+must not be described as implemented until corresponding source exists.
 
-Delete definitivo
-
-↓
-
-Supabase Auth
-
-↓
-
-PostgreSQL
-
-↓
-
-Storage
+Password recovery may be added later as a separate approved capability.
 
 ---
 
-# 22. Auditoría
+# 13. Future Product Routes
 
-Toda acción crítica quedará registrada.
+Product concepts such as:
 
-Ejemplos:
+- library;
+- playlists;
+- imports;
+- settings;
+- administration;
+- public Artist pages;
+- festivals;
+- rankings;
+- articles;
 
-- login
+may exist in Product requirements or roadmap documentation.
 
-- logout
+Their existence in Product vision does not imply that corresponding application routes are currently implemented.
 
-- cambio email
-
-- cambio contraseña
-
-- creación playlists
-
-- importaciones
-
-- eliminación contenido
-
----
-
-# 23. Integración con RLS
-
-Cada consulta comprobará automáticamente:
-
-```
-auth.uid()
-```
-
-contra
-
-```
-profiles.id
-```
-
-No existirán consultas sin políticas RLS.
+Authentication rules should be introduced when those routes actually exist.
 
 ---
 
-# 24. Seguridad
+# 14. Administrative Access
 
-- Cookies HttpOnly
-- HTTPS obligatorio
-- JWT firmado
-- Refresh automático
-- CSRF protegido
-- OAuth seguro
-- Passwordless por defecto
-- Secretos únicamente en servidor
+Administrative access must not be implemented through a DJ-specific persisted field such as:
 
----
+    role == ADMIN
 
-# 25. Roadmap
+or a historical DJ Domain `UserRole`.
 
-## Fase 1
+Future administrative authorization must use approved Platform Core authorization capabilities.
 
-- Magic Link
+Conceptually:
 
-- Google Login
+    authenticated Profile
+        ↓
+    Organization Membership
+        ↓
+    Role
+        ↓
+    Permission
 
-- Profiles
+Administrative UI must check the required authorization capability rather than relying only on route naming.
 
-- Middleware
-
----
-
-## Fase 2
-
-- GitHub
-
-- Roles
-
-- Admin
+An `/admin` path is not itself an authorization model.
 
 ---
 
-## Fase 3
+# 15. Current Authentication Methods
 
-- Spotify OAuth
+The active authentication implementation supports the methods actually present in current source and runtime configuration.
 
-- Discord OAuth
+Email-based authentication is currently part of the implemented flow.
 
-- Apple Login
+Additional providers such as:
+
+- Google;
+- GitHub;
+- Apple;
+- other OAuth providers;
+
+must not be considered implemented until configured, exercised and verified.
+
+Provider support should be added based on demonstrated Product need.
 
 ---
 
-# Estado
+# 16. Session Resolution
 
-**APPROVED**
+Application code requiring the authenticated identity should use the Core Identity boundary rather than duplicating authentication logic.
 
-Este documento define la arquitectura oficial de autenticación y autorización de DJ Platform sobre Supabase Self Hosted y será la referencia para toda la implementación de la capa de acceso, sesiones y seguridad.
+Current Profile resolution is implemented under:
+
+    src/core/identity/profile/services/get-current-profile.ts
+
+Conceptually:
+
+    Request
+        ↓
+    Supabase server client
+        ↓
+    Supabase Auth identity
+        ↓
+    Profile resolution
+        ↓
+    Product behavior
+
+Failure to resolve an authenticated Profile must be handled explicitly.
+
+---
+
+# 17. Login
+
+Login behavior belongs to:
+
+    src/core/identity/auth/
+
+Infrastructure connectivity belongs to:
+
+    src/lib/supabase/
+
+The separation is:
+
+    Product / App
+        ↓
+    Core Identity action
+        ↓
+    Supabase infrastructure adapter
+        ↓
+    Supabase Auth
+
+Business or Product UI must not reimplement Supabase authentication mechanics independently.
+
+---
+
+# 18. Registration
+
+Registration follows the same boundary:
+
+    Product / App
+        ↓
+    Core Identity registration
+        ↓
+    Supabase Auth
+        ↓
+    Profile lifecycle
+
+Authentication identity and application Profile must remain logically distinct even when created as part of one Product flow.
+
+Partial failures must be handled deliberately.
+
+---
+
+# 19. Logout
+
+Logout invalidates the current authentication session through the Supabase infrastructure boundary.
+
+After logout, private Product routes must no longer resolve an authenticated Profile.
+
+---
+
+# 20. Environment Configuration
+
+Current Supabase public configuration includes environment values used by the Supabase client infrastructure, including:
+
+    NEXT_PUBLIC_SUPABASE_URL
+    NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+Environment values must be supplied through runtime configuration.
+
+Secrets must not be committed to source control.
+
+Server-only credentials must not be exposed through `NEXT_PUBLIC_*`.
+
+The existence of a possible Supabase credential does not imply that the application currently requires or uses it.
+
+---
+
+# 21. Privileged Supabase Clients
+
+The current authentication architecture does not assume that an application-wide privileged Admin Supabase client exists.
+
+A future server-only privileged client may be introduced only when a demonstrated requirement needs it.
+
+If introduced:
+
+- credentials must remain server-only;
+- usage must be narrowly scoped;
+- authorization invariants must not be bypassed casually;
+- audit requirements must be considered;
+- the capability must be documented explicitly.
+
+A `service_role` credential must never be exposed to the browser.
+
+---
+
+# 22. Row Level Security
+
+RLS is part of the broader Supabase security strategy, but its existence in architecture documentation must not be confused with verified database state.
+
+The current initial Prisma migration does not establish RLS policies.
+
+Therefore:
+
+- RLS must not be claimed as currently verified protection;
+- server-side authorization remains mandatory;
+- future RLS policies must be implemented and validated explicitly;
+- `RLS.md` describes design intent, not runtime proof.
+
+Database security claims require evidence from the actual database environment.
+
+---
+
+# 23. Storage and Realtime
+
+Supabase may provide capabilities such as:
+
+- Storage;
+- Realtime.
+
+DJ Platform must not treat these capabilities as implemented merely because Supabase supports them.
+
+They should be adopted only when Product requirements demonstrate a need and implementation is verified.
+
+Authentication architecture must not depend on Storage or Realtime by default.
+
+---
+
+# 24. Data Protection
+
+Protected data must not rely solely on:
+
+- hidden UI;
+- client-side route guards;
+- disabled controls;
+- JavaScript state;
+- route naming.
+
+Sensitive operations require server-side authentication and, when applicable, authorization.
+
+Tenant-aware operations must also enforce tenant membership and permissions once those Platform Core capabilities are implemented.
+
+---
+
+# 25. Account Deletion
+
+Account deletion is not currently defined as an implemented end-to-end capability by this document.
+
+A future account deletion workflow must define explicitly:
+
+- Supabase Auth identity deletion;
+- Profile handling;
+- owned Product data;
+- Organization implications;
+- membership implications;
+- retention requirements;
+- audit requirements;
+- external storage implications if Storage is later adopted.
+
+Deletion behavior must not be inferred from the historical authentication design.
+
+---
+
+# 26. Audit
+
+Authentication-sensitive actions may require auditability as Platform Core evolves.
+
+Audit requirements must be introduced according to demonstrated security and operational needs.
+
+The DJ Domain must not create an independent authentication audit architecture that conflicts with Platform Core.
+
+---
+
+# 27. Current Source Structure
+
+Current relevant source is:
+
+    src/
+    ├── app/
+    │   ├── (auth)/
+    │   │   ├── login/
+    │   │   └── register/
+    │   ├── (private)/
+    │   │   ├── dashboard/
+    │   │   ├── profile/
+    │   │   └── layout.tsx
+    │   └── auth/
+    │       └── callback/
+    ├── core/
+    │   └── identity/
+    │       ├── auth/
+    │       └── profile/
+    ├── lib/
+    │   └── supabase/
+    │       ├── client.ts
+    │       ├── proxy.ts
+    │       └── server.ts
+    └── proxy.ts
+
+This structure reflects current implementation.
+
+Future Core modules or Product routes should be added only when implementation begins.
+
+---
+
+# 28. Current Implementation State
+
+Currently implemented:
+
+- Supabase Auth integration;
+- application Profile;
+- login;
+- registration;
+- logout;
+- authentication callback;
+- server-side current Profile resolution;
+- private Product layout;
+- dashboard;
+- profile page;
+- Supabase browser/server/proxy infrastructure.
+
+Specified but not yet implemented as complete Platform Core capabilities:
+
+- Organizations;
+- Roles;
+- Memberships;
+- Permissions.
+
+Not assumed implemented:
+
+- admin authorization;
+- OAuth providers not verified in runtime;
+- password recovery route;
+- RLS enforcement;
+- Storage-backed Product features;
+- Realtime-dependent Product features;
+- account deletion workflow.
+
+---
+
+# 29. Evolution Rules
+
+Authentication changes must respect the following process:
+
+1. identify the Product requirement;
+2. distinguish authentication from authorization;
+3. determine whether the change belongs to Identity, another Platform Core capability, Product composition or infrastructure;
+4. avoid adding Domain-specific identity systems;
+5. update architecture when behavior materially changes;
+6. implement using the approved boundary;
+7. validate source behavior;
+8. verify runtime behavior before declaring operational guarantees.
+
+---
+
+# 30. Related Documents
+
+Platform architecture:
+
+- `../../../architecture/IDENTITY.md`
+- `../../../architecture/TENANCY.md`
+- `../../../architecture/SECURITY.md`
+- `../../../architecture/CORE.md`
+
+DJ Domain persistence:
+
+- `DATA_MODEL.md`
+- `ERD.md`
+- `RLS.md`
+
+Active source:
+
+- `../../../../src/core/identity/`
+- `../../../../src/lib/supabase/`
+- `../../../../src/app/(private)/`
+- `../../../../src/proxy.ts`
+
+Active persistence:
+
+- `../../../../prisma/schema.prisma`
+
+---
+
+# Final Principle
+
+Supabase Auth authenticates identities.
+
+`Profile` represents application identity.
+
+Platform Core owns reusable authorization capabilities.
+
+DJ Domain entities do not become authentication identities.
+
+Product routes enforce access server-side.
+
+Documentation describes intended architecture; runtime claims require implementation evidence.

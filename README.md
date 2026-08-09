@@ -1,483 +1,501 @@
 # DJ Platform
 
-> The AI-native knowledge platform for Electronic Dance Music.
+> AI-native knowledge and content Product for Electronic Dance Music, built on a reusable SaaS foundation.
 
 ---
 
-# Overview
+## Overview
 
-DJ Platform es una plataforma editorial y de datos estructurados dedicada al mundo de los DJs y la música electrónica.
+DJ Platform is a Product focused on DJs, electronic music and structured music knowledge.
 
-Su objetivo es convertirse en la referencia para descubrir, explorar y comprender artistas, géneros, rankings, festivales, sesiones y escenas musicales mediante una combinación de contenido editorial, relaciones entre entidades y automatización asistida por IA.
+Its broader direction includes:
 
-No pretende ser una red social, un servicio de streaming ni una simple base de datos.
+- DJs and artists
+- genres
+- festivals
+- tracks
+- labels
+- sessions
+- playlists
+- rankings
+- editorial content
+- relationships between music entities
+- discovery
+- AI-assisted workflows
 
-El proyecto está diseñado desde su origen como una **plataforma AI-Native**, donde la documentación, la arquitectura y el desarrollo están optimizados para ser comprendidos y mantenidos tanto por personas como por asistentes de IA.
+The repository is also being used to develop and validate a reusable SaaS foundation called **Platform Core**.
 
----
+Conceptually:
 
-# Vision
+    DJ Platform
+        ↓
+    App Composition
+        +
+    Platform Core
+        +
+    DJ Domain
+        +
+    Shared Technical Capabilities
+        +
+    Infrastructure
 
-Construir la plataforma de referencia mundial sobre DJs y música electrónica.
+DJ Platform is the Product.
 
-El usuario debe poder descubrir cualquier artista relevante y comprender rápidamente:
+DJ is the Business Domain.
 
-- quién es
-- cómo suena
-- qué géneros representa
-- qué trayectoria tiene
-- qué festivales frecuenta
-- qué sesiones son imprescindibles
-- qué artistas similares existen
-- qué rankings ocupa
-- cómo se relaciona con la escena electrónica
+Platform Core is the reusable SaaS foundation.
 
----
-
-# Product Goals
-
-## MVP
-
-- Directorio público de DJs.
-- Perfiles editoriales.
-- Géneros musicales.
-- Rankings.
-- Buscador.
-- Panel administrativo.
-- Importador de datos.
-- SEO técnico.
-- Arquitectura preparada para IA.
-
----
-
-## Medium Term
-
-- Comunidad.
-- Favoritos.
-- Listas.
-- Sistema editorial avanzado.
-- API.
-- Automatización mediante IA.
-- Recomendaciones personalizadas.
+Product and Domain are not synonyms.
 
 ---
 
-## Long Term
+## Product Vision
 
-- Plataforma internacional.
-- Aplicaciones móviles.
-- Marketplace.
-- Integraciones externas.
-- Herramientas profesionales.
+The long-term goal is to build a high-quality knowledge platform for DJs and electronic music.
 
----
+Users should eventually be able to understand:
 
-# Core Principles
+- who an artist is
+- how they sound
+- which genres they represent
+- their career and context
+- relevant festivals
+- important sessions
+- related artists
+- rankings
+- relationships within electronic music culture
 
-Todo el proyecto gira alrededor de estos principios.
+Strategic Product scope is broader than current implementation.
 
-## Documentation First
-
-La documentación es la fuente de verdad.
-
-Antes de escribir código debe existir una definición funcional.
-
----
-
-## AI Native
-
-El proyecto está preparado para ser desarrollado conjuntamente por personas y asistentes de IA.
-
-Toda decisión importante debe quedar documentada.
+Roadmap presence does not mean a capability is already implemented.
 
 ---
 
-## Clean Architecture
+## Platform Core
 
-El código debe ser:
+Platform Core contains reusable SaaS capabilities whose semantics are independent from a specific business vertical.
 
-- mantenible
-- modular
-- testeable
-- escalable
+Current Foundation sequence:
 
----
+    Identity
+        ↓
+    Organizations
+        ↓
+    Roles
+        ↓
+    Memberships
+        ↓
+    Tenancy Integration
+        ↓
+    Permissions
 
-## SEO First
+Current status:
 
-Todo contenido público debe estar preparado para buscadores desde el primer día.
+- Identity foundation implemented
+- Organizations specified
+- Roles specified
+- Memberships specified
+- Permissions specified
 
----
+Specified does not mean implemented.
 
-## Editorial Quality
-
-No buscamos cantidad.
-
-Buscamos calidad.
-
-Una ficha excelente vale más que cien fichas vacías.
-
----
-
-# Planned Features
-
-## Public Website
-
-- Home
-- DJ Directory
-- DJ Profiles
-- Genres
-- Rankings
-- Festivals
-- Sessions
-- Editorial Content
-- Search
-- Filters
+Future capabilities are not promoted into Platform Core merely because they could theoretically be reused.
 
 ---
 
-## Administration
+## Current Implementation
 
-- Dashboard
-- CRUD DJs
-- CRUD Genres
-- CRUD Rankings
-- Editorial Workflow
-- Importers
-- Media Management
-- User Management
+The repository already contains application code.
 
----
+Current implemented foundation includes:
 
-## AI Features
+- Next.js application
+- Supabase authentication
+- email/password authentication
+- magic-link authentication
+- protected application area
+- application Profile
+- Prisma foundation
+- generated Prisma client
+- initial Core and Domain source boundaries
 
-- Draft generation
-- Genre suggestions
-- Duplicate detection
-- Metadata normalization
-- Editorial assistance
-- Structured extraction
+Large parts of the DJ Domain and Core Foundation remain implementation work.
 
 ---
 
-# Tech Stack
+## Identity
 
-## Frontend
+Supabase Auth is the canonical authentication identity.
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
+Application identity is represented by:
+
+    Profile
+
+A DJ or artist is a Domain entity.
+
+A DJ is not automatically an authenticated application user.
+
+Do not introduce a second canonical Prisma `User` model.
 
 ---
 
-## Backend
+## Tenancy
 
-- Next.js
-- Prisma
+`Organization` is the canonical tenant boundary.
+
+Organization ownership is modeled through:
+
+    Organization
+    +
+    ACTIVE OrganizationMembership
+    +
+    OWNER Role
+
+Ownership is not represented by a competing `ownerUserId`, `ownerId` or `ownerProfileId` field.
+
+---
+
+## Source Structure
+
+    src/
+    ├── app/
+    ├── config/
+    ├── core/
+    │   ├── identity/
+    │   └── modules/
+    ├── domains/
+    │   └── dj/
+    ├── generated/
+    │   └── prisma/
+    ├── lib/
+    └── shared/
+
+Main responsibilities:
+
+`src/app`
+
+Product composition, routing and framework entry points.
+
+`src/core`
+
+Reusable SaaS capabilities.
+
+`src/domains`
+
+Business-specific semantics.
+
+`src/shared`
+
+Business-agnostic technical reuse.
+
+`src/lib`
+
+Infrastructure adapters and provider connectivity.
+
+`src/generated`
+
+Generated artifacts.
+
+---
+
+## Dependency Direction
+
+Allowed:
+
+    app
+    → core / domains / shared
+
+    domains
+    → core / shared / lib
+
+    core
+    → shared / lib
+
+    lib
+    → generated / external providers
+
+Forbidden:
+
+    core
+    → domains
+
+    shared
+    → core
+
+    shared
+    → domains
+
+    Domain A
+    → Domain B
+
+---
+
+## Current Technology Stack
+
+Application:
+
+- Next.js 16
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+
+Data:
+
 - PostgreSQL
+- Prisma 7
+- `pg`
+
+Authentication:
+
+- Supabase Auth
+- `@supabase/ssr`
+- `@supabase/supabase-js`
+
+Package manager:
+
+- npm
+
+Infrastructure direction:
+
+- VPS
+- Coolify
+- PostgreSQL
+- Supabase self-hosted
+- Docker-based services where appropriate
+
+Verify exact dependency versions from `package.json`.
 
 ---
 
-## Authentication
+## Do Not Assume
+
+The repository does not currently assume the presence of:
 
 - Auth.js
+- Zod
+- shadcn/ui
+- OpenAI SDK
+- Anthropic SDK
+- Vitest
+- Playwright
+- Storybook
+- Redis
+- queue infrastructure
+- generic object storage
+- generic Billing
+
+Check the repository before introducing or using dependencies.
+
+---
+
+## Repository Structure
+
+    dj-platform/
+    ├── .cursor/
+    ├── docs/
+    ├── prisma/
+    ├── public/
+    ├── src/
+    ├── AGENTS.md
+    ├── PROJECT_CONTEXT.md
+    ├── README.md
+    └── package.json
+
+Other directories may exist for tooling, tasks, assets or generated artifacts.
+
+Architectural ownership is defined by repository documentation, not by directory names alone.
+
+---
+
+## Documentation
+
+Primary entry points:
+
+- `PROJECT_CONTEXT.md`
+- `AGENTS.md`
+- `docs/INDEX.md`
+- `docs/PLATFORM_MATURITY.md`
+
+Main documentation areas:
+
+    docs/
+    ├── architecture/
+    ├── backend/
+    ├── business/
+    ├── core/
+    ├── domains/
+    ├── engineering/
+    ├── frontend/
+    ├── operations/
+    ├── adr/
+    └── reviews/
+
+Documentation is organized by responsibility and ownership.
+
+Documentation must remain aligned with repository reality.
+
+No single document should be followed blindly when stronger repository or runtime evidence proves it stale.
+
+---
+
+## Development Model
+
+Before significant implementation:
+
+1. understand the task
+2. read relevant context
+3. identify capability ownership
+4. inspect current source
+5. verify implementation readiness
+6. implement approved scope
+7. validate
+8. review and report
+
+Readiness question:
+
+    Can the implementation agent execute this work
+    without making an unresolved architectural decision?
+
+If not, stop and resolve the decision before continuing.
+
+---
+
+## AI-Assisted Development
+
+AI is used as part of the development workflow.
+
+Different roles must remain explicit.
+
+An Architecture agent may analyze and propose architectural decisions.
+
+An implementation agent implements approved Architecture and must not silently redefine it.
+
+Repository-level AI instructions are defined in:
+
+- `AGENTS.md`
+- `.cursor/RULES.md`
+- `.cursor/WORKFLOW.md`
+- `.cursor/CHECKLIST.md`
 
 ---
 
 ## Validation
 
-- Zod
+Current baseline validation:
+
+    npm run typecheck
+    npm run lint
+
+Additional validation depends on the task and may include:
+
+- build
+- automated tests
+- migrations
+- database verification
+- authentication verification
+- runtime checks
+- Product flow validation
+
+Never claim a validation step passed unless it was actually executed.
+
+Static validation is not equivalent to comprehensive automated testing.
 
 ---
 
-## Infrastructure
+## Infrastructure Status
 
-- Docker
+Development infrastructure exists and continues to evolve.
+
+Current infrastructure direction includes:
+
+- VPS
 - Coolify
-- GitHub
+- PostgreSQL
+- Supabase self-hosted
+
+Supabase self-hosted infrastructure remains under operational validation.
+
+The existence of deployment configuration does not prove that every service is healthy.
+
+Staging is not assumed.
+
+Production is not currently verified.
+
+DJ Platform is not currently considered Production Ready.
 
 ---
 
-## AI Providers
+## Security
 
-Primary
+Never commit:
 
-- OpenAI
-
-Secondary
-
-- Anthropic
-
----
-
-# Repository Structure
-
-```
-dj-platform/
-
-docs/
-tasks/
-.cursor/
-.ai/
-
-src/
-prisma/
-public/
-
-README.md
-AGENTS.md
-```
-
----
-
-# Documentation
-
-Toda la documentación vive dentro de `/docs`.
-
-```
-docs/
-
-00-VISION.md
-01-PRD.md
-
-...
-
-60-CODING_STANDARDS.md
-```
-
-No debe existir conocimiento importante fuera de la documentación.
-
----
-
-# Development Workflow
-
-```
-Vision
-
-↓
-
-Requirements
-
-↓
-
-Architecture
-
-↓
-
-Task
-
-↓
-
-Implementation
-
-↓
-
-Testing
-
-↓
-
-Review
-
-↓
-
-Merge
-
-↓
-
-Deploy
-```
-
----
-
-# Git Workflow
-
-```
-main
-
-↓
-
-develop
-
-↓
-
-feature/*
-```
-
-Nunca se desarrolla directamente sobre `main`.
-
----
-
-# Project Status
-
-Actualmente el proyecto se encuentra en fase de definición.
-
-La prioridad es construir una base sólida de:
-
-- documentación
-- arquitectura
-- modelo de datos
-- reglas de desarrollo
-
-Antes de comenzar la implementación.
-
----
-
-# Coding Standards
-
-Las reglas completas se encuentran en:
-
-```
-AGENTS.md
-```
-
-Todo desarrollador o IA debe leer ese documento antes de modificar el proyecto.
-
----
-
-# Project Documentation
-
-La documentación está organizada por dominios.
-
-## Foundation
-
-- Vision
-- PRD
-- Roadmap
-- Glossary
-
-## Product
-
-- Features
-- User Stories
-- Business Rules
-
-## Architecture
-
-- Stack
-- Database
-- API
-- Deployment
-
-## Domain
-
-- DJs
-- Genres
-- Rankings
-- Festivals
-- Tracks
-
-## Frontend
-
-- Design System
-- Components
-- Pages
-
-## SEO
-
-- Metadata
-- Structured Data
-- URL Strategy
-
-## Development
-
-- Coding Standards
-- Testing
-- Git Workflow
-- AI Rules
-
----
-
-# Development Philosophy
-
-El objetivo no es escribir código rápidamente.
-
-El objetivo es construir una plataforma que pueda mantenerse durante años.
-
-Toda funcionalidad debe ser:
-
-- comprensible
-- reutilizable
-- documentada
-- testeable
-
----
-
-# Deployment
-
-Entornos previstos.
-
-## Local
-
-Desarrollo.
-
----
-
-## Staging
-
-Validación previa.
-
----
-
-## Production
-
-Entorno público.
-
-Cada entorno tendrá su propia configuración y base de datos.
-
----
-
-# Security
-
-Nunca almacenar:
-
-- claves
+- passwords
 - tokens
-- contraseñas
-- secretos
+- API keys
+- database credentials
+- authentication secrets
+- private environment configuration
 
-dentro del repositorio.
+External input must be validated at the appropriate boundary.
 
-Toda configuración sensible vive en variables de entorno.
+Protected behavior requires server-side authorization.
 
----
-
-# Quality Requirements
-
-Antes de cerrar cualquier tarea deben pasar:
-
-- Lint
-- Typecheck
-- Tests
-- Revisión manual
+Client-side visibility is not security.
 
 ---
 
-# Future Documentation
+## Current Repository Priorities
 
-La documentación crecerá junto al proyecto.
+Current priorities are:
 
-Cada decisión importante quedará registrada.
+1. complete repository context consolidation
+2. backfill foundational ADRs
+3. perform formal Architecture Review
+4. perform Cursor / AI Agent Readiness Review
+5. validate repository state
+6. commit the consolidated foundation
+7. resume approved Core Foundation implementation
 
-Esto permitirá que cualquier desarrollador o IA pueda continuar el trabajo sin depender del contexto de conversaciones anteriores.
+Avoid jumping ahead to speculative Product or infrastructure capabilities.
 
 ---
 
-# License
+## Project Maturity
 
-Pendiente de definir.
+Architecture and documentation are significantly consolidated.
+
+Implementation is partial.
+
+Operational readiness is not established.
+
+Production readiness requires evidence.
+
+See:
+
+    docs/PLATFORM_MATURITY.md
 
 ---
 
-# Maintainers
+## License
 
-Actualmente el proyecto está dirigido por:
+License strategy is not yet finalized.
 
-- Product Owner
-- AI Architecture
-- Cursor
-- GPT
-- Claude
+---
 
-La arquitectura está diseñada para permitir colaboración entre asistentes de IA y desarrolladores humanos sin pérdida de contexto.
+## Final Principle
+
+DJ Platform is the current Product.
+
+Platform Core is the reusable SaaS foundation.
+
+The DJ Domain owns electronic-music-specific semantics.
+
+App composes capabilities.
+
+Engineering implements approved Architecture.
+
+Operations manages deployed systems.
+
+AI agents execute within explicit roles.
+
+Build only the next justified capability.

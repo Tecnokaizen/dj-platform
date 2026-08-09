@@ -1,4 +1,4 @@
-import { getCurrentProfile } from '@/core/profile/services/get-current-profile'
+import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
 
 export default async function DashboardPage() {
   const session = await getCurrentProfile()

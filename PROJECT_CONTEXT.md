@@ -1,388 +1,905 @@
+---
+title: Project Context
+version: 2.0.0
+status: Living Document
+updated: 2026-08-09
+repository: dj-platform
+---
+
 # PROJECT_CONTEXT
 
-> Executive summary for AI agents and developers.
+Executive context for human developers and AI agents working on this repository.
 
-Last Updated: 2026-08-03
+This document provides the minimum high-level context required before significant implementation work.
+
+It does not replace Architecture, Business, Engineering, Core or Domain documentation.
 
 ---
 
 # Project
 
-Name
+Name:
 
 DJ Platform
 
-Repository
+Repository:
 
-dj-platform
+`dj-platform`
 
-Status
+Primary Product:
 
-Planning & Architecture Phase
+DJ Platform
 
-Current Sprint
+Architectural Foundation:
 
-Sprint 00 — Foundation
+Platform Core
 
----
+Current State:
 
-# Mission
+Architecture consolidated.
 
-DJ Platform is an AI-native editorial platform focused on Electronic Dance Music.
+Core Foundation partially implemented and partially specified.
 
-The goal is to build the most complete knowledge platform for DJs by combining:
+Product implementation in progress.
 
-- structured data
-- editorial content
-- rankings
-- genres
-- festivals
-- sessions
-- relationships
-- discovery
-- AI-assisted workflows
+Production readiness not established.
 
 ---
 
-# Current Phase
+# Product Strategy
 
-The project is **NOT** in development.
+DJ Platform is the first Product being built on a reusable SaaS foundation called Platform Core.
 
-The current objective is:
+The long-term architecture supports additional Products without duplicating common SaaS capabilities.
 
-- define architecture
-- define product
-- define domain
-- define database
-- define workflows
-- define documentation
+Conceptually:
 
-Implementation has not started.
+    Platform Core
+        ↓
+    Reusable SaaS Capabilities
+
+    Business Domains
+        ↓
+    Product-Specific Semantics
+
+    Products
+        ↓
+    Customer-Facing Applications
+
+Product and Domain are not synonyms.
 
 ---
 
-# Current Stack
+# DJ Platform Mission
 
-Frontend
+DJ Platform is an AI-native knowledge and content Product focused on Electronic Dance Music and DJ culture.
 
-- Next.js
+Its broader Product direction may include:
 
-Backend
+- DJs and artists;
+- genres;
+- festivals;
+- tracks;
+- labels;
+- sessions;
+- playlists;
+- rankings;
+- editorial content;
+- relationships between music entities;
+- discovery;
+- AI-assisted workflows.
 
-- Next.js
+Not every strategic capability is currently implemented.
 
-Language
+Product strategy must not be confused with current repository maturity.
 
+---
+
+# Platform Core
+
+Platform Core contains reusable SaaS capabilities whose semantics are independent from a specific business vertical.
+
+Current Foundation model:
+
+    Identity
+        ↓
+    Organizations
+        ↓
+    Roles
+        ↓
+    Memberships
+        ↓
+    Tenancy Integration
+        ↓
+    Permissions
+
+Current Foundation ownership:
+
+    Identity
+    └── Profile
+
+    Organizations
+    └── Organization
+
+    Roles
+    └── Role
+
+    Memberships
+    ├── OrganizationMembership
+    └── OrganizationInvitation
+
+    Permissions
+    ├── Permission
+    └── RolePermission
+
+---
+
+# Current Core Status
+
+Identity foundation:
+
+Implemented in source.
+
+Organizations:
+
+Specification complete.
+
+Implementation pending.
+
+Roles:
+
+Specification complete.
+
+Implementation pending.
+
+Memberships:
+
+Specification complete.
+
+Implementation pending.
+
+Permissions:
+
+Specification complete.
+
+Implementation pending.
+
+Other future Core capabilities must not be implemented speculatively.
+
+---
+
+# Identity
+
+Supabase authentication identity is the canonical authentication identity.
+
+Application identity is represented by:
+
+`Profile`
+
+Do not introduce a second canonical Prisma `User` model.
+
+A DJ or artist is a Domain entity.
+
+A DJ is not equivalent to an authenticated application user.
+
+---
+
+# Tenancy
+
+`Organization` is the canonical tenant boundary.
+
+Organization ownership is represented by:
+
+    Organization
+    +
+    ACTIVE OrganizationMembership
+    +
+    OWNER Role
+
+Do not introduce competing ownership fields such as:
+
+- `ownerUserId`
+- `ownerId`
+- `ownerProfileId`
+
+Every operational Organization must have exactly one active OWNER.
+
+---
+
+# Authorization
+
+Initial authorization architecture:
+
+    ACTIVE Membership
+        ↓
+    Role
+        ↓
+    RolePermission
+        ↓
+    Permission
+
+Initial permission model is explicit.
+
+Do not introduce wildcard permissions, implicit OWNER bypasses, role inheritance or alternative authorization engines without Architecture approval.
+
+---
+
+# Current Source Structure
+
+High-level source ownership:
+
+    src/
+    ├── app/
+    ├── config/
+    ├── core/
+    │   ├── identity/
+    │   └── modules/
+    ├── domains/
+    │   └── dj/
+    ├── generated/
+    │   └── prisma/
+    ├── lib/
+    └── shared/
+
+Responsibilities:
+
+`src/app`
+
+Application routing and Product composition.
+
+`src/core`
+
+Reusable SaaS capability implementation.
+
+`src/domains`
+
+Business-specific semantics.
+
+`src/shared`
+
+Business-agnostic technical reuse.
+
+`src/lib`
+
+Infrastructure adapters and provider connectivity.
+
+`src/generated`
+
+Generated artifacts.
+
+`src/config`
+
+Application configuration.
+
+---
+
+# Dependency Direction
+
+Allowed:
+
+    app
+    → core / domains / shared
+
+    domains
+    → core / shared / lib
+
+    core
+    → shared / lib
+
+    lib
+    → generated / external providers
+
+Forbidden:
+
+    core
+    → domains
+
+    shared
+    → core
+
+    shared
+    → domains
+
+    Domain A
+    → Domain B
+
+Application composition may coordinate capabilities without taking ownership of them.
+
+---
+
+# Current Technology Stack
+
+Frontend:
+
+- Next.js 16
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+
+Backend:
+
+- Next.js server capabilities
 - TypeScript
 
-Database
+Database:
 
 - PostgreSQL
 
-ORM
+ORM:
 
-- Prisma
+- Prisma 7
 
-Authentication
+Authentication:
 
-- Auth.js
+- Supabase Auth
+- `@supabase/ssr`
+- `@supabase/supabase-js`
 
-Validation
+Database connectivity:
 
-- Zod
+- `pg`
+- Prisma PostgreSQL adapter
 
-Infrastructure
+Deployment direction:
 
-- Docker
+- VPS
 - Coolify
+- Docker-based services where appropriate
+- Supabase self-hosted infrastructure
 
-AI
+Package manager:
 
-Primary
-
-- OpenAI
-
-Secondary
-
-- Anthropic
+- npm
 
 ---
 
-# Documentation Structure
+# Technologies Not Currently Assumed
 
-```
-docs/
+Do not assume the repository currently contains:
 
-foundation/
-architecture/
-domain/
-frontend/
-backend/
-seo/
-operations/
-adr/
-```
+- Auth.js;
+- Zod;
+- shadcn/ui;
+- OpenAI SDK;
+- Anthropic SDK;
+- Vitest;
+- Playwright;
+- Storybook;
+- Redis;
+- queue infrastructure;
+- generic object storage;
+- generic event architecture;
+- generic Billing;
+- production monitoring.
 
----
-
-# Repository Structure
-
-```
-assets/
-database/
-docs/
-prisma/
-public/
-scripts/
-src/
-tasks/
-templates/
-tests/
-ai/
-.cursor/
-```
+Verify `package.json`, source and runtime infrastructure before using any technology.
 
 ---
 
-# Current Documentation
+# Current Authentication Implementation
 
-Completed
+Current authentication supports:
 
-- README
-- AGENTS
-- PROJECT_CONTEXT
+- email/password registration;
+- email/password login;
+- magic-link flow;
+- auth callback;
+- logout;
+- protected application area;
+- Profile management.
 
-In Progress
+Relevant source currently lives under:
 
-- Vision
-- PRD
+    src/core/identity/auth/
+    src/core/identity/profile/
 
-Pending
+Authentication is implemented.
+
+Identity architecture must remain aligned with Supabase Auth plus application `Profile`.
+
+---
+
+# Current Validation
+
+Current repository baseline validation includes:
+
+    npm run typecheck
+    npm run lint
+
+Current typecheck command includes Next.js type generation and TypeScript validation.
+
+These checks are not equivalent to comprehensive automated testing.
+
+---
+
+# Testing Maturity
+
+Static validation exists.
+
+Comprehensive automated behavioral testing is pending.
+
+Future testing should progressively protect:
+
+- Core invariants;
+- tenancy;
+- authorization;
+- Domain behavior;
+- migrations;
+- critical Product flows;
+- infrastructure boundaries.
+
+Do not claim production confidence from lint and typecheck alone.
+
+---
+
+# Infrastructure Status
+
+Self-hosted infrastructure work is in progress.
+
+Current infrastructure includes VPS and Coolify resources.
+
+PostgreSQL services have been deployed during development.
+
+Supabase self-hosted infrastructure has been deployed experimentally and remains under validation.
+
+Individual Supabase services must not be assumed healthy without runtime verification.
+
+Production infrastructure is not currently considered verified.
+
+---
+
+# Environment Status
+
+Local Development:
+
+Active.
+
+Development Infrastructure:
+
+Active and evolving.
+
+Staging:
+
+Not assumed to exist.
+
+Production:
+
+Not verified.
+
+Production Ready:
+
+No.
+
+Environment status must be based on runtime evidence.
+
+---
+
+# Documentation Architecture
+
+Main documentation areas:
+
+    docs/
+    ├── architecture/
+    ├── backend/
+    ├── business/
+    ├── core/
+    ├── domains/
+    ├── engineering/
+    ├── frontend/
+    ├── operations/
+    ├── adr/
+    └── reviews/
+
+Additional platform-level documents include:
+
+- `docs/INDEX.md`
+- `docs/README.md`
+- `docs/PLATFORM_MATURITY.md`
+
+---
+
+# Documentation Status
+
+Consolidated:
 
 - Architecture
-- Database
-- API
-- Domain
-- Design System
-- SEO
-- Deployment
-- ADR
+- Business
+- Engineering
+- Backend
+- Frontend
+- Operations
+
+Core Foundation specifications completed:
+
+- Organizations
+- Roles
+- Memberships
+- Permissions
+
+Reviews framework:
+
+Consolidated.
+
+Formal versioned reviews:
+
+Pending.
+
+ADR framework:
+
+Defined.
+
+Foundation ADR backfill:
+
+Pending.
+
+Domain documentation:
+
+Exists and requires continued alignment with Product implementation and maturity.
 
 ---
 
-# Development Rules
+# Documentation Boundaries
 
-Always read:
+Business:
 
-1. PROJECT_CONTEXT.md
+Defines why Products exist and what value they create.
 
-2. AGENTS.md
+Architecture:
 
-3. Relevant documentation
+Defines ownership, boundaries, dependencies and major system decisions.
 
-before changing anything.
+Engineering:
 
----
+Defines how approved Architecture is implemented.
 
-# Decision Hierarchy
+Core:
 
-Product Owner
+Defines reusable SaaS capabilities.
 
-↓
+Domains:
 
-ADR
+Define business-specific semantics.
 
-↓
+Backend and Frontend:
 
-Documentation
+Define technical implementation standards.
 
-↓
+Operations:
 
-AGENTS
+Defines how deployed systems are operated.
 
-↓
+Reviews:
 
-Implementation
+Provide evidence-based readiness assessments.
 
----
+ADRs:
 
-# Coding Philosophy
-
-The project values
-
-Correctness
-
-↓
-
-Maintainability
-
-↓
-
-Readability
-
-↓
-
-Scalability
-
-↓
-
-Performance
-
-↓
-
-Speed
+Record significant architectural decisions.
 
 ---
 
-# AI Philosophy
+# Product vs Domain
 
-AI assists development.
+Never use:
 
-AI never replaces engineering decisions.
+    Product
+    = Domain
 
-AI must not invent product requirements.
+Products are customer-facing applications.
 
-AI must not modify architecture without approval.
+Domains own business-specific semantics.
+
+A Product may compose one or more Domains plus Platform Core capabilities.
+
+---
+
+# Core Promotion Rule
+
+Never use:
+
+    Could another Product reuse this?
+    → Platform Core
+
+Potential reuse is insufficient.
+
+Platform Core ownership requires:
+
+- business-agnostic semantics;
+- demonstrated reuse or strong architectural justification;
+- clear capability ownership;
+- meaningful reduction of duplication;
+- no Domain coupling.
+
+Architecture decides final ownership.
+
+---
+
+# Current Business Method
+
+The broader platform strategy uses real Product and client discovery to identify reusable capabilities.
+
+Typical progression:
+
+    Real Problem
+        ↓
+    Discovery
+        ↓
+    Process / Product Understanding
+        ↓
+    Prototype when useful
+        ↓
+    Validation
+        ↓
+    Architecture
+        ↓
+    Product Implementation
+
+Reusable capabilities are extracted into Platform Core only when justified.
+
+---
+
+# DJ Platform Role
+
+DJ Platform validates areas such as:
+
+- structured content;
+- editorial data;
+- discovery;
+- public Product experiences;
+- SEO-heavy resources;
+- AI-assisted workflows.
+
+Strategic scope is broader than current implementation.
+
+Do not implement the entire Product vision at once.
+
+---
+
+# Current Product Implementation
+
+The repository currently contains:
+
+- Next.js application foundation;
+- Supabase authentication integration;
+- protected application area;
+- Profile functionality;
+- Prisma foundation;
+- generated Prisma client;
+- initial Domain and Core source boundaries.
+
+Large parts of DJ Domain functionality remain unimplemented.
+
+---
+
+# Implementation Readiness Rule
+
+Before implementation ask:
+
+    Can the implementation agent execute this work
+    without making architectural decisions?
+
+If yes:
+
+    Implement
+    → Validate
+    → Review
+
+If no:
+
+    STOP
+    → Resolve Architecture or Business decision
+    → Update documentation
+    → Resume
+
+---
+
+# AI Agent Role
+
+AI coding agents are implementation agents.
+
+They may:
+
+- implement approved tasks;
+- create tests;
+- perform constrained refactors;
+- update implementation documentation;
+- inspect repository state;
+- identify inconsistencies;
+- run validation;
+- report blockers.
+
+They must not silently redefine Architecture.
+
+---
+
+# AI Stop Conditions
+
+Stop when:
+
+- ownership is unclear;
+- documentation conflicts materially;
+- a business rule is missing;
+- tenancy semantics are unresolved;
+- authorization semantics are unresolved;
+- a forbidden dependency would be required;
+- implementation requires an architectural decision;
+- runtime infrastructure contradicts documentation;
+- destructive operational work lacks recovery context.
+
+Do not guess on foundational decisions.
+
+---
+
+# Source of Truth
+
+No single file should be followed blindly.
+
+Relevant evidence may include:
+
+- approved Architecture;
+- accepted ADRs;
+- Core specifications;
+- Domain specifications;
+- Engineering standards;
+- approved tasks;
+- current source;
+- Prisma schema;
+- package configuration;
+- runtime infrastructure.
+
+If evidence conflicts, stop and resolve the conflict.
+
+Source code does not silently become Architecture.
+
+Documentation must not be followed blindly when repository evidence proves it stale.
 
 ---
 
 # Current Priorities
 
-Priority 1
+Current consolidation priorities:
 
-Complete Foundation documentation.
-
-Priority 2
-
-Define Architecture.
-
-Priority 3
-
-Define Domain Model.
-
-Priority 4
-
-Define Database.
-
-Priority 5
-
-Initialize project.
+1. finish repository context alignment;
+2. review `AGENTS.md`;
+3. review `.cursor/` instructions and session context;
+4. backfill foundational ADRs;
+5. perform formal Architecture Review;
+6. perform AI Agent / Cursor Readiness Review;
+7. validate repository state;
+8. commit the consolidated foundation;
+9. resume implementation from approved Core Foundation sequence.
 
 ---
 
-# Current Sprint
+# Foundation ADRs Pending
 
-Sprint 00
+Architectural decisions already established should be backfilled into ADRs where appropriate.
 
-Objectives
+Current candidates:
 
-- Documentation
-- Architecture
-- Repository organization
-- Coding standards
-- Development workflow
+- Platform Core and Domain Boundary;
+- Identity Source of Truth;
+- Internal Identifier Strategy;
+- Tenancy and Organization Model;
+- Roles, Memberships and Ownership Model;
+- Authorization and Permission Model;
+- Prisma and Data Access Conventions;
+- Deployment and Infrastructure Strategy.
 
-Deliverables
-
-- README
-- PROJECT_CONTEXT
-- AGENTS
-- Vision
-- PRD
-- Roadmap
-- ADR foundation
+Future ADRs should be created only when real decisions require them.
 
 ---
 
-# Known Decisions
+# Open Architecture Questions
 
-Architecture
+Known areas still requiring explicit decisions or implementation review may include:
 
-Pending
+- ownership transfer behavior for the previous OWNER;
+- exact database enforcement of one active OWNER per Organization;
+- invitation uniqueness implementation;
+- future storage architecture;
+- future AI provider architecture;
+- future search architecture;
+- future queue and background-job architecture;
+- future Billing architecture.
 
-Database
-
-PostgreSQL
-
-ORM
-
-Prisma
-
-Deployment
-
-Coolify
-
-Authentication
-
-Auth.js
-
-Language
-
-TypeScript
-
-Package Manager
-
-Pending
-
-Testing
-
-Pending
-
-Storage
-
-Pending
+These questions must not be resolved implicitly by implementation agents.
 
 ---
 
-# Next Document
+# Current Core Implementation Sequence
 
-docs/foundation/VISION.md
+Approved sequence:
+
+    Identity
+        ↓
+    Organizations
+        ↓
+    Roles
+        ↓
+    Memberships
+        ↓
+    Tenancy Integration
+        ↓
+    Permissions
+
+Identity foundation already exists.
+
+The next Core implementation work should respect this dependency order unless Architecture explicitly changes it.
 
 ---
 
-# Long-Term Vision
+# Production Rule
 
-The repository should become self-explanatory.
+Implementation does not equal Production Ready.
 
-A new developer or AI agent should understand the project in less than five minutes by reading:
+Production readiness may require:
 
-1. PROJECT_CONTEXT.md
+- behavioral tests;
+- migration validation;
+- deployment validation;
+- backup verification;
+- restore testing;
+- monitoring;
+- security review;
+- operational runbooks;
+- readiness review.
 
-2. AGENTS.md
+Do not describe the Product as Production Ready without evidence.
 
-3. README.md
+---
 
-4. The relevant documentation for the task.
+# Before Significant Work
 
-If additional explanations are required, documentation is considered incomplete.
+Read:
 
-# Suggested PROJECT_CONTEXT.md update
+1. `PROJECT_CONTEXT.md`
+2. `AGENTS.md`
+3. relevant Architecture
+4. relevant Core or Domain documentation
+5. relevant Engineering standards
+6. current source affected by the task
 
-## Current architecture status
+Context depth should be proportional to task risk.
 
-Architecture Pack v2 completed as draft.
+Do not load the entire documentation tree for every trivial change.
 
-## Completed architecture documents
+---
 
-- DATABASE.md
-- DATA_MODEL.md
-- API.md
-- AUTH.md
-- AI.md
-- CACHE.md
-- SECURITY.md
-- DEPLOYMENT.md
+# Repository Goal
 
-## ADRs required before implementation
+The repository should become progressively self-explanatory.
 
-- internal identifier strategy
-- authentication method
-- permissions persistence
-- media storage provider
-- deployment branch strategy
-- AI provider routing
-- multilingual data strategy
+A developer or AI agent should be able to determine:
 
-## Next priority
+- what is being built;
+- what is already implemented;
+- what is only planned;
+- where capabilities belong;
+- which dependencies are allowed;
+- what decisions remain unresolved;
+- how implementation should be validated.
 
-Create ADRs and convert DATA_MODEL.md into the first Prisma schema specification.
+Better repository knowledge should reduce prompt complexity and implementation mistakes.
+
+---
+
+# Final Principle
+
+DJ Platform is the first Product.
+
+Platform Core is the reusable SaaS foundation.
+
+Business Domains own Product-specific semantics.
+
+App composes capabilities into Products.
+
+Engineering implements approved Architecture.
+
+AI agents implement approved work and stop on unresolved foundational decisions.
+
+Documentation must reflect repository reality.
+
+Implementation status requires evidence.
+
+Build only the next justified capability.

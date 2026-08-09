@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { register } from '@/core/auth/actions/register'
+import { register } from '@/core/identity/auth/actions/register'
 
 type RegisterPageProps = {
   searchParams: Promise<{

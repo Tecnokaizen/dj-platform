@@ -1,9 +1,9 @@
-# DJ Platform — Data Model v1
+# DJ Platform — Data Model
 
-**Documento:** `DATA_MODEL.md`  
-**Estado:** Draft v1  
-**Proyecto:** DJ Platform  
-**Objetivo:** definir el modelo de datos canónico antes de generar `schema.prisma` y la primera migración.
+**Documento:** `DATA_MODEL.md`
+**Estado:** Living Document
+**Proyecto:** DJ Platform
+**Objetivo:** documentar el modelo de persistencia del DJ Domain y mantenerlo alineado con `prisma/schema.prisma`, la historia de migraciones y la arquitectura vigente.
 
 ## 1. Propósito
 
@@ -96,20 +96,24 @@ Los resultados de IA deben guardar:
 
 Las entidades principales utilizarán UUID por compatibilidad con Supabase, menor acoplamiento y mejor preparación para sincronización futura.
 
-### 2.6 PostgreSQL como fuente de verdad
+### 2.6 Persistencia, Supabase y Prisma
 
-PostgreSQL será la fuente de verdad.
+PostgreSQL es la persistencia canónica de la aplicación.
 
-Supabase aportará:
+Supabase Auth proporciona la identidad de autenticación canónica.
 
-- autenticación;
-- API;
+La infraestructura Supabase self-hosted puede proporcionar servicios adicionales cuando exista una necesidad demostrada y su estado operativo haya sido verificado.
+
+No se debe asumir como implementado únicamente por existir en la plataforma:
+
 - Storage;
-- Realtime cuando sea necesario;
-- Row Level Security.
+- Realtime;
+- Row Level Security;
+- otros servicios opcionales de Supabase.
 
-Prisma gestionará el dominio de aplicación, no las tablas internas de `auth`.
+Prisma gestiona el esquema de aplicación y no las tablas internas de `auth`.
 
+El estado real de cada servicio debe basarse en evidencia de implementación y runtime.
 ## 3. Capas del modelo
 
 ### 3.1 Identidad
@@ -627,7 +631,9 @@ tracks / artists / releases / labels
 
 ## 11. Row Level Security
 
-RLS obligatoria en:
+RLS forma parte de la estrategia de protección de datos privados, pero no está presente en la migración Prisma inicial actual.
+
+El diseño objetivo debe evaluar RLS para tablas privadas como:
 
 - `profiles`
 - `user_tracks`
@@ -640,10 +646,15 @@ RLS obligatoria en:
 - `dj_sets`
 - `set_tracks`
 
-Las tablas globales permitirán lectura según fase, pero la escritura quedará restringida al backend, procesos de ingesta y administradores.
+Algunas de estas tablas permanecen pospuestas y no existen todavía en el schema activo.
+
+Las tablas globales podrán adoptar políticas de lectura y escritura según el Product y el modelo de autorización aprobado.
+
+Hasta que RLS esté implementada y verificada, la autorización server-side sigue siendo obligatoria.
 
 La `service_role` nunca debe exponerse en el navegador.
 
+La existencia de `RLS.md` documenta la estrategia; no demuestra que las policies estén aplicadas en la base de datos.
 ## 12. Flujo de datos
 
 ```text
@@ -683,9 +694,17 @@ producto
 9. Los secretos nunca se almacenarán en tablas de dominio.
 10. El contenido externo respetará licencias y políticas de cada fuente.
 
-## 14. Alcance recomendado de la primera migración
+## 14. Estado de la migración inicial
 
-### Núcleo
+La migración inicial existente es:
+
+`prisma/migrations/20260806172928_init/migration.sql`
+
+La migración contiene las 21 tablas actualmente representadas en `prisma/schema.prisma`.
+
+Las siguientes áreas forman parte del schema activo.
+
+### Incluido — Núcleo
 
 - `profiles`
 - `artists`
@@ -697,7 +716,7 @@ producto
 - `releases`
 - `release_tracks`
 
-### Procedencia
+### Incluido — Procedencia
 
 - `data_sources`
 - `external_entities`
@@ -707,7 +726,7 @@ producto
 - `ingestion_items`
 - `enrichment_jobs`
 
-### Producto mínimo
+### Incluido — Producto mínimo
 
 - `user_tracks`
 - `tags`
@@ -715,7 +734,7 @@ producto
 - `playlists`
 - `playlist_tracks`
 
-### Posponer
+### Pospuesto / no presente en el schema activo
 
 - `track_files`
 - `cue_points`
@@ -725,21 +744,23 @@ producto
 - `review_tasks`
 - `activity_events`
 
-## 15. Decisiones cerradas
+## 15. Decisiones y estado confirmado
 
-1. PostgreSQL será la fuente de verdad.
-2. Supabase gestionará Auth, API, Storage y RLS.
-3. Prisma gestionará el dominio.
-4. Las entidades musicales serán globales.
-5. La biblioteca y preferencias serán privadas.
-6. Los datos de Internet e IA conservarán procedencia.
-7. Se separarán datos brutos, hechos y valores canónicos.
-8. Los tracks no se identificarán solo por título y artista.
-9. Las playlists permitirán repeticiones.
-10. La service role será exclusiva de servidor.
-11. La ingesta será idempotente siempre que sea posible.
-12. La primera migración será contenida y extensible.
-
+1. PostgreSQL es la persistencia canónica de la aplicación.
+2. Supabase Auth es la identidad de autenticación canónica.
+3. Prisma gestiona el esquema de aplicación y no las tablas internas de `auth`.
+4. Las entidades musicales canónicas son globales.
+5. La biblioteca y preferencias de usuario permanecen separadas de las entidades musicales globales.
+6. Los datos obtenidos de Internet, procesos automáticos e IA conservan procedencia.
+7. Se separan datos brutos, hechos y valores canónicos.
+8. Los tracks no se identifican únicamente por título y artista.
+9. Las playlists permiten repeticiones.
+10. La `service_role`, cuando se utiliza, es exclusiva del servidor.
+11. La ingesta debe ser idempotente siempre que sea posible.
+12. La migración inicial contiene las 21 tablas del schema activo.
+13. `track_files`, `cue_points`, `dj_sets`, `set_tracks` y `entity_matches` permanecen pospuestos.
+14. RLS no forma parte de la migración inicial y requiere implementación y verificación separadas.
+15. Storage y Realtime no se consideran capacidades implementadas por defecto.
 ## 16. Cuestiones pendientes
 
 1. ¿El catálogo musical será público desde la v1?
@@ -749,14 +770,22 @@ producto
 5. ¿Qué política de retención tendrán snapshots y resultados de IA?
 6. ¿Habrá matching con MusicBrainz o Discogs en la v1?
 7. ¿Prisma usará conexión directa o Supavisor según operación?
-8. ¿La primera migración incluirá RLS mediante SQL adicional?
-9. ¿Cuál será el primer vertical funcional: DJs, tracks o playlists?
+8. ¿Cuándo y mediante qué mecanismo se incorporará y verificará RLS?
+9. ¿Cuál será el primer vertical funcional que se llevará a implementación completa?
 
-## 17. Próximos documentos
+## 17. Documentos relacionados
+
+Este Data Model debe leerse junto con:
 
 1. `ENUMS.md`
 2. `ERD.md`
 3. `DATA_INGESTION_MODEL.md`
 4. `RLS.md`
-5. `MIGRATION_STRATEGY.md`
-6. `schema.prisma`
+5. `prisma/schema.prisma`
+6. la historia bajo `prisma/migrations/`
+
+`prisma/schema.prisma` representa la implementación Prisma activa.
+
+Este documento conserva la intención y semántica del modelo de persistencia.
+
+Cuando ambos diverjan materialmente, la discrepancia debe revisarse explícitamente en lugar de asumir que uno de los dos es automáticamente correcto.

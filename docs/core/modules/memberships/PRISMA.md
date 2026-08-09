@@ -1,0 +1,4431 @@
+---
+title: Memberships Prisma Implementation
+version: 1.0.0
+status: Draft
+owner: Platform Core
+updated: 2026-08-08
+related:
+  - SPEC.md
+  - DATA_MODEL.md
+  - FLOWS.md
+  - API.md
+  - TASKS.md
+  - ../organizations/PRISMA.md
+  - ../organizations/DATA_MODEL.md
+  - ../roles/PRISMA.md
+  - ../roles/DATA_MODEL.md
+  - ../../../architecture/PRISMA_IMPLEMENTATION.md
+  - ../../../architecture/DATA.md
+  - ../../../architecture/IDENTITY.md
+  - ../../../architecture/SECURITY.md
+---
+
+# Memberships Prisma Implementation
+
+## Purpose
+
+This document defines the Prisma persistence design for the Platform Core Memberships module.
+
+Memberships Foundation introduces:
+
+```text
+OrganizationMembership
+
+OrganizationInvitation
+
+MembershipStatus
+
+InvitationStatus
+```
+
+Memberships connects existing Platform Core entities:
+
+```text
+Profile
+
+Organization
+
+Role
+```
+
+It must use those real entities from the first production implementation.
+
+Do not introduce temporary strings, duplicate users or provisional Role persistence.
+
+---
+
+# Architectural Ownership
+
+Persistence ownership is:
+
+```text
+Identity
+└── Profile
+
+Organizations
+└── Organization
+
+Memberships
+├── OrganizationMembership
+├── MembershipStatus
+├── OrganizationInvitation
+└── InvitationStatus
+
+Roles
+└── Role
+
+Permissions
+└── Permission
+```
+
+Memberships owns:
+
+```text
+OrganizationMembership
+
+OrganizationInvitation
+
+Membership lifecycle persistence
+
+Invitation lifecycle persistence
+
+Membership Role assignment persistence
+```
+
+Memberships does not own:
+
+```text
+Profile
+
+Organization
+
+Role definition
+
+Permission
+
+Authentication
+
+Organization lifecycle
+```
+
+Physical relations inside the shared Prisma schema do not transfer architectural ownership.
+
+---
+
+# Foundation Dependencies
+
+Memberships persistence requires existing:
+
+```text
+Profile
+
+Organization
+
+Role
+```
+
+Therefore implementation order is:
+
+```text
+Identity
+   ↓
+Organizations Foundation
+   ↓
+Roles Foundation
+   ↓
+Memberships Foundation
+```
+
+Do not implement Memberships against fake placeholder models.
+
+---
+
+# Identifier Strategy
+
+Memberships follows the Platform Core UUID strategy.
+
+Required identifier shape:
+
+```prisma
+id String @id @default(uuid()) @db.Uuid
+```
+
+This applies to:
+
+```text
+OrganizationMembership
+
+OrganizationInvitation
+```
+
+Do not introduce:
+
+```text
+CUID
+
+autoincrement IDs
+
+business-derived primary keys
+```
+
+for Memberships entities.
+
+---
+
+# MembershipStatus
+
+Recommended Prisma enum:
+
+```prisma
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+  REMOVED
+
+  @@map("membership_status")
+}
+```
+
+MembershipStatus represents the lifecycle of an established tenant relationship.
+
+It must not contain invitation states.
+
+---
+
+# MembershipStatus Exclusions
+
+Do not add:
+
+```text
+INVITED
+
+PENDING
+
+ACCEPTED
+
+REVOKED
+
+EXPIRED
+```
+
+to MembershipStatus.
+
+Those concepts belong to OrganizationInvitation.
+
+---
+
+# InvitationStatus
+
+Recommended Prisma enum:
+
+```prisma
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+
+  @@map("invitation_status")
+}
+```
+
+InvitationStatus represents the lifecycle of an invitation toward Membership.
+
+---
+
+# Initial OrganizationMembership Model
+
+Recommended initial model:
+
+```prisma
+model OrganizationMembership {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  profileId      String           @map("profile_id") @db.Uuid
+  roleId         String           @map("role_id") @db.Uuid
+  status         MembershipStatus @default(ACTIVE)
+  suspendedAt    DateTime?        @map("suspended_at") @db.Timestamptz(6)
+  removedAt      DateTime?        @map("removed_at") @db.Timestamptz(6)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  profile      Profile      @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  role         Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  invitationsSent OrganizationInvitation[] @relation("InvitationInviterMembership")
+
+  @@unique(
+    [organizationId, profileId],
+    map: "organization_memberships_organization_profile_unique"
+  )
+
+  @@index(
+    [organizationId, status],
+    map: "organization_memberships_organization_status_idx"
+  )
+
+  @@index(
+    [profileId, status],
+    map: "organization_memberships_profile_status_idx"
+  )
+
+  @@index(
+    [roleId],
+    map: "organization_memberships_role_idx"
+  )
+
+  @@map("organization_memberships")
+}
+```
+
+This model represents the durable tenant relationship.
+
+---
+
+# OrganizationMembership Table
+
+Prisma:
+
+```text
+OrganizationMembership
+```
+
+PostgreSQL:
+
+```text
+organization_memberships
+```
+
+Mapping:
+
+```prisma
+@@map("organization_memberships")
+```
+
+---
+
+# Membership id
+
+Definition:
+
+```prisma
+id String @id @default(uuid()) @db.Uuid
+```
+
+Requirements:
+
+```text
+UUID
+
+generated by persistence
+
+immutable
+```
+
+The Membership ID does not replace the logical uniqueness of:
+
+```text
+organizationId
++
+profileId
+```
+
+---
+
+# organizationId
+
+Definition:
+
+```prisma
+organizationId String @map("organization_id") @db.Uuid
+```
+
+Relation:
+
+```prisma
+organization Organization @relation(
+  fields: [organizationId],
+  references: [id],
+  onDelete: Restrict
+)
+```
+
+Organizations owns:
+
+```text
+Organization
+```
+
+Memberships owns the foreign-key relationship.
+
+---
+
+# profileId
+
+Definition:
+
+```prisma
+profileId String @map("profile_id") @db.Uuid
+```
+
+Relation:
+
+```prisma
+profile Profile @relation(
+  fields: [profileId],
+  references: [id],
+  onDelete: Restrict
+)
+```
+
+Identity owns:
+
+```text
+Profile
+```
+
+Memberships must not introduce another application User model.
+
+---
+
+# roleId
+
+Definition:
+
+```prisma
+roleId String @map("role_id") @db.Uuid
+```
+
+Relation:
+
+```prisma
+role Role @relation(
+  fields: [roleId],
+  references: [id],
+  onDelete: Restrict
+)
+```
+
+Roles owns:
+
+```text
+Role
+```
+
+Memberships owns:
+
+```text
+which Role is assigned to the Membership
+```
+
+---
+
+# roleId Is Required
+
+The initial Membership model must use:
+
+```text
+roleId NOT NULL
+```
+
+Do not implement:
+
+```prisma
+roleId String?
+```
+
+as a temporary workaround.
+
+An established Membership without a valid Role is not an approved state.
+
+---
+
+# No Membership Role Enum
+
+Do not introduce:
+
+```prisma
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  VIEWER
+}
+```
+
+Roles already provides the canonical Role entity.
+
+Correct persistence:
+
+```text
+OrganizationMembership.roleId
+        ↓
+Role.id
+```
+
+---
+
+# No Free-Form Role
+
+Do not persist:
+
+```prisma
+role String
+```
+
+or:
+
+```prisma
+roleKey String
+```
+
+as Membership authority.
+
+Role keys may be used to resolve a Role before persistence.
+
+The persisted relationship uses:
+
+```text
+roleId
+```
+
+---
+
+# Membership Status
+
+Definition:
+
+```prisma
+status MembershipStatus @default(ACTIVE)
+```
+
+Creation through an approved Membership workflow produces:
+
+```text
+ACTIVE
+```
+
+unless a future specification explicitly introduces another creation flow.
+
+---
+
+# suspendedAt
+
+Definition:
+
+```prisma
+suspendedAt DateTime? @map("suspended_at") @db.Timestamptz(6)
+```
+
+Expected consistency:
+
+```text
+ACTIVE
+→ suspendedAt = null
+```
+
+```text
+SUSPENDED
+→ suspendedAt != null
+```
+
+```text
+REMOVED
+→ suspendedAt = null
+```
+
+under the initial deterministic lifecycle policy.
+
+---
+
+# removedAt
+
+Definition:
+
+```prisma
+removedAt DateTime? @map("removed_at") @db.Timestamptz(6)
+```
+
+Expected:
+
+```text
+REMOVED
+→ removedAt != null
+```
+
+Restoration to ACTIVE clears:
+
+```text
+removedAt
+```
+
+---
+
+# Membership Timestamps
+
+Definitions:
+
+```prisma
+createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+```
+
+Membership history beyond current lifecycle metadata belongs to Audit.
+
+---
+
+# Membership Uniqueness
+
+Required database invariant:
+
+```text
+one durable Membership
+per
+Organization + Profile
+```
+
+Prisma:
+
+```prisma
+@@unique(
+  [organizationId, profileId],
+  map: "organization_memberships_organization_profile_unique"
+)
+```
+
+This applies regardless of Membership status.
+
+---
+
+# Why Uniqueness Includes REMOVED Memberships
+
+Do not allow:
+
+```text
+Membership 1
+Organization A + Profile X
+REMOVED
+```
+
+and simultaneously:
+
+```text
+Membership 2
+Organization A + Profile X
+ACTIVE
+```
+
+Instead:
+
+```text
+REMOVED Membership
+        ↓
+restore/rejoin
+        ↓
+same Membership becomes ACTIVE
+```
+
+The durable relationship remains stable.
+
+---
+
+# Membership Indexes
+
+Required unique constraint:
+
+```text
+organizationId + profileId
+```
+
+Recommended query indexes:
+
+```text
+organizationId + status
+
+profileId + status
+
+roleId
+```
+
+These directly support expected Core queries.
+
+---
+
+# organizationId + status
+
+Supports:
+
+```text
+list active Organization Members
+
+list suspended Organization Members
+
+tenant Membership administration
+```
+
+Recommended:
+
+```prisma
+@@index(
+  [organizationId, status],
+  map: "organization_memberships_organization_status_idx"
+)
+```
+
+---
+
+# profileId + status
+
+Supports:
+
+```text
+list active Organizations for Profile
+
+tenant selection
+
+active Membership lookup
+```
+
+Recommended:
+
+```prisma
+@@index(
+  [profileId, status],
+  map: "organization_memberships_profile_status_idx"
+)
+```
+
+---
+
+# roleId Index
+
+Supports Role relationship queries and future authorization analysis.
+
+Recommended:
+
+```prisma
+@@index(
+  [roleId],
+  map: "organization_memberships_role_idx"
+)
+```
+
+Do not add additional indexes without a real query pattern.
+
+---
+
+# Membership Referential Actions
+
+Initial conservative policy:
+
+```text
+Organization
+→ Restrict
+
+Profile
+→ Restrict
+
+Role
+→ Restrict
+```
+
+This prevents Membership history from disappearing through unrelated destructive cascades.
+
+---
+
+# No Organization Cascade
+
+Do not implement:
+
+```text
+Organization deleted
+↓
+all Memberships automatically deleted
+```
+
+through:
+
+```prisma
+onDelete: Cascade
+```
+
+Organization hard deletion requires a deliberate cross-module retention workflow.
+
+---
+
+# No Profile Cascade
+
+Do not implement automatic:
+
+```text
+Profile deleted
+↓
+Membership history disappears
+```
+
+Profile deletion/privacy behavior requires an explicit policy.
+
+---
+
+# No Role Cascade
+
+Never implement:
+
+```text
+Role deleted
+↓
+Membership deleted
+```
+
+Canonical Roles are durable authorization reference data.
+
+---
+
+# OWNER Representation
+
+OWNER is represented through:
+
+```text
+OrganizationMembership.roleId
+        ↓
+Role where key = OWNER
+```
+
+Do not add:
+
+```text
+Organization.ownerId
+
+Organization.ownerUserId
+
+OrganizationMembership.isOwner
+
+Profile.isOwner
+```
+
+as competing ownership sources.
+
+---
+
+# OWNER Database Challenge
+
+The invariant:
+
+```text
+exactly one ACTIVE OWNER
+per operational Organization
+```
+
+depends on:
+
+```text
+OrganizationMembership.status
+
+OrganizationMembership.roleId
+
+Role.key = OWNER
+```
+
+Because OWNER semantics live in another table, the invariant cannot be represented safely by a simple ordinary uniqueness constraint on the Membership table without relying on a fixed Role UUID.
+
+---
+
+# No Hard-Coded OWNER UUID Constraint
+
+Do not create a constraint based on:
+
+```text
+role_id = '<environment-specific OWNER UUID>'
+```
+
+Canonical Role UUIDs are not intended to be hard-coded across environments.
+
+OWNER is semantically resolved through:
+
+```text
+Role.key = OWNER
+```
+
+---
+
+# OWNER Enforcement Strategy
+
+Memberships Foundation must enforce OWNER safety through:
+
+```text
+dedicated services
+
+cross-module transactions
+
+state validation
+
+concurrency tests
+```
+
+A stronger PostgreSQL database mechanism may be added later if tenancy review determines it is required.
+
+Possible future database enforcement may involve:
+
+```text
+trigger
+
+constraint trigger
+
+other deliberately reviewed database logic
+```
+
+Do not invent that mechanism inside the first Membership migration.
+
+---
+
+# Exactly One vs At Most One OWNER
+
+Application workflows must preserve:
+
+```text
+exactly one ACTIVE OWNER
+```
+
+for operational Organizations.
+
+This includes:
+
+```text
+Organization onboarding
+
+ownership transfer
+
+Membership suspension
+
+Membership removal
+
+Role change
+```
+
+The database schema alone does not define the full invariant.
+
+---
+
+# Initial Organization Onboarding
+
+Cross-module transaction:
+
+```text
+Resolve OWNER Role
+        ↓
+BEGIN
+        ↓
+Create Organization
+        ↓
+Create Membership
+organizationId = new Organization
+profileId = creator
+roleId = OWNER.id
+status = ACTIVE
+        ↓
+COMMIT
+```
+
+If Membership insert fails:
+
+```text
+Organization creation rolls back
+```
+
+---
+
+# Ownership Transfer Persistence
+
+Required atomic mutation:
+
+```text
+Target Membership
+→ roleId = OWNER.id
+
+Previous OWNER
+→ roleId = approved non-owner Role.id
+```
+
+These updates must commit together.
+
+---
+
+# Ownership Transfer Concurrency
+
+Two concurrent ownership transfers must not leave:
+
+```text
+two OWNER Memberships
+```
+
+or:
+
+```text
+zero OWNER Memberships
+```
+
+The implementation must coordinate transaction and locking strategy against PostgreSQL.
+
+This requires dedicated integration testing.
+
+---
+
+# OrganizationInvitation Model
+
+Recommended initial model:
+
+```prisma
+model OrganizationInvitation {
+  id                    String           @id @default(uuid()) @db.Uuid
+  organizationId        String           @map("organization_id") @db.Uuid
+  recipientEmail        String           @map("recipient_email") @db.VarChar(320)
+  normalizedEmail       String           @map("normalized_email") @db.VarChar(320)
+  roleId                String           @map("role_id") @db.Uuid
+  status                InvitationStatus @default(PENDING)
+  tokenHash             String           @unique(map: "organization_invitations_token_hash_unique") @map("token_hash") @db.VarChar(255)
+  expiresAt             DateTime         @map("expires_at") @db.Timestamptz(6)
+  invitedByMembershipId String           @map("invited_by_membership_id") @db.Uuid
+  acceptedByProfileId   String?          @map("accepted_by_profile_id") @db.Uuid
+  acceptedAt            DateTime?        @map("accepted_at") @db.Timestamptz(6)
+  revokedAt             DateTime?        @map("revoked_at") @db.Timestamptz(6)
+  createdAt             DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization @relation(
+    fields: [organizationId],
+    references: [id],
+    onDelete: Restrict
+  )
+
+  role Role @relation(
+    fields: [roleId],
+    references: [id],
+    onDelete: Restrict
+  )
+
+  invitedByMembership OrganizationMembership @relation(
+    "InvitationInviterMembership",
+    fields: [invitedByMembershipId],
+    references: [id],
+    onDelete: Restrict
+  )
+
+  acceptedByProfile Profile? @relation(
+    "InvitationAcceptedByProfile",
+    fields: [acceptedByProfileId],
+    references: [id],
+    onDelete: Restrict
+  )
+
+  @@index(
+    [organizationId, status],
+    map: "organization_invitations_organization_status_idx"
+  )
+
+  @@index(
+    [status, expiresAt],
+    map: "organization_invitations_status_expires_idx"
+  )
+
+  @@map("organization_invitations")
+}
+```
+
+The pending-invitation uniqueness invariant is handled separately.
+
+---
+
+# OrganizationInvitation Table
+
+Prisma:
+
+```text
+OrganizationInvitation
+```
+
+PostgreSQL:
+
+```text
+organization_invitations
+```
+
+---
+
+# Invitation id
+
+Definition:
+
+```prisma
+id String @id @default(uuid()) @db.Uuid
+```
+
+Uses the Platform Core UUID strategy.
+
+---
+
+# recipientEmail
+
+Definition:
+
+```prisma
+recipientEmail String @map("recipient_email") @db.VarChar(320)
+```
+
+Represents the email supplied for the invitation.
+
+It may be used for presentation.
+
+It is not the deterministic comparison field.
+
+---
+
+# normalizedEmail
+
+Definition:
+
+```prisma
+normalizedEmail String @map("normalized_email") @db.VarChar(320)
+```
+
+Initial normalization:
+
+```text
+trim
++
+lowercase
+```
+
+Every invitation creation and acceptance path must use the same normalization service.
+
+---
+
+# Email Normalization Boundary
+
+Do not independently normalize emails differently in:
+
+```text
+Invitation creation
+
+Invitation acceptance
+
+Identity integration
+```
+
+The implementation should provide one canonical normalization helper or approved Identity-compatible behavior.
+
+---
+
+# roleId on Invitation
+
+Definition:
+
+```prisma
+roleId String @map("role_id") @db.Uuid
+```
+
+Relation:
+
+```text
+OrganizationInvitation
+→ Role
+```
+
+This represents:
+
+```text
+intended future Membership Role
+```
+
+It does not itself grant tenant authority.
+
+---
+
+# OWNER Invitations
+
+The schema does not encode:
+
+```text
+roleId != OWNER
+```
+
+because OWNER meaning is stored in Role.
+
+The Memberships service must prevent normal invitation creation using:
+
+```text
+Role.key = OWNER
+```
+
+Ownership uses the dedicated ownership-transfer workflow.
+
+---
+
+# Invitation status
+
+Definition:
+
+```prisma
+status InvitationStatus @default(PENDING)
+```
+
+Initial lifecycle:
+
+```text
+PENDING
+→ ACCEPTED
+
+PENDING
+→ REVOKED
+
+PENDING
+→ EXPIRED
+```
+
+---
+
+# tokenHash
+
+Definition:
+
+```prisma
+tokenHash String
+  @unique(map: "organization_invitations_token_hash_unique")
+  @map("token_hash")
+  @db.VarChar(255)
+```
+
+Only a one-way representation of the raw invitation secret is persisted.
+
+---
+
+# Raw Token Must Not Be Persisted
+
+Do not add:
+
+```prisma
+token String
+```
+
+or:
+
+```prisma
+rawToken String
+```
+
+to OrganizationInvitation.
+
+Correct flow:
+
+```text
+Secure Random Token
+        ↓
+raw token delivered transiently
+        ↓
+hash
+        ↓
+tokenHash persisted
+```
+
+---
+
+# Token Hash Length
+
+The schema allows enough space for the approved high-entropy token hashing representation.
+
+The exact algorithm belongs to security implementation.
+
+If the chosen representation changes beyond the persisted field capacity, update the schema deliberately.
+
+---
+
+# tokenHash Uniqueness
+
+Required:
+
+```text
+UNIQUE(tokenHash)
+```
+
+Prisma:
+
+```prisma
+@unique(map: "organization_invitations_token_hash_unique")
+```
+
+A token must never resolve to more than one invitation.
+
+---
+
+# expiresAt
+
+Definition:
+
+```prisma
+expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+```
+
+Required.
+
+Invitation acceptance must always verify:
+
+```text
+expiresAt > now
+```
+
+even if:
+
+```text
+status = PENDING
+```
+
+---
+
+# invitedByMembershipId
+
+Definition:
+
+```prisma
+invitedByMembershipId String
+  @map("invited_by_membership_id")
+  @db.Uuid
+```
+
+This references the Membership through which the actor performed the tenant action.
+
+---
+
+# Inviter Relation
+
+Recommended relation:
+
+```prisma
+invitedByMembership OrganizationMembership @relation(
+  "InvitationInviterMembership",
+  fields: [invitedByMembershipId],
+  references: [id],
+  onDelete: Restrict
+)
+```
+
+This avoids duplicating:
+
+```text
+invitedByProfileId
+```
+
+---
+
+# Inviter Tenant Consistency
+
+Required application invariant:
+
+```text
+Invitation.organizationId
+=
+InviterMembership.organizationId
+```
+
+A normal simple foreign key cannot enforce this cross-row equality by itself.
+
+Memberships services must validate it before persistence.
+
+---
+
+# acceptedByProfileId
+
+Definition:
+
+```prisma
+acceptedByProfileId String?
+  @map("accepted_by_profile_id")
+  @db.Uuid
+```
+
+Before acceptance:
+
+```text
+null
+```
+
+After successful acceptance:
+
+```text
+authenticated matching Profile.id
+```
+
+---
+
+# acceptedByProfile Relation
+
+Recommended:
+
+```prisma
+acceptedByProfile Profile? @relation(
+  "InvitationAcceptedByProfile",
+  fields: [acceptedByProfileId],
+  references: [id],
+  onDelete: Restrict
+)
+```
+
+This is historical correlation.
+
+It does not replace OrganizationMembership.
+
+---
+
+# acceptedAt
+
+Definition:
+
+```prisma
+acceptedAt DateTime? @map("accepted_at") @db.Timestamptz(6)
+```
+
+Expected consistency:
+
+```text
+status = ACCEPTED
+→ acceptedAt != null
+```
+
+---
+
+# revokedAt
+
+Definition:
+
+```prisma
+revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+```
+
+Expected:
+
+```text
+status = REVOKED
+→ revokedAt != null
+```
+
+---
+
+# No expiredAt
+
+The initial schema does not need:
+
+```text
+expiredAt
+```
+
+because:
+
+```text
+expiresAt
+```
+
+already defines expiration time.
+
+Formal lifecycle status may additionally become:
+
+```text
+EXPIRED
+```
+
+---
+
+# Invitation Timestamps
+
+Definitions:
+
+```prisma
+createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+```
+
+Full event history belongs to Audit.
+
+---
+
+# Invitation Referential Actions
+
+Initial conservative policy:
+
+```text
+Organization
+→ Restrict
+
+Role
+→ Restrict
+
+Inviter Membership
+→ Restrict
+
+Accepted Profile
+→ Restrict
+```
+
+Membership and invitation history should not disappear through accidental cascades.
+
+---
+
+# Invitation Pending Uniqueness
+
+Required business invariant:
+
+```text
+at most one persisted PENDING Invitation
+per
+Organization + normalizedEmail
+```
+
+Historical:
+
+```text
+ACCEPTED
+
+REVOKED
+
+EXPIRED
+```
+
+records must remain possible for the same recipient.
+
+---
+
+# Why Normal Composite Unique Is Wrong
+
+Do not create:
+
+```prisma
+@@unique([organizationId, normalizedEmail])
+```
+
+because that would prevent legitimate future reinvitations after:
+
+```text
+ACCEPTED
+
+REVOKED
+
+EXPIRED
+```
+
+---
+
+# Partial Unique Index
+
+Required PostgreSQL semantics:
+
+```sql
+CREATE UNIQUE INDEX
+  "organization_invitations_pending_email_unique"
+ON
+  "organization_invitations"
+  ("organization_id", "normalized_email")
+WHERE
+  "status" = 'PENDING';
+```
+
+This protects concurrent invitation creation.
+
+---
+
+# Prisma Partial Index Strategy
+
+The repository must choose one deliberate implementation path based on the active Prisma configuration.
+
+Option A:
+
+```text
+Represent the partial unique index through the active Prisma schema/index capabilities
+```
+
+if those capabilities are explicitly enabled and validated in this project.
+
+Option B:
+
+```text
+Create the PostgreSQL partial unique index through migration SQL
+```
+
+and preserve/document it as a database-level invariant.
+
+Do not enable new Prisma preview behavior casually merely for convenience.
+
+---
+
+# Migration SQL Is Part of Architecture
+
+If raw migration SQL is used for:
+
+```text
+organization_invitations_pending_email_unique
+```
+
+the index is not an incidental migration artifact.
+
+It is an intentional Memberships invariant.
+
+Future migrations must preserve it.
+
+---
+
+# Reintrospection Caution
+
+If an invariant is represented through database SQL rather than the Prisma schema language, future:
+
+```text
+db pull
+
+migration editing
+
+schema refactoring
+```
+
+must not accidentally remove it.
+
+Document and test the constraint.
+
+---
+
+# Expired PENDING Invitation Problem
+
+A row may remain persisted as:
+
+```text
+status = PENDING
+```
+
+while:
+
+```text
+expiresAt <= now
+```
+
+That row still occupies the PENDING partial unique index.
+
+Therefore reinvitation must handle expiration deliberately.
+
+---
+
+# Reinvitation Transaction
+
+Conceptually:
+
+```text
+BEGIN
+        ↓
+Find existing PENDING invitation
+        ↓
+If expiresAt <= now
+        ↓
+Update status = EXPIRED
+        ↓
+Create new PENDING invitation
+        ↓
+COMMIT
+```
+
+The partial unique index protects concurrent attempts.
+
+---
+
+# Invitation Indexes
+
+Recommended initial indexes:
+
+```text
+UNIQUE tokenHash
+
+UNIQUE pending organizationId + normalizedEmail
+
+organizationId + status
+
+status + expiresAt
+```
+
+Avoid adding speculative indexes.
+
+---
+
+# organizationId + status Invitation Index
+
+Supports:
+
+```text
+list Organization invitations
+
+list pending invitations
+```
+
+Recommended:
+
+```prisma
+@@index(
+  [organizationId, status],
+  map: "organization_invitations_organization_status_idx"
+)
+```
+
+---
+
+# status + expiresAt Invitation Index
+
+Supports:
+
+```text
+find expired PENDING invitations
+```
+
+Recommended:
+
+```prisma
+@@index(
+  [status, expiresAt],
+  map: "organization_invitations_status_expires_idx"
+)
+```
+
+---
+
+# No Generic normalizedEmail Index Initially
+
+The partial pending index already supports the main:
+
+```text
+Organization + normalizedEmail + PENDING
+```
+
+lookup pattern.
+
+Do not automatically add a second broad email index unless real queries require it.
+
+---
+
+# Inverse Prisma Relations
+
+Adding Memberships may require inverse relation fields on existing models.
+
+This is physically necessary for Prisma relation modeling.
+
+It does not change entity ownership.
+
+---
+
+# Organization Inverse Relations
+
+Organization may require:
+
+```prisma
+memberships OrganizationMembership[]
+
+invitations OrganizationInvitation[]
+```
+
+Conceptually:
+
+```prisma
+model Organization {
+  // Organizations-owned fields
+
+  memberships OrganizationMembership[]
+  invitations OrganizationInvitation[]
+}
+```
+
+These fields do not make Memberships-owned entities part of Organizations.
+
+---
+
+# Profile Inverse Relations
+
+Profile may require:
+
+```prisma
+memberships OrganizationMembership[]
+
+acceptedInvitations OrganizationInvitation[]
+  @relation("InvitationAcceptedByProfile")
+```
+
+Conceptually:
+
+```prisma
+model Profile {
+  // Identity-owned fields
+
+  memberships OrganizationMembership[]
+
+  acceptedInvitations OrganizationInvitation[]
+    @relation("InvitationAcceptedByProfile")
+}
+```
+
+Identity remains owner of Profile.
+
+---
+
+# Role Inverse Relations
+
+Role may require:
+
+```prisma
+memberships OrganizationMembership[]
+
+invitations OrganizationInvitation[]
+```
+
+Conceptually:
+
+```prisma
+model Role {
+  // Roles-owned fields
+
+  memberships OrganizationMembership[]
+
+  invitations OrganizationInvitation[]
+}
+```
+
+Roles remains owner of Role.
+
+---
+
+# Membership Inverse Invitation Relation
+
+OrganizationMembership contains:
+
+```prisma
+invitationsSent OrganizationInvitation[]
+  @relation("InvitationInviterMembership")
+```
+
+This relation is entirely within Memberships ownership.
+
+---
+
+# Relation Naming
+
+Explicit relation names should be used where they improve clarity or Prisma requires disambiguation.
+
+Recommended named relations:
+
+```text
+InvitationInviterMembership
+
+InvitationAcceptedByProfile
+```
+
+Do not invent relation names that imply incorrect ownership.
+
+---
+
+# Full Conceptual Prisma Integration
+
+After Organizations, Roles and Memberships exist, the relevant schema relationships conceptually become:
+
+```text
+Profile
+  ↓
+OrganizationMembership
+  ↓             ↓
+Organization    Role
+
+OrganizationInvitation
+  ↓        ↓            ↓
+Organization   Role   Inviter Membership
+  ↓
+Accepted Profile?
+```
+
+---
+
+# No Duplicate User Model
+
+Memberships must not add:
+
+```prisma
+model User {
+  ...
+}
+```
+
+Supabase authentication remains canonical.
+
+Application identity remains:
+
+```text
+Supabase auth.users
+        ↓
+Profile
+```
+
+OrganizationMembership references:
+
+```text
+Profile.id
+```
+
+---
+
+# Profile ID Relationship
+
+The active Identity architecture determines how:
+
+```text
+Profile.id
+```
+
+maps to Supabase authentication identity.
+
+Memberships must consume that existing contract.
+
+Do not create a second mapping mechanism inside Memberships.
+
+---
+
+# No Global Profile Role
+
+Do not modify Profile with:
+
+```prisma
+roleId String?
+```
+
+for tenant authorization.
+
+A Profile may hold different Membership Roles in different Organizations.
+
+---
+
+# No Organization Role
+
+Do not modify Organization with:
+
+```prisma
+roleId String?
+```
+
+Role belongs to OrganizationMembership.
+
+---
+
+# No Organization Owner Column
+
+Do not introduce:
+
+```prisma
+ownerId String
+```
+
+or:
+
+```prisma
+ownerUserId String
+```
+
+into Organization.
+
+Ownership remains:
+
+```text
+OrganizationMembership
++
+OWNER Role
+```
+
+---
+
+# No Permission Persistence
+
+Memberships Foundation must not add:
+
+```prisma
+model Permission {
+  ...
+}
+```
+
+or:
+
+```prisma
+model RolePermission {
+  ...
+}
+```
+
+or Membership fields such as:
+
+```prisma
+permissions Json
+```
+
+Permissions owns authorization capability.
+
+---
+
+# No Multiple Role Join Table
+
+Initial Membership architecture uses:
+
+```text
+one Membership
+→ one roleId
+```
+
+Do not create:
+
+```text
+MembershipRole
+
+OrganizationMembershipRole
+
+MembershipRoles[]
+```
+
+join tables.
+
+---
+
+# No Domain Metadata
+
+Do not add:
+
+```text
+department
+
+editorialRole
+
+productionArea
+
+DJRole
+
+orderResponsibility
+
+domainMetadata
+```
+
+to OrganizationMembership.
+
+Core Memberships remains business agnostic.
+
+---
+
+# No Generic Metadata JSON
+
+Do not add:
+
+```prisma
+metadata Json?
+```
+
+merely to postpone modeling decisions.
+
+Initial Core Membership persistence must remain explicit.
+
+---
+
+# Membership Repository
+
+Recommended location:
+
+```text
+src/core/modules/memberships/repositories/membership-repository.ts
+```
+
+Possible persistence operations:
+
+```text
+findById
+
+findByOrganizationAndProfile
+
+findActiveByOrganizationAndProfile
+
+listByOrganization
+
+listByProfile
+
+create
+
+updateStatus
+
+updateRole
+```
+
+Only implement required operations.
+
+---
+
+# Invitation Repository
+
+Recommended location:
+
+```text
+src/core/modules/memberships/repositories/invitation-repository.ts
+```
+
+Possible operations:
+
+```text
+findById
+
+findByTokenHash
+
+findPendingByOrganizationAndEmail
+
+listByOrganization
+
+create
+
+updateStatus
+
+rotateToken
+```
+
+---
+
+# Repository Responsibilities
+
+Repositories may:
+
+```text
+query Prisma
+
+persist Memberships entities
+
+apply explicit projections
+
+translate expected persistence conflicts
+```
+
+Repositories must not:
+
+```text
+implement HTTP behavior
+
+send emails
+
+evaluate final Permissions
+
+authenticate users
+
+contain UI logic
+```
+
+---
+
+# Service Boundary
+
+Memberships services own lifecycle behavior.
+
+Examples:
+
+```text
+getMembership
+
+suspendMembership
+
+restoreMembership
+
+removeMembership
+
+restoreRemovedMembership
+
+changeMembershipRole
+
+createInvitation
+
+acceptInvitation
+
+revokeInvitation
+
+resendInvitation
+```
+
+Services consume repositories.
+
+Services should not spread Prisma calls throughout `src/app`.
+
+---
+
+# Membership Creation Primitive
+
+Repository-level creation may conceptually perform:
+
+```ts
+create({
+  organizationId,
+  profileId,
+  roleId,
+  status: "ACTIVE",
+})
+```
+
+This persistence primitive must not become unrestricted public application behavior.
+
+Approved higher-level workflows control when it may be called.
+
+---
+
+# Duplicate Membership Error
+
+Concurrent creation may violate:
+
+```text
+organizationId + profileId
+```
+
+unique constraint.
+
+Repository/service layer should map the persistence conflict to:
+
+```text
+MEMBERSHIP_ALREADY_EXISTS
+```
+
+or the approved stable application equivalent.
+
+---
+
+# Invitation Token Generation Boundary
+
+Prisma does not generate application invitation secrets.
+
+Token generation belongs to trusted server-side application/security logic.
+
+Flow:
+
+```text
+secure random token
+        ↓
+hash token
+        ↓
+Prisma persists tokenHash
+```
+
+---
+
+# Token Comparison
+
+Invitation acceptance should not retrieve every invitation and compare hashes in application memory.
+
+Expected:
+
+```text
+hash incoming raw token
+        ↓
+query unique tokenHash
+```
+
+---
+
+# Token Hash Never Returned
+
+Repository DTOs used outside trusted persistence code must not include:
+
+```text
+tokenHash
+```
+
+unless an internal security workflow explicitly requires it.
+
+Normal administrative projections exclude it.
+
+---
+
+# Invitation Acceptance Transaction
+
+Invitation acceptance must be atomic.
+
+Possible transaction shape:
+
+```text
+BEGIN
+        ↓
+Resolve current Invitation state
+        ↓
+Validate PENDING
+        ↓
+Validate expiresAt
+        ↓
+Validate recipient
+        ↓
+Resolve existing Membership
+        ↓
+Create or restore Membership
+        ↓
+Conditionally transition Invitation
+PENDING → ACCEPTED
+        ↓
+Set acceptedByProfileId
+        ↓
+Set acceptedAt
+        ↓
+COMMIT
+```
+
+---
+
+# Conditional Invitation Acceptance
+
+Concurrency protection must ensure only one transition from:
+
+```text
+PENDING
+```
+
+to:
+
+```text
+ACCEPTED
+```
+
+succeeds.
+
+A safe implementation may use a conditional update whose predicate includes:
+
+```text
+id
+
+status = PENDING
+
+expiresAt > now
+```
+
+and require:
+
+```text
+affected row count = 1
+```
+
+inside the transaction.
+
+Exact Prisma code should be validated against the active client API during implementation.
+
+---
+
+# Acceptance Race — New Membership
+
+Two concurrent requests may both observe:
+
+```text
+PENDING
+```
+
+and:
+
+```text
+no Membership
+```
+
+Final protection comes from:
+
+```text
+Membership unique constraint
+
++
+
+conditional Invitation transition
+
++
+
+transaction
+```
+
+Only one logical acceptance may commit.
+
+---
+
+# Acceptance Race — REMOVED Membership
+
+Two concurrent acceptance attempts may attempt to restore the same Membership.
+
+The conditional Invitation transition must still ensure at most one transaction succeeds.
+
+If the Invitation claim fails:
+
+```text
+rollback Membership changes
+```
+
+---
+
+# Invitation Already Accepted
+
+If conditional transition affects:
+
+```text
+0 rows
+```
+
+the service must resolve whether the Invitation is now:
+
+```text
+ACCEPTED
+
+REVOKED
+
+EXPIRED
+```
+
+and return the approved stable result.
+
+Do not blindly retry the Membership mutation.
+
+---
+
+# Invitation Expiration Concurrency
+
+Acceptance and expiration may race.
+
+Security requirement:
+
+```text
+Invitation with expiresAt <= now
+must never successfully accept
+```
+
+The acceptance predicate must include real expiration time.
+
+Persisted status alone is insufficient.
+
+---
+
+# Invitation Revocation Concurrency
+
+Revocation should conditionally transition:
+
+```text
+PENDING
+→ REVOKED
+```
+
+Only one terminal transition may win.
+
+An Invitation that became ACCEPTED concurrently must not later become REVOKED.
+
+---
+
+# Invitation Status Conditional Updates
+
+Preferred lifecycle mutation principle:
+
+```text
+UPDATE
+WHERE
+  id = target
+  AND status = expectedCurrentStatus
+```
+
+Then validate affected-row count.
+
+This avoids blind last-write-wins lifecycle corruption.
+
+---
+
+# Membership Lifecycle Conditional Updates
+
+Security-relevant Membership lifecycle operations should also verify current state.
+
+Examples:
+
+```text
+ACTIVE → SUSPENDED
+
+SUSPENDED → ACTIVE
+
+ACTIVE → REMOVED
+
+SUSPENDED → REMOVED
+```
+
+Avoid generic:
+
+```text
+update status to arbitrary value
+```
+
+APIs.
+
+---
+
+# Membership State Integrity
+
+Prisma schema cannot by itself fully encode relationships such as:
+
+```text
+ACTIVE
+→ suspendedAt null
+→ removedAt null
+```
+
+Membership services must preserve these invariants.
+
+Optional PostgreSQL check constraints may be considered later if they improve safety without duplicating lifecycle logic.
+
+Do not add them casually before lifecycle semantics are frozen.
+
+---
+
+# Recommended Lifecycle Writes
+
+Suspend:
+
+```text
+status = SUSPENDED
+
+suspendedAt = now()
+
+removedAt = null
+```
+
+Restore suspended:
+
+```text
+status = ACTIVE
+
+suspendedAt = null
+
+removedAt = null
+```
+
+Remove:
+
+```text
+status = REMOVED
+
+suspendedAt = null
+
+removedAt = now()
+```
+
+Restore removed:
+
+```text
+status = ACTIVE
+
+suspendedAt = null
+
+removedAt = null
+```
+
+---
+
+# Role Change Persistence
+
+Role replacement updates:
+
+```text
+roleId
+```
+
+only after:
+
+```text
+target Role resolved
+
+Membership state validated
+
+OWNER safety checked
+
+authorization approved
+```
+
+Repository should not expose uncontrolled mass assignment.
+
+---
+
+# Mass Assignment Protection
+
+Do not write:
+
+```ts
+data: {
+  ...input,
+}
+```
+
+for Membership or Invitation mutation.
+
+Explicitly select allowed fields.
+
+External input must never control:
+
+```text
+id
+
+profileId acting identity
+
+invitedByMembershipId acting identity
+
+status arbitrarily
+
+acceptedByProfileId
+
+tokenHash directly
+
+createdAt
+
+updatedAt
+```
+
+without the appropriate workflow.
+
+---
+
+# invitedByMembershipId Must Be Server Resolved
+
+Invitation clients should provide:
+
+```text
+organizationId
+
+recipientEmail
+
+roleId
+```
+
+The trusted server resolves:
+
+```text
+authenticated Profile
+        ↓
+ACTIVE OrganizationMembership
+        ↓
+invitedByMembershipId
+```
+
+Do not trust a client-supplied inviter Membership ID.
+
+---
+
+# acceptedByProfileId Must Be Server Resolved
+
+Invitation acceptance client supplies:
+
+```text
+raw token
+```
+
+The server resolves:
+
+```text
+authenticated Profile
+```
+
+and writes:
+
+```text
+acceptedByProfileId
+```
+
+after recipient validation.
+
+---
+
+# Role Resolution
+
+Memberships must resolve Role through Roles.
+
+Do not construct a fake Role object from:
+
+```text
+roleId
+
+role key string
+
+client claim
+```
+
+A foreign key prevents invalid persisted UUID references.
+
+Roles service provides semantic validation such as:
+
+```text
+OWNER protection
+```
+
+---
+
+# Invitation OWNER Safety
+
+Database foreign key only proves:
+
+```text
+Role exists
+```
+
+It does not prove:
+
+```text
+Role may be assigned through this workflow
+```
+
+Normal invitation service must explicitly reject:
+
+```text
+Role.key = OWNER
+```
+
+---
+
+# Membership RLS Role
+
+OrganizationMembership becomes the canonical tenant-membership data source for RLS.
+
+Conceptually:
+
+```text
+authenticated identity
+        ↓
+Profile
+        ↓
+OrganizationMembership
+        ↓
+organizationId
+```
+
+with:
+
+```text
+status = ACTIVE
+```
+
+---
+
+# RLS Is Not Full Authorization
+
+A Membership RLS check may prove:
+
+```text
+Profile belongs actively to Organization
+```
+
+It does not automatically prove:
+
+```text
+Profile may invite Members
+
+Profile may remove Members
+
+Profile may change Roles
+
+Profile may manage billing
+```
+
+Fine-grained authorization belongs to Permissions.
+
+---
+
+# Memberships Table RLS
+
+Memberships itself contains security-relevant tenant relationships.
+
+Do not introduce a broad policy such as:
+
+```text
+all authenticated users can read all Memberships
+```
+
+Production policies must be intentionally Organization scoped.
+
+---
+
+# Invitation RLS
+
+OrganizationInvitation contains:
+
+```text
+recipient email
+
+token hash
+
+inviter relationship
+
+acceptance metadata
+```
+
+It requires restrictive access.
+
+Preferred initial architecture:
+
+```text
+Invitation writes
+→ trusted server only
+
+token lookup
+→ trusted server only
+
+administrative reads
+→ authorized server-side operation
+```
+
+---
+
+# tokenHash and RLS
+
+Even authorized Organization administrators generally do not need:
+
+```text
+tokenHash
+```
+
+Normal projections and client-facing APIs must exclude it.
+
+RLS alone is not a reason to expose the field.
+
+---
+
+# Server-First Access
+
+Memberships implementation should be server-first.
+
+Preferred:
+
+```text
+Server Component / Action
+        ↓
+Memberships Service
+        ↓
+Repository
+        ↓
+Prisma
+```
+
+Avoid direct browser writes to Memberships tables.
+
+---
+
+# Prisma Connection and RLS
+
+Application authorization must remain correct regardless of whether the Prisma database connection is subject to or bypasses PostgreSQL RLS.
+
+Therefore:
+
+```text
+RLS
+```
+
+is defense in depth.
+
+It is not a replacement for Memberships service authorization.
+
+---
+
+# Membership-Based Tenant RLS
+
+Once Memberships exists, other tenant-owned tables may use policies conceptually based on:
+
+```text
+active Membership for target organization
+```
+
+The exact helper functions and policy patterns belong to Security/RLS architecture.
+
+Do not duplicate Membership logic independently in every Domain if a reusable secure pattern can be established.
+
+---
+
+# Identity and auth.uid()
+
+If the active Identity architecture guarantees:
+
+```text
+Profile.id
+=
+Supabase authenticated user UUID
+```
+
+RLS may be able to use that established identity mapping directly.
+
+If not, policies must resolve Profile through the approved Identity mapping.
+
+Memberships must follow the actual Identity contract rather than assume a new one.
+
+---
+
+# Migration
+
+Recommended migration name:
+
+```text
+add_platform_memberships
+```
+
+Expected migration scope:
+
+```text
+MembershipStatus
+
+InvitationStatus
+
+organization_memberships
+
+organization_invitations
+
+foreign keys
+
+Membership uniqueness
+
+Invitation token uniqueness
+
+required indexes
+
+pending Invitation partial uniqueness
+```
+
+---
+
+# Migration Preconditions
+
+Before generating Memberships migration:
+
+```text
+Organization table exists
+
+Role table exists
+
+Profile table exists
+
+Organizations schema is stable
+
+Roles schema is stable
+```
+
+If any dependency is missing:
+
+```text
+STOP
+
+Do not create temporary references
+```
+
+---
+
+# Migration Workflow
+
+Preferred:
+
+```bash
+npx prisma format
+npx prisma validate
+npx prisma migrate dev --name add_platform_memberships
+```
+
+Then inspect migration SQL before finalizing.
+
+If partial-index SQL must be added manually:
+
+```text
+edit the generated migration deliberately
+
+document why
+
+validate the resulting database
+```
+
+Then:
+
+```bash
+npx prisma generate
+npm run typecheck
+npm run lint
+```
+
+Run the approved test suite.
+
+---
+
+# Migration Review
+
+Inspect generated SQL for:
+
+```text
+correct UUID types
+
+correct enum values
+
+correct table names
+
+correct field nullability
+
+Organization/Profile/Role foreign keys
+
+Membership composite uniqueness
+
+tokenHash uniqueness
+
+expected indexes
+
+Restrict delete behavior
+
+partial pending Invitation uniqueness
+
+absence of destructive unrelated changes
+```
+
+---
+
+# Migration Must Not Introduce
+
+```text
+User
+
+MembershipRole enum
+
+Permission
+
+RolePermission
+
+Organization ownerId
+
+Profile roleId
+
+Organization roleId
+
+custom Role tables
+
+Domain-specific Membership fields
+```
+
+---
+
+# Raw SQL Migration Block
+
+If the project chooses migration SQL for pending Invitation uniqueness, the migration should contain the equivalent of:
+
+```sql
+CREATE UNIQUE INDEX
+  "organization_invitations_pending_email_unique"
+ON
+  "organization_invitations"
+  ("organization_id", "normalized_email")
+WHERE
+  "status" = 'PENDING';
+```
+
+The exact generated PostgreSQL enum representation must be validated against the migration generated in this repository.
+
+---
+
+# Raw SQL Rollback Awareness
+
+Prisma migrations are forward migrations.
+
+If a partial index is manually introduced, later schema changes must account for its existence explicitly.
+
+Renaming:
+
+```text
+organization_invitations
+
+organization_id
+
+normalized_email
+
+status
+```
+
+requires corresponding index migration.
+
+---
+
+# Existing Organizations
+
+Memberships migration does not automatically create Memberships for existing Organizations.
+
+Possible development state after migration:
+
+```text
+Organization exists
+
+no OrganizationMembership
+```
+
+This may exist temporarily during migration/consolidation.
+
+It must not be treated as a production-ready operational tenant.
+
+---
+
+# Existing Organization Ownership Migration
+
+If pre-existing Organizations must become operational tenants, ownership must be established through an explicit data migration or approved tenancy bootstrap workflow.
+
+Do not infer owner from:
+
+```text
+first Profile
+
+earliest user
+
+Organization timestamp
+
+email guess
+```
+
+---
+
+# Existing Profiles
+
+Existing Profiles receive no Membership automatically.
+
+Membership is an explicit relationship.
+
+---
+
+# Existing Roles
+
+Memberships requires canonical Roles to already be seeded.
+
+Before tenancy integration validate:
+
+```text
+OWNER
+
+ADMIN
+
+MANAGER
+
+MEMBER
+
+VIEWER
+```
+
+as required by the approved Role catalog.
+
+---
+
+# No Membership Seed Data
+
+Do not seed:
+
+```text
+fake Members
+
+fake OWNER Memberships
+
+demo Invitations
+```
+
+as Platform Core reference data.
+
+Memberships are application data, not canonical global reference data.
+
+Tests may use fixtures inside test infrastructure.
+
+---
+
+# Transaction — Organization Onboarding
+
+Cross-module persistence requires a transaction containing:
+
+```text
+Organization insert
+
+OWNER Membership insert
+```
+
+The transaction may coordinate repositories from:
+
+```text
+Organizations
+
+Memberships
+```
+
+Role resolution can occur before the transaction if appropriate.
+
+---
+
+# Transaction — Invitation Acceptance
+
+Required atomic set:
+
+```text
+Membership create/restore
+
++
+
+Invitation ACCEPTED transition
+```
+
+If either fails:
+
+```text
+ROLLBACK
+```
+
+---
+
+# Transaction — Ownership Transfer
+
+Required atomic set:
+
+```text
+Target Membership roleId → OWNER
+
++
+
+Previous OWNER roleId → approved Role
+```
+
+If either fails:
+
+```text
+ROLLBACK
+```
+
+---
+
+# Cross-Module Transaction Boundary
+
+A transaction may coordinate models owned by several modules.
+
+That does not transfer ownership.
+
+Example:
+
+```text
+Tenancy Onboarding Service
+        ↓
+Organizations Repository
+        +
+Memberships Repository
+        +
+Roles Service
+```
+
+---
+
+# Transaction Duration
+
+Do not execute:
+
+```text
+email
+
+webhook
+
+analytics
+
+external provider calls
+```
+
+inside Memberships database transactions.
+
+Persist first.
+
+Commit.
+
+Trigger external effects afterward.
+
+---
+
+# Invitation Email Delivery
+
+Flow:
+
+```text
+Create Invitation
+        ↓
+COMMIT
+        ↓
+Pass transient raw token to Notifications
+        ↓
+Send Email
+```
+
+If email delivery fails:
+
+```text
+Invitation remains PENDING
+```
+
+and may be resent.
+
+---
+
+# Invitation Resend Persistence
+
+Recommended resend behavior:
+
+```text
+Generate new raw token
+
+Hash
+
+Update tokenHash
+
+Optionally update expiresAt
+
+Commit
+
+Send new notification
+```
+
+The previous raw token becomes invalid immediately after the update commits.
+
+---
+
+# Resend Transaction
+
+Token rotation itself should be atomic.
+
+Do not persist:
+
+```text
+multiple active token hashes
+```
+
+for the same Invitation during initial implementation.
+
+---
+
+# Invitation Expiration
+
+Formal expiration update:
+
+```text
+PENDING
+→ EXPIRED
+```
+
+may be performed by:
+
+```text
+lazy service logic
+
+reinvitation transaction
+
+scheduled maintenance
+```
+
+Acceptance must always enforce real `expiresAt` regardless of persisted status.
+
+---
+
+# Expiration Job Query
+
+The recommended index:
+
+```text
+status + expiresAt
+```
+
+supports queries conceptually like:
+
+```text
+status = PENDING
+AND
+expiresAt <= now
+```
+
+if a scheduled expiration job is introduced.
+
+The job itself is not required for security.
+
+---
+
+# Repository DTO Selection
+
+Membership repository should avoid unnecessarily selecting:
+
+```text
+full Organization
+
+full Profile
+
+full Role
+
+all Invitations
+```
+
+Use explicit projections appropriate to each application service.
+
+---
+
+# Invitation Secret Projection
+
+A repository method used for token acceptance may select:
+
+```text
+tokenHash
+```
+
+internally.
+
+A normal administrative listing must not.
+
+Use separate projections rather than one oversized Invitation object everywhere.
+
+---
+
+# Membership With Role Projection
+
+Authorization-related internal consumers may require:
+
+```text
+Membership.id
+
+organizationId
+
+profileId
+
+status
+
+Role.id
+
+Role.key
+```
+
+Use explicit relation selection.
+
+Do not load unrelated Role metadata unless needed.
+
+---
+
+# Active Membership Query
+
+Common query concept:
+
+```text
+where:
+  organizationId
+  profileId
+  status = ACTIVE
+```
+
+The composite uniqueness means there is only one durable pair.
+
+A service may instead retrieve the unique pair and inspect status.
+
+Choose the simplest query consistent with repository contracts.
+
+---
+
+# List User Organizations Query
+
+Membership repository may query:
+
+```text
+profileId
+
+status = ACTIVE
+```
+
+and join/select Organization data where the application service requires it.
+
+Architectural ownership remains:
+
+```text
+Memberships
+→ relationship
+
+Organizations
+→ Organization data
+```
+
+---
+
+# Query Ownership vs Physical Join
+
+A Prisma query may physically include:
+
+```text
+membership.organization
+```
+
+for performance.
+
+That does not mean Memberships owns Organization business logic.
+
+Cross-module projections are acceptable when deliberate.
+
+---
+
+# Hard Delete
+
+Memberships Foundation does not implement normal:
+
+```text
+DELETE OrganizationMembership
+```
+
+or:
+
+```text
+DELETE OrganizationInvitation
+```
+
+for lifecycle behavior.
+
+Memberships use:
+
+```text
+REMOVED
+```
+
+Invitations use:
+
+```text
+ACCEPTED
+
+REVOKED
+
+EXPIRED
+```
+
+---
+
+# Retention
+
+Permanent deletion may later be required by:
+
+```text
+privacy policy
+
+retention policy
+
+Organization hard deletion
+
+legal requirements
+```
+
+That requires coordinated architecture.
+
+Do not add ad hoc hard-delete services during Foundation.
+
+---
+
+# Membership Lifecycle Checks
+
+Service tests must validate database state after:
+
+```text
+ACTIVE → SUSPENDED
+
+SUSPENDED → ACTIVE
+
+ACTIVE → REMOVED
+
+SUSPENDED → REMOVED
+
+REMOVED → ACTIVE through approved restore
+```
+
+---
+
+# Invitation Lifecycle Checks
+
+Test:
+
+```text
+PENDING → ACCEPTED
+
+PENDING → REVOKED
+
+PENDING → EXPIRED
+```
+
+Reject:
+
+```text
+ACCEPTED → PENDING
+
+REVOKED → PENDING
+
+EXPIRED → PENDING
+```
+
+A new Invitation handles reinvitation.
+
+---
+
+# Membership Persistence Tests
+
+At minimum cover:
+
+```text
+UUID generation
+
+Organization foreign key
+
+Profile foreign key
+
+Role foreign key
+
+Organization/Profile uniqueness
+
+status default
+
+timestamps
+
+roleId required
+
+delete restrictions
+```
+
+---
+
+# Invitation Persistence Tests
+
+Cover:
+
+```text
+UUID generation
+
+Organization foreign key
+
+Role foreign key
+
+Inviter Membership foreign key
+
+optional accepted Profile
+
+tokenHash uniqueness
+
+status default
+
+expiration
+
+lifecycle timestamps
+```
+
+---
+
+# Pending Invitation Constraint Tests
+
+Required concurrency-oriented behavior:
+
+```text
+PENDING invitation A
+Organization X + email Y
+```
+
+then attempt:
+
+```text
+PENDING invitation B
+Organization X + email Y
+```
+
+Expected:
+
+```text
+database conflict
+```
+
+After A becomes:
+
+```text
+REVOKED
+```
+
+or:
+
+```text
+EXPIRED
+```
+
+a new PENDING invitation must be allowed.
+
+---
+
+# Historical Invitation Test
+
+Verify same Organization/email may have:
+
+```text
+one ACCEPTED historical Invitation
+
+one REVOKED historical Invitation
+
+one EXPIRED historical Invitation
+
+one current PENDING Invitation
+```
+
+without violating the intended constraint.
+
+---
+
+# Membership Duplicate Test
+
+Attempt two Memberships with:
+
+```text
+same organizationId
+
+same profileId
+```
+
+Expected:
+
+```text
+database uniqueness conflict
+```
+
+regardless of status.
+
+---
+
+# Role Foreign Key Test
+
+Attempt Membership with unknown:
+
+```text
+roleId
+```
+
+Expected:
+
+```text
+foreign-key failure
+```
+
+Application service should prevent reaching this where possible.
+
+Database remains final integrity protection.
+
+---
+
+# Organization Foreign Key Test
+
+Attempt Membership with nonexistent Organization.
+
+Expected failure.
+
+---
+
+# Profile Foreign Key Test
+
+Attempt Membership with nonexistent Profile.
+
+Expected failure.
+
+---
+
+# Invitation Inviter Integrity Test
+
+Attempt Invitation where:
+
+```text
+invitedByMembershipId
+```
+
+does not exist.
+
+Expected foreign-key failure.
+
+Also test application-level:
+
+```text
+Inviter Membership belongs to Organization A
+
+Invitation organizationId = Organization B
+```
+
+Expected service rejection.
+
+---
+
+# Invitation Recipient Test
+
+Acceptance must verify:
+
+```text
+normalized authenticated email
+=
+invitation.normalizedEmail
+```
+
+No database relation alone can enforce this.
+
+---
+
+# Invitation Token Tests
+
+Verify:
+
+```text
+raw token is not persisted
+
+tokenHash is unique
+
+correct token resolves invitation
+
+wrong token does not
+
+rotated token invalidates old token
+```
+
+---
+
+# Concurrency Tests
+
+Memberships is security-critical.
+
+Include tests for:
+
+```text
+simultaneous duplicate Membership creation
+
+simultaneous duplicate Invitation creation
+
+simultaneous Invitation acceptance
+
+accept vs revoke race
+
+accept vs expire race
+
+ownership transfer race
+```
+
+Where full integration concurrency tests are expensive, prioritize the invariants that could create unauthorized tenant access.
+
+---
+
+# OWNER Safety Tests
+
+Test attempts to:
+
+```text
+suspend sole OWNER
+
+remove sole OWNER
+
+demote sole OWNER
+
+assign second OWNER through normal Role change
+
+invite OWNER through normal invitation
+```
+
+All must be rejected or routed through ownership transfer.
+
+---
+
+# Ownership Transfer Tests
+
+Validate:
+
+```text
+one OWNER before
+
+one OWNER after
+
+target becomes OWNER
+
+previous owner receives approved Role
+
+transaction rolls back on failure
+```
+
+---
+
+# RLS Tests
+
+When Membership-based RLS is implemented, verify:
+
+```text
+ACTIVE Membership
+→ permitted tenant relationship
+
+SUSPENDED Membership
+→ denied
+
+REMOVED Membership
+→ denied
+
+no Membership
+→ denied
+
+Membership in Organization A
+→ does not grant Organization B access
+```
+
+---
+
+# Invitation RLS Tests
+
+Verify clients cannot retrieve:
+
+```text
+tokenHash
+```
+
+through normal public/client database access.
+
+Verify unrelated tenant Members cannot enumerate Invitations.
+
+---
+
+# Source Structure
+
+Recommended:
+
+```text
+src/core/modules/memberships/
+├── repositories/
+│   ├── membership-repository.ts
+│   └── invitation-repository.ts
+├── services/
+│   ├── get-membership.ts
+│   ├── suspend-membership.ts
+│   ├── restore-membership.ts
+│   ├── remove-membership.ts
+│   ├── change-membership-role.ts
+│   ├── create-invitation.ts
+│   ├── accept-invitation.ts
+│   ├── revoke-invitation.ts
+│   └── resend-invitation.ts
+├── schemas/
+├── types/
+└── security/
+```
+
+Only create directories required by actual implementation.
+
+Do not create speculative empty folders.
+
+---
+
+# Token Security Helper
+
+If token generation/hashing is Memberships-specific, an internal helper may live under:
+
+```text
+src/core/modules/memberships/
+```
+
+If the same secure-token mechanism becomes reusable across multiple Core capabilities, extract it into an appropriate shared technical security utility deliberately.
+
+Do not generalize prematurely.
+
+---
+
+# Prisma Generated Client
+
+After schema changes:
+
+```bash
+npx prisma generate
+```
+
+Generated output remains in the project's configured location.
+
+Do not manually edit generated Prisma files.
+
+---
+
+# Shared Prisma Schema
+
+Memberships uses the existing:
+
+```text
+prisma/schema.prisma
+```
+
+Do not create a separate active Memberships schema without an explicit platform-wide Prisma architecture change.
+
+---
+
+# Migration File Ownership
+
+The generated migration belongs to the coordinated database history of the repository.
+
+Its semantic scope is:
+
+```text
+Memberships Foundation
+```
+
+Migration SQL may physically alter existing tables through foreign-key relationships without changing module ownership.
+
+---
+
+# Prisma Formatting
+
+Run:
+
+```bash
+npx prisma format
+```
+
+before validation and migration review.
+
+---
+
+# Prisma Validation
+
+Run:
+
+```bash
+npx prisma validate
+```
+
+before generating migration.
+
+---
+
+# Project Validation
+
+After migration and generation:
+
+```bash
+npm run typecheck
+npm run lint
+```
+
+Then run the approved automated tests.
+
+---
+
+# No Schema Reset as Default Fix
+
+If migration conflicts appear:
+
+```text
+inspect the conflict
+```
+
+Do not reflexively:
+
+```text
+reset database
+
+delete migrations
+
+recreate schema
+```
+
+unless explicitly approved for the current development environment.
+
+Preserve migration discipline.
+
+---
+
+# Migration Safety Checklist
+
+Before applying Memberships migration:
+
+```text
+[ ] Profile exists
+
+[ ] Organization exists
+
+[ ] Role exists
+
+[ ] UUID strategy matches Platform Core
+
+[ ] MembershipStatus is correct
+
+[ ] InvitationStatus is correct
+
+[ ] organizationId is NOT NULL
+
+[ ] profileId is NOT NULL
+
+[ ] roleId is NOT NULL
+
+[ ] Membership Organization/Profile uniqueness exists
+
+[ ] tokenHash uniqueness exists
+
+[ ] pending Invitation uniqueness exists
+
+[ ] Invitation expiresAt is NOT NULL
+
+[ ] inviter Membership relation exists
+
+[ ] accepted Profile is optional
+
+[ ] delete actions are conservative
+
+[ ] no User model added
+
+[ ] no MembershipRole enum added
+
+[ ] no Permission models added
+
+[ ] no ownerId added
+
+[ ] no Profile.roleId added
+
+[ ] no unrelated destructive SQL generated
+```
+
+---
+
+# Security Checklist
+
+Before Memberships Foundation is considered complete:
+
+```text
+[ ] raw Invitation token is never persisted
+
+[ ] tokenHash is never exposed in normal DTOs
+
+[ ] tokenHash is unique
+
+[ ] Invitation expiration is always checked
+
+[ ] acceptance requires authenticated matching identity
+
+[ ] duplicate Memberships are database-protected
+
+[ ] duplicate pending Invitations are database-protected
+
+[ ] suspended Membership cannot accept its way back in
+
+[ ] OWNER cannot be removed casually
+
+[ ] OWNER cannot be suspended casually
+
+[ ] OWNER cannot be assigned through normal invitation
+
+[ ] Membership mutation is server-side
+
+[ ] client role claims are not trusted
+
+[ ] RLS does not replace application authorization
+```
+
+---
+
+# Deferred Prisma Work
+
+Do not implement during Memberships Foundation:
+
+```text
+Permission model
+
+RolePermission
+
+custom Organization Roles
+
+multiple Roles per Membership
+
+Teams
+
+SCIM
+
+seat billing persistence
+
+department fields
+
+generic metadata JSON
+
+platform administrator Membership
+
+Membership hard-delete workflow
+
+Invitation hard-delete workflow
+
+full audit persistence
+
+notification provider persistence
+```
+
+---
+
+# Permissions Integration
+
+Later Permissions design may add authorization relationships involving:
+
+```text
+Membership
+
+Role
+
+Permission
+```
+
+Memberships Foundation must not pre-create those tables or fields.
+
+---
+
+# Audit Integration
+
+Audit may eventually persist Membership events.
+
+Do not add:
+
+```text
+membershipHistory Json
+```
+
+or dozens of historical state fields to replace Audit.
+
+Membership rows represent current durable state.
+
+---
+
+# Notifications Integration
+
+Do not add:
+
+```text
+emailProviderId
+
+deliveryStatus
+
+smtpResponse
+```
+
+to OrganizationInvitation.
+
+Notifications owns delivery infrastructure.
+
+---
+
+# Billing Integration
+
+Do not add:
+
+```text
+seatId
+
+subscriptionId
+
+billingStatus
+```
+
+to OrganizationMembership.
+
+Billing may later count Memberships through its own integration.
+
+---
+
+# Future Custom Roles
+
+If Roles later introduces Organization-specific custom Roles, Memberships should continue referencing the approved:
+
+```text
+Role.id
+```
+
+architecture.
+
+Do not add custom-Role compatibility fields in advance.
+
+---
+
+# Future Multiple Roles
+
+If real products later require multiple Roles per Membership, that is a major authorization-model change.
+
+It must not be implemented by making:
+
+```text
+roleId nullable
+```
+
+today.
+
+A future design would require explicit architecture review and migration.
+
+---
+
+# Future Membership Deletion
+
+Privacy or retention requirements may eventually require anonymization or deletion.
+
+That workflow must consider:
+
+```text
+Audit
+
+Invitations
+
+Organizations
+
+Domain data
+
+legal retention
+
+billing
+
+security history
+```
+
+No generic repository `delete()` is required initially.
+
+---
+
+# Foundation Implementation Boundary
+
+Memberships Prisma Foundation includes:
+
+```text
+MembershipStatus
+
+InvitationStatus
+
+OrganizationMembership model
+
+OrganizationInvitation model
+
+real Profile relation
+
+real Organization relation
+
+real Role relation
+
+Membership uniqueness
+
+Invitation token uniqueness
+
+pending Invitation uniqueness
+
+required indexes
+
+conservative referential actions
+
+transaction-safe persistence primitives
+```
+
+---
+
+# Tenancy Integration Boundary
+
+After Memberships Foundation exists, a coordinated Tenancy Integration milestone can complete:
+
+```text
+Organization + OWNER Membership onboarding
+
+listUserOrganizations
+
+active Organization switching
+
+Membership-based RLS
+
+ownership transfer
+```
+
+These are cross-module capabilities.
+
+---
+
+# Permissions Boundary
+
+After Tenancy Foundation exists:
+
+```text
+Permissions
+```
+
+can provide full administrative authorization for:
+
+```text
+invite Member
+
+suspend Member
+
+remove Member
+
+change Role
+
+manage tenant resources
+```
+
+Do not block persistence design on Permissions, but do not expose insecure production administration without it.
+
+---
+
+# Definition of Ready
+
+Memberships Prisma implementation is ready when:
+
+- Organizations persistence exists.
+- Roles persistence exists.
+- canonical Roles are seeded.
+- Profile identity relation is confirmed.
+- MembershipStatus is approved.
+- InvitationStatus is approved.
+- Membership fields are approved.
+- Invitation fields are approved.
+- Membership Role is non-null.
+- Organization/Profile uniqueness is approved.
+- secure token-hash strategy is approved.
+- pending Invitation uniqueness strategy is approved.
+- referential actions are approved.
+- OWNER safety strategy is explicit.
+- concurrency requirements are understood.
+- RLS boundary is understood.
+- Permissions remain separate.
+- existing Prisma schema has been reviewed for conflicts.
+
+---
+
+# Definition of Done
+
+Memberships Prisma Foundation is complete when:
+
+- MembershipStatus exists.
+- InvitationStatus exists.
+- OrganizationMembership exists.
+- OrganizationInvitation exists.
+- UUID strategy is preserved.
+- Membership Organization relation exists.
+- Membership Profile relation exists.
+- Membership Role relation exists.
+- Membership roleId is required.
+- Organization/Profile uniqueness is enforced by database.
+- lifecycle timestamps exist.
+- Invitation Organization relation exists.
+- Invitation Role relation exists.
+- Invitation inviter Membership relation exists.
+- Invitation accepted Profile relation is optional.
+- tokenHash is unique.
+- raw token is not persisted.
+- expiresAt is required.
+- pending Invitation uniqueness is database-protected.
+- expected indexes exist.
+- delete actions are conservative.
+- no duplicate User exists.
+- no Profile global Role exists.
+- no Organization owner column exists.
+- no Membership Role enum exists.
+- no Permission persistence exists.
+- migrations have been reviewed.
+- concurrency-sensitive flows are tested.
+- OWNER safety is tested.
+- Prisma format passes.
+- Prisma validation passes.
+- Prisma generation passes.
+- TypeScript passes.
+- Lint passes.
+- relevant tests pass.
+- documentation matches implementation.
+
+---
+
+# Final Principle
+
+Prisma persists one durable Membership per Profile and Organization.
+
+That Membership references one real Role.
+
+Invitations remain separate security-sensitive records.
+
+Raw invitation secrets are never persisted.
+
+Database constraints protect uniqueness and concurrency.
+
+Services protect lifecycle and ownership invariants.
+
+Organizations owns the tenant.
+
+Identity owns the Profile.
+
+Roles owns Role definitions.
+
+Memberships owns belonging.
+
+Permissions will own capability.

@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
           })
         },
       },
-    }
+    },
   )
 
   const {
@@ -38,25 +38,9 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  const isPrivateRoute =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/library') ||
-    pathname.startsWith('/playlists') ||
-    pathname.startsWith('/imports') ||
-    pathname.startsWith('/settings')
-
   const isAuthRoute =
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/forgot-password')
-
-  if (!user && isPrivateRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('next', pathname)
-
-    return NextResponse.redirect(url)
-  }
+    pathname === '/login' ||
+    pathname === '/register'
 
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone()

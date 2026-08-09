@@ -2,8 +2,8 @@
 title: Caching Strategy
 version: 2.0.0
 status: Living Document
-owner: Platform Core
-updated: 2026-08-07
+owner: Platform Architecture
+updated: 2026-08-09
 related:
   - ARCHITECTURE.md
   - DATA.md
@@ -14,9 +14,11 @@ related:
 
 ## Purpose
 
-This document defines the caching strategy used by Platform Core.
+This document defines the caching strategy for the platform.
 
 Caching is a performance optimization.
+
+No dedicated application cache or distributed cache is currently implemented.
 
 Correctness always takes priority over speed.
 
@@ -68,6 +70,10 @@ External Providers
 
 Not every layer is required for every deployment.
 
+This diagram is conceptual.
+
+A cache layer must not be treated as implemented until it exists in source code and, when applicable, deployment configuration.
+
 ---
 
 # Cacheable Resources
@@ -96,11 +102,17 @@ The following should never be publicly cached:
 - Administrative interfaces
 - Sensitive business information
 
+The current platform does not cache authorization decisions.
+
+Any future authorization caching would require explicit security review, tenant-aware scoping and reliable invalidation.
+
 ---
 
 # Cache Invalidation
 
-The component performing the mutation owns cache invalidation.
+The capability or service that owns the mutation coordinates cache invalidation for the state it changes.
+
+Transport and UI layers may initiate a mutation, but they do not own invalidation policy.
 
 Invalidate only the affected resources.
 
@@ -115,18 +127,25 @@ Cache keys should include:
 - Resource Type
 - Resource Identifier
 - Locale (when applicable)
-- Organization (when applicable)
+- Organization Identifier for tenant-scoped data
+- Profile or Membership Identifier when private scope depends on the actor
 - Filters
 - Pagination
 - Version
 
 Keys should remain deterministic.
 
+Tenant-scoped cache entries must never share cache identity across Organizations.
+
+A cache hit must never widen access beyond the caller's current authorized scope.
+
 ---
 
 # AI Caching
 
-AI responses may be cached when appropriate.
+No runtime AI provider or AI response cache is currently implemented.
+
+If AI caching is introduced, AI responses may be cached when appropriate.
 
 Cache keys should include:
 
@@ -146,26 +165,23 @@ Invalidate cached AI responses whenever:
 
 # Redis
 
-Redis is optional.
+Redis is not currently part of the application stack.
 
-Introduce Redis only when a measurable need exists.
+Redis is optional as a distributed caching technology.
 
-Typical use cases:
+Introduce Redis for caching only when a measurable need exists.
 
-- Distributed Cache
-- Rate Limiting
-- Queues
-- Distributed Locks
-- Idempotency
-- Session Storage
+Redis may also support other architectural concerns such as rate limiting, queues, distributed locks, idempotency or session storage.
 
-Redis adoption requires an ADR.
+Those uses are not cache responsibilities and require their own failure semantics and architectural review.
+
+Redis adoption with architectural impact requires an ADR.
 
 ---
 
 # Failure Strategy
 
-Cache failures should never make the application unavailable.
+Failure of an optional performance cache should not make the application unavailable.
 
 Recommended behavior:
 
@@ -181,21 +197,27 @@ Primary Data Source
 Optional Cache Refresh
 ```
 
-Critical services should continue operating without cache.
+Critical services should continue operating without optional caches.
+
+This rule does not apply when a technology is intentionally used as a required coordination, persistence, queue or security mechanism. Those capabilities require their own failure strategy.
 
 ---
 
 # Performance Strategy
 
-Optimize in this order:
+Performance optimization is evidence-driven.
 
-1. Database queries
-2. Indexes
-3. Pagination
-4. Next.js Cache
-5. CDN
-6. Redis
-7. Horizontal Scaling
+A typical investigation order is:
+
+1. Query design
+2. Database indexes
+3. Pagination and data-loading strategy
+4. Measure the remaining bottleneck
+5. Introduce framework caching or CDN caching when appropriate
+6. Introduce distributed caching only when justified
+7. Scale infrastructure when measurements require it
+
+This is guidance, not a mandatory sequence.
 
 Do not introduce caching to compensate for poor database design.
 
@@ -203,7 +225,9 @@ Do not introduce caching to compensate for poor database design.
 
 # Observability
 
-Monitor:
+No dedicated cache subsystem is currently implemented, so cache telemetry is a future operational requirement rather than a current capability.
+
+When caching is introduced, monitor as applicable:
 
 - Cache Hit Rate
 - Cache Miss Rate
@@ -222,6 +246,8 @@ Never:
 - Cache sensitive information
 - Cache authorization indefinitely
 - Cache secrets
+- Cache tenant-scoped data without tenant-aware keys
+- Treat cached authorization as the source of truth
 - Use infinite TTL without versioning
 - Invalidate the entire application after every mutation
 - Introduce caching before measuring performance

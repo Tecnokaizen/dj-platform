@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { login } from '@/core/auth/actions/login'
+import { login } from '@/core/identity/auth/actions/login'
 
 type LoginPageProps = {
   searchParams: Promise<{

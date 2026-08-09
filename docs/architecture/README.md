@@ -29,16 +29,17 @@ docs/domains/
 ## Core Capabilities
 
 7. IDENTITY.md
-8. DATA.md
-9. SECURITY.md
+8. TENANCY.md
+9. DATA.md
+10. SECURITY.md
 
 ## Infrastructure
 
-10. API.md
-11. CACHE.md
-12. DEPLOYMENT.md
-13. TECH_STACK.md
-14. PRISMA_IMPLEMENTATION.md
+11. API.md
+12. CACHE.md
+13. DEPLOYMENT.md
+14. TECH_STACK.md
+15. PRISMA_IMPLEMENTATION.md
 
 ---
 
@@ -60,13 +61,13 @@ Platform Core follows these principles:
 - AI-Assisted Development
 - Separation of Responsibilities
 
-Business Domains extend Platform Core without modifying its architecture.
+Business Domains consume Platform Core without creating direct Domain-to-Domain dependencies. Platform Core may evolve when product requirements reveal genuinely reusable SaaS capabilities.
 
 ---
 
 # Architectural Decision Records
 
-Long-term architectural decisions should be documented as ADRs before implementation.
+Significant new architectural decisions should normally be documented as ADRs before implementation. Established decisions that predate ADR formalization should be backfilled.
 
 See:
 

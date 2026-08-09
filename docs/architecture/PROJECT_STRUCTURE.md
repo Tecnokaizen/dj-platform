@@ -1,48 +1,64 @@
+---
+title: Project Structure
+version: 2.0.0
+status: Living Document
+owner: Platform Architecture
+updated: 2026-08-09
+related:
+  - SOURCE_STRUCTURE.md
+  - CONVENTIONS.md
+  - CORE.md
+  - DOMAINS.md
+---
+
 # Project Structure
 
 ## Purpose
 
-This document defines the directory structure of Platform Core.
+This document defines the high-level project organization of Platform Core.
 
-Every repository built on this architecture must follow the same organization.
-
-The goal is consistency, scalability and maintainability.
+The objective is to maintain clear ownership, predictable dependencies and reusable architecture across multiple SaaS products.
 
 ---
 
-# Root Structure
+# Source Structure
 
-```
+```text
 src/
 
-app/
+├── app/
+├── config/
+├── core/
+├── domains/
+├── generated/
+├── lib/
+└── shared/
+```
 
-core/
+Detailed source conventions are defined in:
 
-shared/
-
-domains/
-
-generated/
-
-lib/
+```text
+SOURCE_STRUCTURE.md
 ```
 
 ---
 
 # app/
 
-Contains the application entry points.
+Contains application entry points.
 
 Responsibilities:
 
 - Routing
 - Layouts
 - Pages
-- Route groups
+- Route Groups
+- Route Handlers
 - Metadata
 
-Contains no business logic.
+Application files compose capabilities.
+
+They contain no business logic.
 
 ---
 
@@ -50,29 +66,34 @@ Contains no business logic.
 
 Contains reusable platform capabilities.
 
+Core currently includes:
+
+```text
+identity/
+modules/
+```
+
+Identity owns foundational authentication and profile behavior.
+
+Reusable functional modules live under:
+
+```text
+core/modules/
+```
+
 Examples:
 
-Authentication
+- Organizations
+- Roles
+- Memberships
+- Permissions
+- Settings
+- Billing
+- Notifications
+- Audit
+- Storage
 
-Profiles
-
-Organizations
-
-Roles
-
-Permissions
-
-Settings
-
-Dashboard
-
-Billing
-
-Notifications
-
-Storage
-
-The Core is business agnostic.
+Platform Core is business agnostic.
 
 ---
 
@@ -82,23 +103,16 @@ Contains reusable technical resources.
 
 Examples:
 
-Components
-
-UI
-
-Hooks
-
-Utilities
-
-Providers
-
-Validators
-
-Types
-
-Icons
-
-Constants
+- Components
+- UI
+- Hooks
+- Utilities
+- Providers
+- Validators
+- Schemas
+- Types
+- Icons
+- Constants
 
 Shared contains no business logic.
 
@@ -106,25 +120,22 @@ Shared contains no business logic.
 
 # domains/
 
-Contains every business application.
-
-Each Domain owns its business.
+Contains independent Business Domains.
 
 Example:
 
-```
+```text
 domains/
 
-dj/
-
-copy/
-
-crm/
+├── dj/
+├── copy/
+├── seo/
+└── crm/
 ```
 
-Domains may depend on Core and Shared.
+Domains may consume Platform Core and Shared resources.
 
-Domains never depend on other Domains.
+Domains never depend directly on other Domains.
 
 ---
 
@@ -134,75 +145,159 @@ Contains generated code.
 
 Examples:
 
-Prisma Client
+- Prisma Client
+- Generated Types
 
-Generated Types
+Generated files are never edited manually.
 
-Never edit manually.
+Generated code does not determine architectural ownership.
 
 ---
 
 # lib/
 
-Contains infrastructure integrations.
+Contains infrastructure adapters and low-level technical integrations.
 
 Examples:
 
-Supabase
+- Supabase
+- Prisma
+- Cache
+- Logging
+- AI Provider SDKs
+- External SDKs
 
-Prisma
-
-Redis
-
-External SDKs
-
-Infrastructure only.
+Business rules never belong in `lib/`.
 
 ---
 
-# Documentation
+# config/
 
-Documentation mirrors the source code.
+Contains application and platform configuration.
 
-```
+Examples:
+
+- Environment validation
+- Site configuration
+- Navigation configuration
+- Constants
+
+---
+
+# Documentation Structure
+
+Documentation is organized independently by responsibility:
+
+```text
 docs/
 
-architecture/
+├── architecture/
+├── backend/
+├── business/
+├── core/
+├── domains/
+├── engineering/
+├── frontend/
+├── operations/
+├── reviews/
+└── adr/
+```
 
-domains/
+Documentation does not need to mirror source code directory-for-directory.
 
-business/
+It mirrors architectural responsibility.
+
+---
+
+# Core Documentation
+
+Reusable functional Core modules are specified under:
+
+```text
+docs/core/modules/
+```
+
+Example:
+
+```text
+docs/core/modules/organizations/
+```
+
+Implementation lives under:
+
+```text
+src/core/modules/organizations/
+```
+
+---
+
+# Domain Documentation
+
+Business Domain documentation lives under:
+
+```text
+docs/domains/<domain>/
+```
+
+Implementation lives under:
+
+```text
+src/domains/<domain>/
 ```
 
 ---
 
 # Naming Rules
 
-Folders use:
+Folders and files use:
 
+```text
 kebab-case
+```
 
-Modules use:
+TypeScript components and types use:
 
-singular names
+```text
+PascalCase
+```
 
-Examples:
+Functions use:
 
-profile
+```text
+camelCase
+```
 
-organization
+Established capability names should remain stable.
 
-notification
+Do not rename modules solely to normalize grammatical singular or plural forms.
 
-Avoid:
+Consistency and stable references take priority over cosmetic renaming.
 
-profiles
+---
 
-notifications
+# Type Ownership
 
-organizations
+Types belong to their owner.
 
-unless representing collections.
+Core types:
+
+```text
+src/core/.../types/
+```
+
+Domain types:
+
+```text
+src/domains/.../types/
+```
+
+Globally reusable technical types:
+
+```text
+src/shared/types/
+```
+
+Avoid duplicate global type trees.
 
 ---
 
@@ -210,64 +305,100 @@ unless representing collections.
 
 Allowed:
 
-Domain
+```text
+app
+ ↓
+core / domains / shared
+```
 
-↓
+```text
+domains
+ ↓
+core / shared / lib
+```
 
+```text
+core
+ ↓
+shared / lib
+```
+
+```text
+lib
+ ↓
+generated / external providers
+```
+
+Forbidden:
+
+```text
+core
+ ↓
+domains
+```
+
+```text
+shared
+ ↓
+core
+```
+
+```text
+Domain A
+ ↓
+Domain B
+```
+
+---
+
+# Business Logic Rule
+
+When creating functionality ask:
+
+## Is it reusable across SaaS products?
+
+If yes:
+
+```text
+Platform Core
+```
+
+## Is it specific to one business vertical?
+
+If yes:
+
+```text
+Business Domain
+```
+
+## Is it reusable technical functionality with no business meaning?
+
+If yes:
+
+```text
 Shared
+```
 
-↓
+## Is it provider or infrastructure specific?
 
-Core
+If yes:
 
-↓
-
-Infrastructure
-
-Not allowed:
-
-Core
-
-↓
-
-Domain
+```text
+Lib
+```
 
 ---
 
-# Rule of Thumb
+# Growth Rule
 
-When creating a new feature ask:
+Do not create architectural layers in anticipation of hypothetical requirements.
 
-Is it reusable by every SaaS?
-
-↓
-
-YES
-
-↓
-
-Core
+New directories, abstractions and modules must solve a demonstrated problem.
 
 ---
 
-Is it reusable by every Domain?
+# Final Principle
 
-↓
+Project structure communicates ownership.
 
-YES
-
-↓
-
-Shared
-
----
-
-Is it specific to one business?
-
-↓
-
-YES
-
-↓
-
-Domain
+If the correct location of a feature is unclear, clarify its responsibility before writing code.

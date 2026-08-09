@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
-import { ProfileForm } from '@/core/profile/components/profile-form'
-import { getCurrentProfile } from '@/core/profile/services/get-current-profile'
+import { ProfileForm } from '@/core/identity/profile/components/profile-form'
+import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
 
 type ProfilePageProps = {
   searchParams: Promise<{

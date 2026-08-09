@@ -2,8 +2,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { ReactNode } from 'react'
 
-import { LogoutButton } from '@/core/auth/components/logout-button'
-import { getCurrentProfile } from '@/core/profile/services/get-current-profile'
+import { LogoutButton } from '@/core/identity/auth/components/logout-button'
+import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
 
 type PrivateLayoutProps = {
   children: ReactNode

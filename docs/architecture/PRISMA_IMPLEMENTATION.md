@@ -1,13 +1,15 @@
 ---
 title: Prisma Implementation
-version: 2.0.0
+version: 2.1.0
 status: Living Document
-owner: Platform Core
-updated: 2026-08-07
+owner: Platform Architecture
+updated: 2026-08-09
 related:
   - DATA.md
   - ARCHITECTURE.md
   - IDENTITY.md
+  - PROJECT_STRUCTURE.md
+  - SOURCE_STRUCTURE.md
 ---
 
 # Prisma Implementation
@@ -16,15 +18,25 @@ related:
 
 This document defines how Prisma is used within Platform Core.
 
-It establishes conventions for schema management, migrations, code generation and database access.
+It establishes conventions for:
 
-Business-specific models belong to each Domain.
+- Schema management
+- Database migrations
+- Type generation
+- Database client generation
+- Repository access
+- Identifier strategy
+- Transactions
+- Seed data
+- Persistence boundaries
+
+Business-specific models belong to their corresponding Business Domain.
 
 ---
 
 # Scope
 
-Prisma is the persistence layer for Platform Core.
+Prisma is the application persistence layer for Platform Core and Business Domains.
 
 It is responsible for:
 
@@ -32,9 +44,15 @@ It is responsible for:
 - Database migrations
 - Type generation
 - Database client generation
-- Repository access
+- Database access through repositories
 
-Prisma is never accessed directly from Pages, Components or Server Actions.
+Prisma does not own business logic.
+
+Prisma must never be accessed directly from:
+
+- Pages
+- UI Components
+- Server Actions
 
 ---
 
@@ -51,10 +69,21 @@ prisma.config.ts
 src/generated/prisma/
 
 src/lib/prisma/
-└── client.ts
 ```
 
-The generated client must never be edited manually.
+Generated Prisma code lives under:
+
+```text
+src/generated/prisma/
+```
+
+Generated files must never be edited manually.
+
+Infrastructure code responsible for exposing the Prisma Client belongs under:
+
+```text
+src/lib/prisma/
+```
 
 ---
 
@@ -66,21 +95,27 @@ Database configuration is managed through:
 prisma.config.ts
 ```
 
-Environment variables remain outside the schema whenever possible.
+Environment-specific values must be provided through environment variables.
+
+Secrets must never be committed to the repository.
 
 ---
 
-# Driver
+# Database
 
 Current database:
 
-- PostgreSQL
+```text
+PostgreSQL
+```
 
-Current adapter:
+Current Prisma database adapter:
 
-- @prisma/adapter-pg
+```text
+@prisma/adapter-pg
+```
 
-The adapter should remain replaceable.
+Provider-specific configuration must remain isolated from business logic.
 
 ---
 
@@ -92,43 +127,105 @@ The Prisma Client is generated into:
 src/generated/prisma/
 ```
 
-Application code should import the generated client through:
+Application code should access Prisma through the infrastructure layer under:
 
 ```text
-src/lib/prisma/client.ts
+src/lib/prisma/
 ```
 
-The singleton implementation must be shared across the application.
+The Prisma Client must be instantiated consistently and reused according to the runtime requirements of the application.
+
+Application features should not import generated Prisma internals unnecessarily.
+
+---
+
+# Persistence Architecture
+
+Database access follows this flow:
+
+```text
+Page / Component
+        ↓
+Server Action
+        ↓
+Service
+        ↓
+Repository
+        ↓
+Prisma Client
+        ↓
+PostgreSQL
+```
+
+For read operations:
+
+```text
+Server Component
+        ↓
+Service
+        ↓
+Repository
+        ↓
+Prisma Client
+        ↓
+PostgreSQL
+```
+
+Repositories are the persistence boundary.
+
+Services own workflows and business behavior.
+
+Server Actions coordinate application input and output.
 
 ---
 
 # Repository Pattern
 
-Database access always follows this flow:
+Repositories are responsible for:
+
+- Reading persisted entities
+- Creating persisted entities
+- Updating persisted entities
+- Deleting persisted entities when permitted
+- Executing database queries
+- Applying persistence-level filters
+- Mapping persistence results when necessary
+
+Repositories must not:
+
+- Decide business rules
+- Perform authorization decisions
+- Render UI
+- Send email
+- Call AI providers
+- Call external APIs
+- Perform unrelated application workflows
+
+---
+
+# Prisma Access Rule
+
+Prisma must not be accessed directly from:
 
 ```text
-Server Action
-
-↓
-
-Service
-
-↓
-
-Repository
-
-↓
-
-Prisma Client
-
-↓
-
-PostgreSQL
+src/app/
 ```
 
-Repositories are the only layer allowed to communicate with Prisma.
+or UI components.
 
-Business logic belongs to Services.
+Preferred access:
+
+```text
+Application
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Prisma
+```
+
+Exceptions require architectural justification.
 
 ---
 
@@ -146,104 +243,350 @@ Development dependencies:
 npm install -D prisma tsx @types/pg
 ```
 
-Use a single package manager across the repository.
+The repository uses a single package manager consistently.
 
 ---
 
 # Validation Workflow
 
-Before every migration:
+Before creating or reviewing a migration:
 
 ```bash
 npx prisma format
-
 npx prisma validate
-
 npx prisma generate
 ```
 
 Review:
 
 - Model names
+- Field names
 - Relations
+- Foreign keys
 - Constraints
+- Referential actions
 - Cascades
-- Indexes
 - Nullable fields
+- Indexes
+- Unique constraints
+- Identifier types
+
+Schema validation does not replace migration review.
 
 ---
 
 # Migration Workflow
 
-Typical workflow:
+Typical development workflow:
 
 ```bash
 npx prisma migrate dev --name <migration-name>
 ```
 
+Migration names should describe the schema change.
+
+Example:
+
+```text
+add_platform_organizations
+```
+
 Rules:
 
-- One migration per schema change.
-- Never edit applied migrations.
-- Review destructive changes.
-- Test in staging before production.
-- Keep migrations small.
+- Keep migrations focused.
+- Review generated SQL.
+- Never modify migrations that have already been applied to shared or production environments.
+- Review destructive operations explicitly.
+- Test migrations before production deployment.
+- Validate rollback and recovery implications.
+- Keep schema and migration history synchronized.
 
 ---
 
-# Schema Design
+# Schema Ownership
 
-Platform Core owns models such as:
+Every persisted model must have a clear architectural owner.
 
-- User
-- Profile
-- Organization
-- Membership
-- Role
-- Permission
-- Notification
-- Audit
-- FeatureFlag
-
-Business entities belong to Domains.
-
-Examples:
+Models belong to one of two categories:
 
 ```text
-DJ Domain
+Platform Core Models
 
-Track
+Business Domain Models
+```
 
-Artist
+---
 
-Festival
+# Platform Core Models
+
+Platform Core owns application models required across SaaS products.
+
+Examples may include:
+
+```text
+Profile
+Organization
+Role
+OrganizationMembership
+OrganizationInvitation
+Permission
+RolePermission
+Notification
+AuditEvent
+FeatureFlag
+PlatformSetting
+```
+
+Current foundational ownership is:
+
+```text
+Identity
+└── Profile
+
+Organizations
+└── Organization
+
+Roles
+└── Role
+
+Memberships
+├── OrganizationMembership
+└── OrganizationInvitation
+
+Permissions
+├── Permission
+└── RolePermission
+```
+
+Additional models belong to their corresponding approved Core capability or Core module.
+
+Platform Core models must remain business agnostic.
+
+---
+
+# Identity Ownership
+
+Authenticated user identities are provided by Supabase Authentication through:
+
+```text
+auth.users
+```
+
+Platform Core uses the application `Profile` entity to represent application-level profile information associated with an authenticated identity.
+
+Conceptually:
+
+```text
+Supabase Auth
+
+auth.users
+    ↓
+Profile
+    ↓
+Platform Core relationships
+```
+
+Platform Core must not create a duplicate Prisma `User` model while Supabase Auth remains the identity source of truth.
+
+Any future change to this identity architecture requires an ADR and an explicit migration strategy.
+
+---
+
+# Business Domain Models
+
+Business-specific entities belong to their corresponding Domain.
+
+Generic examples:
+
+```text
+Domain A
+
+Resource
+Category
+Collection
 ```
 
 ```text
-Commerce Domain
+Domain B
 
 Order
-
 Customer
-
 Product
 ```
 
-The Core must never contain Domain entities.
+Platform Core must never contain Domain-specific entities merely because multiple screens or workflows use them.
+
+Generated Prisma models do not determine architectural ownership.
+
+Ownership is determined by platform architecture and Domain responsibility.
+
+---
+
+# Cross-Module Relationships
+
+Core modules may reference entities owned by other Core modules when required by the platform model.
+
+Examples include relationships such as:
+
+```text
+Profile
+        ↓
+OrganizationMembership
+        ↓
+Organization
+
+OrganizationMembership
+        ↓
+Role
+
+Role
+        ↓
+RolePermission
+        ↓
+Permission
+
+OrganizationInvitation
+        ├──→ Organization
+        └──→ Role
+```
+
+Entity ownership remains:
+
+```text
+Profile
+→ Identity
+
+Organization
+→ Organizations
+
+OrganizationMembership
+OrganizationInvitation
+→ Memberships
+
+Role
+→ Roles
+
+Permission
+RolePermission
+→ Permissions
+```
+
+Cross-module relationships must:
+
+- Have one documented owner for every entity.
+- Preserve approved architectural dependency rules.
+- Avoid duplicating data solely to eliminate legitimate relationships.
+- Avoid temporary competing sources of truth.
+- Be documented before implementation.
+
+A module may orchestrate another module without becoming the owner of that module's entities.
 
 ---
 
 # Identifiers
 
-Internal identifiers should use:
+Platform Core uses UUID identifiers.
 
-```text
-cuid()
+Recommended Prisma pattern:
+
+```prisma
+id String @id @default(uuid()) @db.Uuid
 ```
+
+UUID is the current identifier strategy for Platform Core and Domain entities unless a documented exception exists.
+
+New models must follow the identifier strategy already used by the active application schema.
+
+Do not introduce alternative identifier formats such as CUID into new modules.
 
 Identifier strategy must remain consistent across Platform Core.
 
-Any future change requires an ADR.
+Foreign keys referencing UUID identifiers should use:
+
+```prisma
+@db.Uuid
+```
+
+Example:
+
+```prisma
+organizationId String @map("organization_id") @db.Uuid
+```
+
+Any future platform-wide change to the identifier strategy requires:
+
+- An ADR
+- A migration plan
+- Compatibility analysis
+- Referential-integrity review
+
+---
+
+# Database Naming
+
+Prisma model names use:
+
+```text
+PascalCase
+```
+
+Application fields use:
+
+```text
+camelCase
+```
+
+Database tables and columns may use:
+
+```text
+snake_case
+```
+
+when explicitly mapped.
+
+Example:
+
+```prisma
+model OrganizationMembership {
+  organizationId String @map("organization_id") @db.Uuid
+
+  @@map("organization_memberships")
+}
+```
+
+Mapping must remain explicit and predictable.
+
+---
+
+# Timestamps
+
+Persisted application entities should normally provide:
+
+```text
+createdAt
+updatedAt
+```
+
+Recommended PostgreSQL representation:
+
+```prisma
+createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+```
+
+Additional timestamps should represent explicit lifecycle events.
+
+Examples:
+
+```text
+archivedAt
+deletedAt
+joinedAt
+publishedAt
+completedAt
+```
+
+Do not introduce timestamps with ambiguous meaning.
 
 ---
 
@@ -251,29 +594,351 @@ Any future change requires an ADR.
 
 Soft deletion is optional.
 
-When used:
+When required, a typical field is:
 
 ```text
 deletedAt
 ```
 
-Repositories are responsible for excluding deleted records.
+Repositories are responsible for excluding soft-deleted records where required.
 
-Prisma should never hide this behavior automatically.
+Prisma should not introduce hidden application behavior that makes persistence rules difficult to understand.
+
+For lifecycle-oriented entities, an explicit status may be preferable to generic soft deletion.
+
+Example:
+
+```text
+ACTIVE
+SUSPENDED
+ARCHIVED
+```
+
+The lifecycle model must be documented by the owning Core module or Domain.
+
+---
+
+# Referential Actions
+
+Relations must define intentional deletion behavior.
+
+Possible strategies include:
+
+```text
+Restrict
+Cascade
+SetNull
+NoAction
+```
+
+Referential actions must never be chosen solely for convenience.
+
+Before using cascading deletion, review:
+
+- Tenant boundaries
+- Audit requirements
+- Historical records
+- Billing records
+- User-generated data
+- Domain-owned data
+- Recovery requirements
+
+Destructive cascades require particular scrutiny.
+
+---
+
+# Unique Constraints
+
+Unique constraints should enforce real invariants.
+
+Examples:
+
+```text
+Organization.slug
+
+organizationId + profileId
+
+externalProvider + externalId
+```
+
+Application validation is not a replacement for database uniqueness where the database can enforce the invariant reliably.
+
+---
+
+# Indexes
+
+Indexes should support actual query patterns.
+
+Common candidates include:
+
+- Foreign keys
+- Status fields used frequently for filtering
+- Tenant identifiers
+- Slugs
+- External identifiers
+- Frequently queried timestamps
+- Composite tenant filters
+
+Example:
+
+```prisma
+@@index([organizationId])
+@@index([status])
+@@index([organizationId, status])
+```
+
+Do not create indexes speculatively without a known access pattern.
+
+---
+
+# Multi-Tenancy
+
+Tenant-owned entities must be explicitly scoped.
+
+Typical tenant identifier:
+
+```text
+organizationId
+```
+
+Tenant-aware queries must not rely solely on UI state.
+
+Tenant isolation must be enforced through the appropriate combination of:
+
+- Application authorization
+- Repository scoping
+- PostgreSQL constraints
+- Supabase Row Level Security where applicable
+
+Example conceptual flow:
+
+```text
+Authenticated Identity
+       ↓
+Profile
+       ↓
+ACTIVE OrganizationMembership
+       ↓
+Organization Context
+       ↓
+Tenant-Scoped Query
+```
+
+A valid authentication session alone does not authorize access to tenant-owned data.
+
+---
+
+# Row Level Security
+
+Supabase Row Level Security may be used as an additional database security boundary.
+
+RLS must complement application authorization.
+
+It does not replace:
+
+- Membership validation
+- Role validation
+- Permission checks
+- Service-layer business rules
+
+Policies must be reviewed together with PostgreSQL grants.
+
+Administrative `service_role` access must remain isolated and deliberate.
+
+---
+
+# Transactions
+
+Transactions are used when multiple persistence operations form one atomic business invariant.
+
+Example:
+
+```text
+BEGIN
+
+Create parent record
+
+Create required relationship
+
+COMMIT
+```
+
+If any required persistence operation fails:
+
+```text
+ROLLBACK
+```
+
+Transactions should contain database work only.
+
+Never perform the following inside a database transaction:
+
+- External HTTP requests
+- Email delivery
+- AI processing
+- File uploads
+- Payment-provider calls
+- Long-running external operations
+
+Keep transactions short.
+
+---
+
+# Service and Repository Responsibilities
+
+## Service
+
+A Service may:
+
+- Apply business rules
+- Coordinate repositories
+- Validate workflows
+- Perform authorization orchestration
+- Open an application transaction where appropriate
+- Coordinate multiple Core capabilities
+
+A Service must not expose persistence internals unnecessarily.
+
+## Repository
+
+A Repository may:
+
+- Execute Prisma queries
+- Select fields
+- Create records
+- Update records
+- Execute persistence-specific operations
+- Participate in transactions
+
+A Repository must not:
+
+- Decide application authorization
+- Define business policy
+- Send notifications
+- Call external providers
+- Render presentation logic
+
+---
+
+# Prisma Types
+
+Generated Prisma types are persistence types.
+
+They should not automatically become public application contracts.
+
+When a stable application contract is required, define an explicit:
+
+```text
+DTO
+Schema
+Application Type
+```
+
+Do not expose Prisma internals merely because generated types are convenient.
+
+---
+
+# Validation
+
+Prisma constraints protect persistence integrity.
+
+Application input validation remains the responsibility of the application layer.
+
+Preferred flow:
+
+```text
+External Input
+      ↓
+Zod Validation
+      ↓
+Service
+      ↓
+Repository
+      ↓
+Prisma
+```
+
+Do not rely on Prisma errors as the primary input-validation mechanism.
 
 ---
 
 # Seed Strategy
 
-Seeds should be:
+Seed and synchronization processes should be:
 
 - Idempotent
 - Predictable
 - Repeatable
+- Environment aware
+- Safe to execute intentionally
+- Based on stable semantic keys
 
-Platform seeds initialize only Platform Core data.
+Platform Core seed or synchronization processes initialize reusable platform reference data only.
 
-Domain-specific seeds belong inside the corresponding Domain.
+Current Foundation reference data includes:
+
+```text
+Roles
+Permissions
+RolePermission policy
+```
+
+Roles are synchronized by:
+
+```text
+Role.key
+```
+
+Permissions are synchronized by:
+
+```text
+Permission.key
+```
+
+RolePermission policy is synchronized using the canonical semantic Role and Permission keys.
+
+Generated UUID values are persistence identifiers.
+
+They must not be hard-coded as semantic identifiers.
+
+Incorrect:
+
+```text
+OWNER_ROLE_ID = "fixed-uuid"
+```
+
+Correct:
+
+```text
+OWNER
+→ resolve Role by key
+```
+
+Required reference data must exist after synchronization.
+
+If a required Role or Permission cannot be resolved, synchronization must fail clearly rather than inventing runtime authorization data.
+
+Synchronization must detect unexpected persisted reference data or policy drift.
+
+It must not automatically perform destructive deletion of unknown Roles, Permissions or RolePermission mappings without an explicitly approved migration or policy decision.
+
+Normal application runtime must not auto-create missing Roles or Permissions as a fallback.
+
+Domain-specific reference data belongs to the corresponding Domain.
+
+Seed scripts must not silently create production tenant or business data.
+
+---
+
+# Existing Identities, Profiles and Migration
+
+Schema changes must account for existing authentication identities, Profiles and application data.
+
+When new Core capabilities are introduced, migration strategy must explicitly decide how existing records are handled.
+
+Do not invent tenant ownership automatically unless product requirements explicitly define personal or automatic workspaces.
+
+Migration behavior must be intentional.
 
 ---
 
@@ -282,27 +947,123 @@ Domain-specific seeds belong inside the corresponding Domain.
 Repositories should:
 
 - Select only required fields.
-- Avoid N+1 queries.
+- Avoid N+1 query patterns.
 - Prefer explicit projections.
+- Use pagination for unbounded collections.
+- Use appropriate indexes.
 - Keep transactions short.
+- Avoid loading large relation graphs unnecessarily.
 
-Never expose raw Prisma models unnecessarily.
+Performance optimization should be driven by actual query behavior.
 
 ---
 
-# Transactions
+# Pagination
 
-Transactions should contain only database work.
+Collections that may grow without a practical upper bound should support pagination.
 
-Never perform:
+The pagination strategy should be selected based on query requirements.
 
-- HTTP requests
-- Email
-- AI processing
-- File uploads
-- External API calls
+Possible approaches:
 
-inside a transaction.
+```text
+Offset Pagination
+
+Cursor Pagination
+```
+
+Repositories own persistence implementation.
+
+The API or application contract owns the externally visible pagination format.
+
+---
+
+# Query Boundaries
+
+Avoid creating repositories that become generic unrestricted database gateways.
+
+Preferred:
+
+```text
+organizationRepository.findById()
+organizationRepository.findBySlug()
+organizationRepository.listForProfile()
+```
+
+Avoid:
+
+```text
+genericRepository.queryAnything()
+```
+
+Persistence APIs should communicate intent.
+
+---
+
+# Error Handling
+
+Raw database errors should not leak directly to users.
+
+Persistence errors should be translated into stable application errors where appropriate.
+
+Examples:
+
+```text
+RESOURCE_NOT_FOUND
+RESOURCE_CONFLICT
+INVALID_RELATION
+PERSISTENCE_ERROR
+```
+
+Detailed database information may be logged securely for diagnostics.
+
+Never expose:
+
+- SQL details
+- Credentials
+- Connection strings
+- Internal database topology
+
+---
+
+# Logging
+
+Database logging should support diagnostics without leaking sensitive data.
+
+Never log:
+
+- Database credentials
+- Access tokens
+- Authentication secrets
+- Sensitive user data unnecessarily
+
+Slow-query and error monitoring may be introduced as platform observability evolves.
+
+---
+
+# Schema Evolution
+
+Schema changes must remain compatible with the documented architecture.
+
+Before introducing a new model, determine:
+
+```text
+Who owns this entity?
+```
+
+Possible answers:
+
+```text
+Identity
+
+Core Module
+
+Business Domain
+
+Infrastructure
+```
+
+If ownership is unclear, architecture must be clarified before implementation.
 
 ---
 
@@ -310,22 +1071,182 @@ inside a transaction.
 
 Prisma extensions may be introduced when they:
 
-- Reduce duplication
+- Reduce meaningful duplication
 - Improve safety
-- Preserve transparency
+- Preserve explicit behavior
+- Remain understandable to engineers and AI agents
 
 Hidden behavior should be avoided.
+
+Extensions must not become a mechanism for hiding business logic inside the persistence layer.
+
+---
+
+# Raw SQL
+
+Raw SQL should be exceptional.
+
+Acceptable cases may include:
+
+- PostgreSQL features Prisma cannot represent
+- Partial unique indexes
+- Specialized constraints
+- RLS policies
+- Database grants
+- Performance-critical reviewed queries
+
+Raw SQL must:
+
+- Be documented
+- Be reviewed
+- Use safe parameterization
+- Remain part of migration history where applicable
+
+---
+
+# Database Constraints vs Application Rules
+
+Use the database to enforce invariants it can express reliably.
+
+Use application services for rules requiring business context.
+
+Example:
+
+```text
+Unique slug
+→ Database constraint
+```
+
+```text
+Actor may archive Organization
+→ Application service rule + authorization
+```
+
+For critical invariants, use both layers when appropriate.
+
+---
+
+# Migration Safety
+
+Before applying a production migration, review:
+
+- Data loss risk
+- Table locking
+- Index creation impact
+- Nullability changes
+- Defaults
+- Foreign keys
+- Cascades
+- Backfill requirements
+- Deployment compatibility
+
+Large backfills should not automatically be combined with schema migrations when they require long-running work.
+
+---
+
+# Production Deployment
+
+Production schema changes should run through the controlled deployment workflow.
+
+Typical sequence:
+
+```text
+Reviewed Migration
+       ↓
+Staging Validation
+       ↓
+Backup / Recovery Check
+       ↓
+Production Deployment
+       ↓
+Migration
+       ↓
+Health Verification
+       ↓
+Monitoring
+```
+
+Production migrations must not depend on manually edited database state.
+
+---
+
+# Testing
+
+Persistence behavior should be tested where it protects important invariants.
+
+Examples:
+
+- Unique constraints
+- Tenant isolation
+- Transaction rollback
+- Referential behavior
+- Repository filtering
+- Lifecycle persistence
+- Cross-module relationships
+
+High-risk database behavior deserves integration testing against PostgreSQL.
+
+---
+
+# AI-Assisted Development Rules
+
+AI coding agents working with Prisma must:
+
+- Read the relevant architecture documentation first.
+- Preserve UUID identifier strategy.
+- Preserve Supabase identity ownership.
+- Determine model ownership before adding entities.
+- Use repositories for persistence access.
+- Review relationships and referential actions.
+- Avoid speculative models.
+- Avoid speculative indexes.
+- Avoid duplicate identity models.
+- Avoid temporary competing authorization systems.
+- Run Prisma validation after schema changes.
+- Review generated migrations before considering a task complete.
+
+AI agents must not redesign persistence architecture during implementation.
+
+Architectural uncertainty must be escalated before code generation continues.
 
 ---
 
 # Definition of Ready
 
-The Prisma layer is ready when:
+A Prisma change is ready for implementation when:
+
+- Entity ownership is defined.
+- Identifier strategy is compatible.
+- Relations are documented.
+- Tenant implications are understood.
+- Referential actions are intentional.
+- Required constraints are defined.
+- Migration impact is understood.
+- Cross-module dependencies are documented.
+
+---
+
+# Definition of Done
+
+A Prisma change is complete when:
 
 - Schema formats successfully.
-- Schema validates.
-- Client generates correctly.
-- Migrations are reviewed.
-- Repositories follow the defined architecture.
-- Platform Core models are stable.
-- Domain models are documented.
+- Schema validates successfully.
+- Prisma Client generates successfully.
+- Migration SQL has been reviewed.
+- TypeScript passes.
+- Lint passes.
+- Repository boundaries are respected.
+- Tenant isolation is implemented and verified where applicable.
+- Documentation matches implementation.
+- Relevant tests pass.
+
+---
+
+# Final Principle
+
+Prisma represents persistence.
+
+It does not define the business architecture.
+
+Every model must have a clear owner, every relationship must be intentional, and every schema change must preserve the boundaries of Platform Core and its Business Domains.
