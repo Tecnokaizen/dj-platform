@@ -10,6 +10,7 @@
  */
 export type * from './models/Profile'
 export type * from './models/Organization'
+export type * from './models/Role'
 export type * from './models/Artist'
 export type * from './models/Track'
 export type * from './models/TrackArtist'

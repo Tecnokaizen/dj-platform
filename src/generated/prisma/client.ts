@@ -52,6 +52,11 @@ export type Profile = Prisma.ProfileModel
  */
 export type Organization = Prisma.OrganizationModel
 /**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
  * Model Artist
  * 
  */
