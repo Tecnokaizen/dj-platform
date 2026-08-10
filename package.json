@@ -29,7 +29,8 @@
     "test:roles:seed": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-seed.test.ts",
     "test:roles:required-resolution": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-required-resolution.test.ts",
     "test:roles:protection": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-protection.test.ts",
-    "test:roles:hardcoded-uuid-audit": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-hardcoded-uuid-audit.test.ts"
+    "test:roles:hardcoded-uuid-audit": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-hardcoded-uuid-audit.test.ts",
+    "test:roles:boundary": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-boundary.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
