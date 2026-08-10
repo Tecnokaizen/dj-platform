@@ -2,6 +2,7 @@ import 'dotenv/config'
 
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client'
+import { seedSystemRoles } from '../src/core/modules/roles/seed/seed-system-roles'
 
 const connectionString = process.env.DATABASE_URL
 
@@ -18,7 +19,7 @@ const prisma = new PrismaClient({
 })
 
 async function main() {
-  console.log('Seed inicial de DJ Platform: sin datos por ahora.')
+  await seedSystemRoles(prisma)
 }
 
 main()
