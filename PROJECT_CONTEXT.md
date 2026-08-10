@@ -2,7 +2,7 @@
 title: Project Context
 version: 2.0.0
 status: Living Document
-updated: 2026-08-09
+updated: 2026-08-10
 repository: dj-platform
 ---
 
@@ -144,7 +144,34 @@ Organizations:
 
 Specification complete.
 
-Implementation pending.
+Foundation source implemented through O-016:
+
+- OrganizationStatus
+- Organization Prisma model and migration
+- Prisma runtime access
+- findOrganizationById / findOrganizationBySlug
+- createOrganizationRecord persistence primitive
+- updateOrganization
+- lifecycle suspend / reactivate / archive / restore
+- Zod validation schemas
+- application types and OrganizationDto
+- stable Organization errors
+
+Organizations Foundation is not complete.
+
+Remaining Organizations work starts at O-017.
+
+Still pending outside completed Organizations Foundation scope:
+
+- public createOrganization() workflow
+- Roles
+- Memberships
+- OWNER ownership workflow
+- Permissions
+- Tenancy Integration
+
+createOrganizationRecord remains an internal persistence primitive only.
+It is not the public createOrganization() workflow.
 
 Roles:
 
@@ -358,7 +385,6 @@ Package manager:
 Do not assume the repository currently contains:
 
 - Auth.js;
-- Zod;
 - shadcn/ui;
 - OpenAI SDK;
 - Anthropic SDK;
@@ -665,7 +691,10 @@ The repository currently contains:
 - Profile functionality;
 - Prisma foundation;
 - generated Prisma client;
+- Organizations Foundation source through O-016;
 - initial Domain and Core source boundaries.
+
+Organizations Foundation continues beyond O-016.
 
 Large parts of DJ Domain functionality remain unimplemented.
 
@@ -825,7 +854,9 @@ Approved sequence:
 
 Identity foundation already exists.
 
-The next Core implementation work should respect this dependency order unless Architecture explicitly changes it.
+Organizations Foundation source is implemented through O-016 and continues with remaining Organizations tasks before Roles.
+
+The Core implementation work should respect this dependency order unless Architecture explicitly changes it.
 
 ---
 
