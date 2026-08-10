@@ -1138,7 +1138,7 @@ findByKey
 listSystemRoles
 ```
 
-The Role repository owns persistence lookup.
+The Roles module owns Role persistence lookup through Roles-owned services/functions using `@/lib/prisma`. A Repository may be introduced later only if demonstrated persistence complexity justifies it under ADR-007.
 
 Services may provide higher-level operations such as:
 
