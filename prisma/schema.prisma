@@ -159,6 +159,12 @@ enum Visibility {
   PUBLIC
 }
 
+enum OrganizationStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
 model Profile {
   id                String           @id @db.Uuid
   username          String?          @unique @db.VarChar(50)
