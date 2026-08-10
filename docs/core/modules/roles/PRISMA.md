@@ -1296,13 +1296,27 @@ Canonical Role creation belongs to seed/setup.
 
 # Repository Boundary
 
-Recommended source location:
+ADR-007 applies.
+
+A Repository is optional, not mandatory.
+
+Current Roles Foundation does not demonstrate a need for a Repository class, Repository interface, or:
 
 ```text
 src/core/modules/roles/repositories/role-repository.ts
 ```
 
-Repository responsibilities may include:
+Preferred current access pattern:
+
+```text
+Roles-owned services/functions
+  ↓
+@/lib/prisma
+```
+
+A Repository may be introduced later only if demonstrated persistence complexity justifies it.
+
+If a Repository is introduced later, candidate operations may include:
 
 ```text
 findById
@@ -1316,16 +1330,16 @@ Only required operations should be implemented.
 
 ---
 
-# Repository Rules
+# Persistence Access Rules
 
-Repository may:
+Roles-owned persistence access (services/functions using `@/lib/prisma`, or an optional Repository if later justified) may:
 
 - Query Prisma.
 - Persist Role records.
 - Map persistence errors.
 - Apply explicit projections.
 
-Repository must not:
+Persistence access must not:
 
 - Assign Roles to Memberships.
 - Check Permissions.
@@ -1352,9 +1366,9 @@ resolveRequiredRole
 validateSystemRoleCatalog
 ```
 
-Services consume repository operations.
+Services may use `@/lib/prisma` directly.
 
-Services should not import Prisma directly.
+A separate Repository layer is not required unless ADR-007 conditions for introducing one are met.
 
 ---
 
@@ -1401,7 +1415,7 @@ Timestamps may remain internal unless consumers need them.
 
 # Query By ID
 
-Repository concept:
+Persistence concept:
 
 ```text
 findById(roleId)
@@ -1419,7 +1433,7 @@ Missing record returns:
 null
 ```
 
-at repository level or the project's approved equivalent.
+at persistence/service level or the project's approved equivalent.
 
 Service maps this to:
 
@@ -1433,7 +1447,7 @@ where appropriate.
 
 # Query By Key
 
-Repository concept:
+Persistence concept:
 
 ```text
 findByKey(key)
@@ -1453,7 +1467,7 @@ findByKey("OWNER")
 
 # List System Roles
 
-Repository concept:
+Persistence concept:
 
 ```text
 findSystemRoles()
@@ -1583,7 +1597,7 @@ MEMBER
 VIEWER
 ```
 
-The Role repository does not require:
+Roles-owned persistence access does not require:
 
 ```text
 delete()
@@ -1754,7 +1768,7 @@ Membership mutations must be atomic.
 
 Roles only supplies canonical Role records.
 
-No ownership-transfer persistence belongs in Role repository.
+No ownership-transfer persistence belongs in Roles persistence access.
 
 ---
 
@@ -2054,8 +2068,6 @@ Recommended implementation:
 
 ```text
 src/core/modules/roles/
-├── repositories/
-│   └── role-repository.ts
 ├── services/
 │   ├── get-role.ts
 │   ├── get-role-by-key.ts
@@ -2066,6 +2078,8 @@ src/core/modules/roles/
 └── constants/
     └── system-role-keys.ts
 ```
+
+`repositories/` is optional and must not be created without demonstrated need (ADR-007).
 
 Only create directories required by actual implementation.
 

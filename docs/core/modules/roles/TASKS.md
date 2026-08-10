@@ -407,19 +407,23 @@ Database uniqueness remains the final constraint.
 
 ---
 
-# Phase 4 — Repository Layer
+# Phase 4 — Persistence Access
 
 ## R-008
 
-### Create Role Repository
+### Establish Role Persistence Access
 
-Create:
+Establish explicitly the Roles-owned Prisma access boundary for Foundation Role lookups.
+
+Preferred Foundation pattern:
 
 ```text
-src/core/modules/roles/repositories/role-repository.ts
+Roles-owned services/functions
+  ↓
+@/lib/prisma
 ```
 
-Initial repository operations may include:
+Lookup operations that follow in R-009–R-011:
 
 ```text
 findById
@@ -429,22 +433,25 @@ findByKey
 findSystemRoles
 ```
 
-Controlled seed/setup persistence may additionally require:
+Do not introduce a Repository class, Repository interface, or:
 
 ```text
-upsertSystemRole
+src/core/modules/roles/repositories/role-repository.ts
 ```
+
+unless demonstrated persistence complexity later justifies it under ADR-007.
+
+Controlled seed/setup persistence already exists separately and must not force a Repository abstraction.
 
 ### Acceptance Criteria
 
-Repository:
-
-- owns direct Prisma access for Roles;
-- contains persistence logic only;
-- contains no Membership logic;
-- contains no Permission evaluation;
-- contains no Organization ownership logic;
-- contains no HTTP/UI logic.
+- Roles owns direct Prisma access for Role lookups.
+- Persistence access contains no Membership logic.
+- Persistence access contains no Permission logic.
+- Persistence access contains no Organization ownership logic.
+- Persistence access contains no HTTP/UI logic.
+- No Repository abstraction is introduced without demonstrated need, per ADR-007.
+- R-009/R-010/R-011 may implement explicit services/functions using `@/lib/prisma`.
 
 ---
 
@@ -461,7 +468,7 @@ findById(roleId)
 ### Acceptance Criteria
 
 - UUID is handled correctly.
-- Missing Role returns the approved repository-level absence result.
+- Missing Role returns `null` (approved persistence/service absence result).
 - Query does not unnecessarily load unrelated relations.
 
 ---
@@ -619,7 +626,7 @@ Conceptual flow:
 ```text
 Validate
 ↓
-Repository
+Persistence / Prisma access (@/lib/prisma)
 ↓
 Map Result
 ↓
@@ -628,7 +635,7 @@ RoleDto
 
 ### Acceptance Criteria
 
-- Service does not access Prisma directly.
+- Service may use `@/lib/prisma` directly; no Repository is required without demonstrated need (ADR-007).
 - Missing Role maps to stable Role error.
 - No authorization side effects occur.
 
@@ -1093,11 +1100,12 @@ Possible implementation directories:
 
 ```text
 constants/
-repositories/
 schemas/
 services/
 types/
 ```
+
+`repositories/` is optional and must not be introduced without demonstrated persistence need (ADR-007).
 
 Only create directories actually required.
 
@@ -1159,7 +1167,7 @@ Review:
 - Migration.
 - Seed.
 - Constants.
-- Repository.
+- Persistence access.
 - Services.
 - DTOs.
 - Validation.
@@ -1203,7 +1211,7 @@ MEMBER exists
 
 VIEWER exists
 
-Role repository exists
+Role persistence access is established (ADR-007; no mandatory Repository)
 
 Role lookup by ID exists
 
@@ -1587,7 +1595,7 @@ Canonical lookup must use:
 OWNER
 ```
 
-through the Role repository/service.
+through Roles-owned persistence/service access (`@/lib/prisma` or an optional Repository if later justified).
 
 ---
 
@@ -1804,7 +1812,7 @@ Roles Foundation is complete when:
 - MEMBER is seeded.
 - VIEWER is seeded.
 - Seed is idempotent.
-- Role repository exists.
+- Role persistence access is established (ADR-007; no mandatory Repository).
 - Role lookup by ID works.
 - Role lookup by key works.
 - System Role listing works.
