@@ -204,6 +204,19 @@ model Organization {
   @@map("organizations")
 }
 
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(100)
+  description String?  @db.Text
+  isSystem    Boolean  @default(true) @map("is_system")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("roles")
+}
+
 model Artist {
   id                  String     @id @default(uuid()) @db.Uuid
   name                String     @db.VarChar(255)
