@@ -207,3 +207,12 @@ export const Visibility = {
 } as const
 
 export type Visibility = (typeof Visibility)[keyof typeof Visibility]
+
+
+export const OrganizationStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type OrganizationStatus = (typeof OrganizationStatus)[keyof typeof OrganizationStatus]
