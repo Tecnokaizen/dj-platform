@@ -2,6 +2,7 @@ import 'server-only'
 
 import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
+import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 
 const ORGANIZATION_SLUG_CONFLICT = 'ORGANIZATION_SLUG_CONFLICT'
@@ -26,18 +27,7 @@ export async function createOrganizationRecord(
         ...(input.locale !== undefined ? { locale: input.locale } : {}),
         ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
       },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        status: true,
-        logoUrl: true,
-        locale: true,
-        timezone: true,
-        createdAt: true,
-        updatedAt: true,
-        archivedAt: true,
-      },
+      select: organizationSelect,
     })
   } catch (error) {
     if (
