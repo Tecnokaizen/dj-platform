@@ -389,17 +389,23 @@ Required.
 
 Initial records:
 
-| Key | Name | System | Suggested Order |
-|---|---|---:|---:|
-| OWNER | Owner | Yes | 10 |
-| ADMIN | Admin | Yes | 20 |
-| MANAGER | Manager | Yes | 30 |
-| MEMBER | Member | Yes | 40 |
-| VIEWER | Viewer | Yes | 50 |
+| Key | Name | Description | System | Suggested Order |
+|---|---|---|---:|---:|
+| OWNER | Owner | null | Yes | 10 |
+| ADMIN | Admin | null | Yes | 20 |
+| MANAGER | Manager | null | Yes | 30 |
+| MEMBER | Member | null | Yes | 40 |
+| VIEWER | Viewer | null | Yes | 50 |
 
 The table defines initial reference data.
 
 It does not define Permission inheritance.
+
+For Roles Foundation, canonical `Role.description` is `null`.
+
+Human-readable description copy is deferred until explicitly approved.
+
+Any description field example elsewhere in this document is illustrative only and is not Foundation seed metadata.
 
 ---
 
