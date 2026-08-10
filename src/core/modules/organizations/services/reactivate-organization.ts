@@ -2,11 +2,12 @@ import 'server-only'
 
 import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
+import {
+  ORGANIZATION_ERROR_CODES,
+  OrganizationError,
+} from '@/core/modules/organizations/errors/organization-error'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
-
-const ORGANIZATION_NOT_FOUND = 'ORGANIZATION_NOT_FOUND'
-const INVALID_ORGANIZATION_STATE = 'INVALID_ORGANIZATION_STATE'
 
 export async function reactivateOrganization(
   organizationId: string
@@ -41,9 +42,9 @@ export async function reactivateOrganization(
     })
 
     if (!existing) {
-      throw new Error(ORGANIZATION_NOT_FOUND)
+      throw new OrganizationError(ORGANIZATION_ERROR_CODES.NOT_FOUND)
     }
 
-    throw new Error(INVALID_ORGANIZATION_STATE)
+    throw new OrganizationError(ORGANIZATION_ERROR_CODES.INVALID_STATE)
   }
 }

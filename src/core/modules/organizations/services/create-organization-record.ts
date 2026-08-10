@@ -2,10 +2,12 @@ import 'server-only'
 
 import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
+import {
+  ORGANIZATION_ERROR_CODES,
+  OrganizationError,
+} from '@/core/modules/organizations/errors/organization-error'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
-
-const ORGANIZATION_SLUG_CONFLICT = 'ORGANIZATION_SLUG_CONFLICT'
 
 export type CreateOrganizationRecordInput = {
   name: string
@@ -34,7 +36,7 @@ export async function createOrganizationRecord(
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
-      throw new Error(ORGANIZATION_SLUG_CONFLICT)
+      throw new OrganizationError(ORGANIZATION_ERROR_CODES.SLUG_CONFLICT)
     }
 
     throw error
