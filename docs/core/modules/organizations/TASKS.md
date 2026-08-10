@@ -272,48 +272,42 @@ Generated Prisma files are not manually modified.
 
 ---
 
-# Phase 2 — Repository Layer
+# Phase 2 — Persistence Foundation
 
 ## O-005
 
-### Create Organization Repository
+### Establish Prisma Runtime Access
 
-Create:
-
-```text
-src/core/modules/organizations/repositories/organization-repository.ts
-```
-
-Initial persistence operations may include:
+Materialize the approved application Prisma infrastructure boundary under:
 
 ```text
-findById
-findBySlug
-create
-update
-updateStatus
+src/lib/prisma/
 ```
 
-Only implement operations required by current services.
+The implementation must expose a consistent server-side Prisma Client for capability services.
+
+This task does not introduce an Organization Repository.
 
 ### Acceptance Criteria
 
-Repository:
+Prisma runtime infrastructure:
 
-- is the only Organizations layer communicating directly with Prisma;
-- contains persistence logic only;
+- is implemented under `src/lib/prisma/`;
+- owns Prisma Client construction and runtime reuse;
+- contains infrastructure behavior only;
+- contains no Organizations business logic;
 - contains no authorization logic;
-- contains no Membership logic;
-- contains no Role logic;
-- contains no Permission logic.
+- contains no Membership, Role or Permission logic;
+- is not imported by browser-side code;
+- does not introduce a Repository abstraction without demonstrated need.
 
 ---
 
 ## O-006
 
-### Implement Organization Lookup
+### Implement Organization Lookup Service
 
-Implement repository operations for:
+Implement Organizations-owned server-side lookup behavior for:
 
 ```text
 findById
@@ -321,12 +315,23 @@ findById
 findBySlug
 ```
 
+The capability service may access Prisma through the approved runtime adapter under:
+
+```text
+src/lib/prisma/
+```
+
+A Repository layer is not required unless demonstrated complexity justifies one.
+
 ### Acceptance Criteria
 
+- Queries are owned by the Organizations capability.
 - Queries use explicit projections where practical.
 - Missing resources are handled predictably.
 - Prisma internals are not leaked unnecessarily.
-- Query behavior is covered by tests.
+- `src/app` and UI code do not access Prisma directly.
+- No authorization, Membership, Role or Permission behavior is introduced.
+- Query behavior is covered by relevant tests when test infrastructure exists.
 
 ---
 
@@ -334,7 +339,7 @@ findBySlug
 
 ### Implement Organization Creation Persistence Primitive
 
-Implement the Organizations-owned persistence primitive for creating an Organization record.
+Implement the Organizations-owned server-side persistence primitive for creating an Organization record.
 
 This is not yet the complete public:
 
@@ -346,6 +351,14 @@ tenancy workflow.
 
 The complete workflow requires Memberships and Roles.
 
+The primitive may access Prisma through the approved runtime adapter under:
+
+```text
+src/lib/prisma/
+```
+
+A Repository layer is not required unless demonstrated complexity justifies one.
+
 ### Acceptance Criteria
 
 - Organization record can be created correctly.
@@ -354,6 +367,7 @@ The complete workflow requires Memberships and Roles.
 - No OWNER Membership is created.
 - No temporary Role is created.
 - No incomplete public onboarding flow is exposed as production-ready.
+- No Repository abstraction is introduced without demonstrated need.
 
 ---
 
@@ -361,24 +375,19 @@ The complete workflow requires Memberships and Roles.
 
 ## O-008
 
-### Create Get Organization Service
+### Superseded — Organization Read Service
 
-Implement an application service for retrieving an Organization.
+The former O-008 duplicated the Organization read service introduced by O-006.
 
-Possible operations:
+Its responsibilities are now owned by O-006.
 
-```text
-getOrganization
-
-getOrganizationBySlug
-```
+No separate implementation is required for O-008.
 
 ### Acceptance Criteria
 
-- Service calls repository.
-- Service does not access Prisma directly.
-- Stable application result is returned.
-- Prisma persistence types are not unnecessarily exposed.
+- O-006 provides the approved Organization lookup service.
+- No duplicate read service is introduced.
+- No Repository layer is created merely to preserve the historical task split.
 
 ---
 
@@ -666,7 +675,7 @@ Until those capabilities exist, this action must not be exposed as a fully autho
 
 ## O-019
 
-### Organization Repository Tests
+### Organization Persistence Tests
 
 Cover:
 
@@ -684,7 +693,7 @@ Slug uniqueness
 
 ### Acceptance Criteria
 
-Repository behavior matches Prisma and Organizations documentation.
+Organizations persistence behavior matches Prisma and Organizations documentation.
 
 ---
 
@@ -881,7 +890,6 @@ Possible directories:
 
 ```text
 actions/
-repositories/
 schemas/
 services/
 types/
@@ -930,7 +938,7 @@ All required validation commands pass.
 Review:
 
 - Persistence
-- Repository boundaries
+- Persistence boundaries
 - Services
 - Validation
 - Errors
@@ -957,7 +965,7 @@ Organization model implemented
 
 Migration reviewed
 
-Repository implemented
+Prisma runtime access implemented
 
 Organization reads implemented
 
@@ -1476,7 +1484,7 @@ Organizations Foundation is complete when:
 - OrganizationStatus exists.
 - Organization model exists.
 - Migration is reviewed.
-- Repository exists.
+- Prisma runtime adapter exists.
 - Organization read services exist.
 - Organization update service exists.
 - Lifecycle services exist.

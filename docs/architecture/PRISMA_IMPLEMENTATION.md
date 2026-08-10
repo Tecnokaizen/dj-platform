@@ -24,7 +24,7 @@ It establishes conventions for:
 - Database migrations
 - Type generation
 - Database client generation
-- Repository access
+- Persistence access
 - Identifier strategy
 - Transactions
 - Seed data
@@ -44,7 +44,7 @@ It is responsible for:
 - Database migrations
 - Type generation
 - Database client generation
-- Database access through repositories
+- Database access through approved server-side persistence boundaries
 
 Prisma does not own business logic.
 
@@ -141,65 +141,44 @@ Application features should not import generated Prisma internals unnecessarily.
 
 # Persistence Architecture
 
-Database access follows this flow:
+Database access follows this conceptual flow:
 
 ```text
-Page / Component
+Application
         ↓
-Server Action
+Capability Service
         ↓
-Service
-        ↓
-Repository
+Prisma Runtime Adapter
         ↓
 Prisma Client
         ↓
 PostgreSQL
 ```
 
-For read operations:
+Capability services own workflows, business behavior and capability-specific persistence semantics.
+
+Prisma runtime infrastructure under:
 
 ```text
-Server Component
-        ↓
-Service
-        ↓
-Repository
-        ↓
-Prisma Client
-        ↓
-PostgreSQL
+src/lib/prisma/
 ```
 
-Repositories are the persistence boundary.
+owns Prisma Client construction and runtime reuse.
 
-Services own workflows and business behavior.
+A Repository abstraction is not mandatory.
 
-Server Actions coordinate application input and output.
+It may be introduced when it provides demonstrated value, such as:
 
----
+- isolating complex persistence behavior;
+- creating a meaningful testing boundary;
+- supporting multiple persistence implementations;
+- encapsulating repeated capability-specific query semantics.
 
-# Repository Pattern
+Repositories must not be introduced merely because a generic architecture template recommends them.
 
-Repositories are responsible for:
+Direct Prisma use inside an appropriate server-side capability service is acceptable when it preserves ownership and remains simple.
 
-- Reading persisted entities
-- Creating persisted entities
-- Updating persisted entities
-- Deleting persisted entities when permitted
-- Executing database queries
-- Applying persistence-level filters
-- Mapping persistence results when necessary
-
-Repositories must not:
-
-- Decide business rules
-- Perform authorization decisions
-- Render UI
-- Send email
-- Call AI providers
-- Call external APIs
-- Perform unrelated application workflows
+The architecture optimizes for clear boundaries, not abstraction count.
 
 ---
 
@@ -213,19 +192,19 @@ src/app/
 
 or UI components.
 
-Preferred access:
+Approved access:
 
 ```text
 Application
     ↓
-Service
+Capability Service
     ↓
-Repository
+Prisma Runtime Adapter
     ↓
 Prisma
 ```
 
-Exceptions require architectural justification.
+Capability-specific Repository abstractions remain optional and require demonstrated value.
 
 ---
 
@@ -600,7 +579,7 @@ When required, a typical field is:
 deletedAt
 ```
 
-Repositories are responsible for excluding soft-deleted records where required.
+Capability-owned persistence queries are responsible for excluding soft-deleted records where required.
 
 Prisma should not introduce hidden application behavior that makes persistence rules difficult to understand.
 
@@ -706,7 +685,7 @@ Tenant-aware queries must not rely solely on UI state.
 Tenant isolation must be enforced through the appropriate combination of:
 
 - Application authorization
-- Repository scoping
+- Capability query scoping
 - PostgreSQL constraints
 - Supabase Row Level Security where applicable
 
@@ -784,39 +763,44 @@ Keep transactions short.
 
 ---
 
-# Service and Repository Responsibilities
+# Service and Persistence Responsibilities
 
 ## Service
 
 A Service may:
 
-- Apply business rules
-- Coordinate repositories
-- Validate workflows
-- Perform authorization orchestration
-- Open an application transaction where appropriate
-- Coordinate multiple Core capabilities
+- Apply business rules.
+- Own capability-specific persistence semantics.
+- Execute Prisma queries through the approved runtime adapter when the persistence behavior remains simple.
+- Validate workflows.
+- Perform authorization orchestration.
+- Open an application transaction where appropriate.
+- Coordinate multiple Core capabilities.
 
 A Service must not expose persistence internals unnecessarily.
 
-## Repository
+## Optional Repository
 
-A Repository may:
+A capability-specific Repository may be introduced when demonstrated complexity justifies it.
 
-- Execute Prisma queries
-- Select fields
-- Create records
-- Update records
-- Execute persistence-specific operations
-- Participate in transactions
+When present, a Repository may:
+
+- Execute Prisma queries.
+- Select fields.
+- Create records.
+- Update records.
+- Execute persistence-specific operations.
+- Participate in transactions.
 
 A Repository must not:
 
-- Decide application authorization
-- Define business policy
-- Send notifications
-- Call external providers
-- Render presentation logic
+- Decide application authorization.
+- Define business policy.
+- Send notifications.
+- Call external providers.
+- Render presentation logic.
+
+Repository introduction is an architectural choice, not a default implementation requirement.
 
 ---
 
@@ -851,9 +835,9 @@ External Input
       ↓
 Zod Validation
       ↓
-Service
+Capability Service
       ↓
-Repository
+Prisma Runtime Adapter
       ↓
 Prisma
 ```
@@ -944,7 +928,7 @@ Migration behavior must be intentional.
 
 # Performance
 
-Repositories should:
+Persistence queries should:
 
 - Select only required fields.
 - Avoid N+1 query patterns.
@@ -972,7 +956,7 @@ Offset Pagination
 Cursor Pagination
 ```
 
-Repositories own persistence implementation.
+Capability-owned persistence code owns persistence implementation.
 
 The API or application contract owns the externally visible pagination format.
 
@@ -980,23 +964,25 @@ The API or application contract owns the externally visible pagination format.
 
 # Query Boundaries
 
-Avoid creating repositories that become generic unrestricted database gateways.
+Avoid creating generic unrestricted database gateways.
 
-Preferred:
+Preferred capability-owned persistence operations communicate intent:
 
 ```text
-organizationRepository.findById()
-organizationRepository.findBySlug()
-organizationRepository.listForProfile()
+findOrganizationById()
+findOrganizationBySlug()
+listOrganizationsForProfile()
 ```
 
-Avoid:
+Avoid generic persistence entry points such as:
 
 ```text
-genericRepository.queryAnything()
+queryAnything()
 ```
 
 Persistence APIs should communicate intent.
+
+These operations may live directly in an appropriate server-side capability service or, when demonstrated complexity justifies it, behind a capability-specific Repository.
 
 ---
 
@@ -1180,7 +1166,7 @@ Examples:
 - Tenant isolation
 - Transaction rollback
 - Referential behavior
-- Repository filtering
+- Persistence filtering
 - Lifecycle persistence
 - Cross-module relationships
 
@@ -1196,7 +1182,7 @@ AI coding agents working with Prisma must:
 - Preserve UUID identifier strategy.
 - Preserve Supabase identity ownership.
 - Determine model ownership before adding entities.
-- Use repositories for persistence access.
+- Use approved server-side persistence boundaries; introduce Repository abstractions only when demonstrated value justifies them.
 - Review relationships and referential actions.
 - Avoid speculative models.
 - Avoid speculative indexes.
@@ -1236,7 +1222,7 @@ A Prisma change is complete when:
 - Migration SQL has been reviewed.
 - TypeScript passes.
 - Lint passes.
-- Repository boundaries are respected.
+- Persistence boundaries are respected.
 - Tenant isolation is implemented and verified where applicable.
 - Documentation matches implementation.
 - Relevant tests pass.

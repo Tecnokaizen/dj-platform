@@ -97,15 +97,15 @@ Cross-module ownership is not.
 Platform Core currently uses:
 
 ```text
-PostgreSQL
-        ↓
-Prisma
-        ↓
-Repository
-        ↓
-Service
-        ↓
 Application
+        ↓
+Organizations Service
+        ↓
+Prisma Runtime Adapter
+        ↓
+Prisma Client
+        ↓
+PostgreSQL
 ```
 
 Supabase provides:
@@ -481,7 +481,7 @@ OrganizationStatus
 
 Organization model
 
-Organization repository
+Prisma runtime access
 
 Organization reads
 
@@ -797,7 +797,7 @@ ACTIVE
 
 Status changes are application operations.
 
-Repositories persist state.
+Organizations services perform persistence operations through the approved Prisma runtime adapter.
 
 Services decide whether a transition is permitted.
 
@@ -1029,7 +1029,7 @@ Validated Membership
         ↓
 Organization Context
         ↓
-Tenant-Scoped Repository Query
+Tenant-Scoped Organization Query
 ```
 
 Authentication alone is insufficient.
@@ -1116,7 +1116,7 @@ Organizations services should use normal application access whenever possible.
 
 ---
 
-# Repository Structure
+# Persistence Structure
 
 Organizations implementation lives under:
 
@@ -1124,35 +1124,36 @@ Organizations implementation lives under:
 src/core/modules/organizations/
 ```
 
-Recommended initial structure:
+Possible implementation directories:
 
 ```text
 organizations/
 
 ├── actions/
 ├── components/
-├── repositories/
 ├── schemas/
 ├── services/
 ├── types/
 └── validators/
 ```
 
-Only directories required by implementation should be created.
+Only directories required by real implementation should be created.
+
+Prisma runtime infrastructure belongs under:
+
+```text
+src/lib/prisma/
+```
 
 Do not create empty architecture ceremony.
 
 ---
 
-# Organization Repository
+# Organizations Persistence Access
 
-Recommended repository:
+Organizations capability services own Organization-specific persistence semantics.
 
-```text
-src/core/modules/organizations/repositories/organization-repository.ts
-```
-
-Possible operations:
+They may perform operations such as:
 
 ```text
 findById
@@ -1165,31 +1166,39 @@ restore
 deletePermanent
 ```
 
+through the approved Prisma runtime adapter.
+
 Only implement operations required by approved tasks.
+
+A Repository abstraction is optional and must only be introduced when demonstrated complexity justifies it.
 
 ---
 
-# Repository Responsibilities
+# Persistence Responsibilities
 
-The Organization repository may:
+Organizations services may:
 
 - Read Organizations.
 - Create Organizations.
 - Update persisted Organization fields.
 - Persist lifecycle changes.
 - Execute Organization-specific database queries.
-- Participate in transactions.
+- Participate in transactions where required.
 
-The repository must not:
+Organizations persistence behavior must not:
 
-- Authorize users.
+- Authorize users implicitly.
 - Decide Membership rules.
 - Assign Roles.
-- Evaluate Permissions.
+- Evaluate Permissions outside the approved authorization boundary.
 - Create invitation workflows.
 - Perform billing behavior.
-- Emit external notifications.
+- Emit unrelated external notifications.
 - Implement Domain behavior.
+
+The Prisma runtime adapter under `src/lib/prisma/` owns Prisma Client construction and runtime reuse only.
+
+It must not own Organizations business semantics.
 
 ---
 
@@ -1229,7 +1238,7 @@ Final implementation concept:
 ```text
 Organization Service
        │
-       ├── Organizations Repository
+       ├── Prisma runtime adapter
        │
        ├── Roles capability
        │
@@ -1692,7 +1701,7 @@ Status transitions
 Archive behavior
 Restore behavior
 archivedAt consistency
-Repository behavior
+Persistence behavior
 Transaction rollback where applicable
 ```
 
@@ -1904,7 +1913,7 @@ Organizations persistence is complete when:
 - Prisma Client generates successfully.
 - UUID conventions match the active schema.
 - Slug uniqueness is enforced.
-- Organization repository exists.
+- Prisma runtime access exists.
 - Lifecycle persistence works.
 - Archive and restore behavior work.
 - Relevant persistence tests pass.
