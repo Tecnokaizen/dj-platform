@@ -26,7 +26,8 @@
     "test:roles:persistence": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-persistence.test.ts",
     "test:roles:lookup": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-lookup.test.ts",
     "test:roles:catalog": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-catalog.test.ts",
-    "test:roles:seed": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-seed.test.ts"
+    "test:roles:seed": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-seed.test.ts",
+    "test:roles:required-resolution": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-required-resolution.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
