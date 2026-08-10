@@ -19,7 +19,8 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:organizations:persistence": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
@@ -46,6 +47,7 @@
     "prisma": "^7.9.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }
