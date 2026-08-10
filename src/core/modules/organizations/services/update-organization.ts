@@ -4,18 +4,11 @@ import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
+import type { UpdateOrganizationInput } from '@/core/modules/organizations/types/update-organization-input'
 
 const ORGANIZATION_UPDATE_EMPTY = 'ORGANIZATION_UPDATE_EMPTY'
 const ORGANIZATION_SLUG_CONFLICT = 'ORGANIZATION_SLUG_CONFLICT'
 const ORGANIZATION_NOT_FOUND = 'ORGANIZATION_NOT_FOUND'
-
-export type UpdateOrganizationInput = {
-  name?: string
-  slug?: string
-  logoUrl?: string | null
-  locale?: string
-  timezone?: string
-}
 
 export async function updateOrganization(
   organizationId: string,

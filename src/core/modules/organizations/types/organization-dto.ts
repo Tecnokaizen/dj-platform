@@ -1,6 +1,6 @@
 import type { OrganizationStatus } from '@/core/modules/organizations/types/organization-status'
 
-export type Organization = {
+export type OrganizationDto = {
   id: string
   name: string
   slug: string
@@ -8,7 +8,7 @@ export type Organization = {
   logoUrl: string | null
   locale: string
   timezone: string
-  createdAt: Date
-  updatedAt: Date
-  archivedAt: Date | null
+  createdAt: string
+  updatedAt: string
+  archivedAt: string | null
 }
