@@ -848,7 +848,7 @@ Organizations should not directly recreate Membership business rules inside its 
 
 # Persistence Ownership
 
-The Organizations repository owns persistence operations for:
+Organizations services own persistence operations for:
 
 ```text
 Organization
@@ -1190,7 +1190,7 @@ Organizations persistence is complete when:
 - Organization status is implemented.
 - UUID conventions match the active schema.
 - Slug uniqueness is enforced.
-- Organization repository exists.
+- Organization persistence access exists (services → Prisma).
 - Lifecycle persistence is tested.
 - Tenant isolation implications are implemented.
 - Cross-module ownership remains respected.

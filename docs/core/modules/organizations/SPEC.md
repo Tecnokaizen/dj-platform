@@ -1055,7 +1055,7 @@ Organizations is complete when:
 
 - Organization persistence exists.
 - Organization lifecycle works.
-- Organization repository exists.
+- Organization persistence access exists (services → Prisma).
 - Organization services exist.
 - Organization actions exist where required.
 - Tenant scope is enforced.
