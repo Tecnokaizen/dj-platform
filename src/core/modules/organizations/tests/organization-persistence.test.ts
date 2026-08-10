@@ -3,13 +3,14 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import {
   assertOrganizationsTestDatabase,
   createOrganizationTestSlug,
-  getOrganizationTestSlugPrefix,
 } from '@/core/modules/organizations/tests/assert-test-database'
 import {
   ORGANIZATION_ERROR_CODES,
   OrganizationError,
 } from '@/core/modules/organizations/errors/organization-error'
 import type { Organization } from '@/core/modules/organizations/types/organization'
+
+const TEST_PREFIX = 'o019-test-'
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -35,7 +36,7 @@ async function cleanupOrganizationTestRecords(): Promise<void> {
   await prisma.organization.deleteMany({
     where: {
       slug: {
-        startsWith: getOrganizationTestSlugPrefix(),
+        startsWith: TEST_PREFIX,
       },
     },
   })
@@ -49,7 +50,7 @@ async function countOrganizationTestRecords(): Promise<number> {
   return prisma.organization.count({
     where: {
       slug: {
-        startsWith: getOrganizationTestSlugPrefix(),
+        startsWith: TEST_PREFIX,
       },
     },
   })
@@ -75,7 +76,7 @@ describe('Organization persistence (O-019)', () => {
       '@/core/modules/organizations/services/create-organization-record'
     )
 
-    const slug = createOrganizationTestSlug()
+    const slug = createOrganizationTestSlug(TEST_PREFIX)
     const organization = await createOrganizationRecord({
       name: 'O-019 Create Org',
       slug,
@@ -99,7 +100,7 @@ describe('Organization persistence (O-019)', () => {
 
     const created = await createOrganizationRecord({
       name: 'O-019 Find By Id',
-      slug: createOrganizationTestSlug(),
+      slug: createOrganizationTestSlug(TEST_PREFIX),
     })
 
     const found = await findOrganizationById(created.id)
@@ -118,7 +119,7 @@ describe('Organization persistence (O-019)', () => {
       '@/core/modules/organizations/services/find-organization-by-slug'
     )
 
-    const slug = createOrganizationTestSlug()
+    const slug = createOrganizationTestSlug(TEST_PREFIX)
     const created = await createOrganizationRecord({
       name: 'O-019 Find By Slug',
       slug,
@@ -129,7 +130,7 @@ describe('Organization persistence (O-019)', () => {
     expect(found?.id).toBe(created.id)
 
     const missing = await findOrganizationBySlug(
-      `${getOrganizationTestSlugPrefix()}missing-${crypto.randomUUID()}`
+      `${TEST_PREFIX}missing-${crypto.randomUUID()}`
     )
     expect(missing).toBeNull()
   })
@@ -144,7 +145,7 @@ describe('Organization persistence (O-019)', () => {
 
     const created = await createOrganizationRecord({
       name: 'O-019 Update Org',
-      slug: createOrganizationTestSlug(),
+      slug: createOrganizationTestSlug(TEST_PREFIX),
       logoUrl: 'https://example.com/logo.png',
     })
 
@@ -171,7 +172,7 @@ describe('Organization persistence (O-019)', () => {
 
     const created = await createOrganizationRecord({
       name: 'O-019 Empty Update',
-      slug: createOrganizationTestSlug(),
+      slug: createOrganizationTestSlug(TEST_PREFIX),
     })
 
     await expectOrganizationError(
@@ -196,7 +197,7 @@ describe('Organization persistence (O-019)', () => {
       '@/core/modules/organizations/services/create-organization-record'
     )
 
-    const slug = createOrganizationTestSlug()
+    const slug = createOrganizationTestSlug(TEST_PREFIX)
 
     await createOrganizationRecord({
       name: 'O-019 Slug Owner',
@@ -220,8 +221,8 @@ describe('Organization persistence (O-019)', () => {
       '@/core/modules/organizations/services/update-organization'
     )
 
-    const occupiedSlug = createOrganizationTestSlug()
-    const otherSlug = createOrganizationTestSlug()
+    const occupiedSlug = createOrganizationTestSlug(TEST_PREFIX)
+    const otherSlug = createOrganizationTestSlug(TEST_PREFIX)
 
     await createOrganizationRecord({
       name: 'O-019 Occupied Slug',

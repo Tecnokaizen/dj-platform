@@ -1,16 +1,10 @@
-const TEST_SLUG_PREFIX = 'o019-test-' as const
-
 const ALLOWED_PROTOCOLS = new Set(['postgresql:', 'postgres:'])
 const ALLOWED_HOSTS = new Set(['localhost', '127.0.0.1'])
 const REQUIRED_PORT = '5433'
 const REQUIRED_DATABASE = 'dj_platform_test'
 
-export function getOrganizationTestSlugPrefix(): string {
-  return TEST_SLUG_PREFIX
-}
-
-export function createOrganizationTestSlug(): string {
-  return `${TEST_SLUG_PREFIX}${crypto.randomUUID()}`
+export function createOrganizationTestSlug(prefix: string): string {
+  return `${prefix}${crypto.randomUUID()}`
 }
 
 export function assertOrganizationsTestDatabase(): void {
