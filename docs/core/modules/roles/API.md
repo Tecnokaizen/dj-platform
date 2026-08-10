@@ -276,9 +276,9 @@ Input
   ↓
 Validate UUID
   ↓
-Roles Service
+Roles service/function
   ↓
-Role Repository
+@/lib/prisma
   ↓
 Role Found?
   ├── YES → RoleDto
@@ -352,7 +352,9 @@ Role Key
    ↓
 Validate
    ↓
-Repository.findByKey()
+Roles service/function
+   ↓
+@/lib/prisma
    ↓
 Found?
    ├── YES → RoleDto
@@ -1122,29 +1124,31 @@ Stable application errors should be returned instead.
 
 ---
 
-# Repository Boundary
+# Persistence Boundary
 
-Preferred architecture:
+Preferred Foundation architecture (ADR-007):
 
 ```text
 Consumer
    ↓
-Roles Service
+Roles service/function
    ↓
-Role Repository
+@/lib/prisma
    ↓
-Prisma
+PostgreSQL
 ```
 
-The repository owns Role persistence access.
+Roles owns Role persistence access through Roles-owned services/functions using `@/lib/prisma`.
 
-Application consumers should not access Prisma directly to resolve Roles.
+Application consumers (routes, UI, unrelated modules) should not access Prisma directly to resolve Roles.
+
+A Repository is optional and may be introduced later only if demonstrated persistence complexity justifies it under ADR-007. Current Roles Foundation does not demonstrate that need.
 
 ---
 
-# Repository Interface
+# Persistence Operations
 
-Possible initial repository operations:
+Possible initial persistence operations (implemented by Roles-owned services/functions, or by an optional Repository if later justified):
 
 ```text
 findById
@@ -1613,7 +1617,7 @@ Roles API implementation is complete when:
 - Required Roles can be resolved.
 - Missing required Roles fail safely.
 - Stable Role errors are used.
-- Prisma access remains behind repository boundaries.
+- Prisma access for Roles remains behind Roles-owned services/functions using `@/lib/prisma` (Repository optional per ADR-007).
 - Raw persistence errors do not leak.
 - Role assignment remains outside Roles.
 - Permission evaluation remains outside Roles.
