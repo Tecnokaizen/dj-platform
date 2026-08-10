@@ -359,6 +359,14 @@ All canonical Roles must use:
 isSystem = true
 ```
 
+Canonical Foundation descriptions are:
+
+```text
+description = null
+```
+
+Seed reconciliation updates `name` / `isSystem` / `sortOrder` and preserves an existing `description`.
+
 ### Acceptance Criteria
 
 Metadata agrees with:

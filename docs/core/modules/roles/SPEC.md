@@ -431,7 +431,10 @@ The canonical role key remains stable.
 
 Roles may provide a human-readable description.
 
-Example:
+For Roles Foundation, canonical `Role.description` is `null`.
+Human-readable description copy is deferred until explicitly approved.
+
+Illustrative example only (not Foundation seed metadata):
 
 ```text
 Owner

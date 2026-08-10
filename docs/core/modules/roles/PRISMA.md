@@ -1155,9 +1155,11 @@ VIEWER
 name: Viewer
 isSystem: true
 sortOrder: 50
+description: null
 ```
 
-Descriptions may be defined centrally in the seed.
+For Roles Foundation, every canonical Role uses `description: null`.
+Human-readable description copy is deferred until explicitly approved.
 
 ---
 
@@ -1180,20 +1182,20 @@ await prisma.role.upsert({
   },
   update: {
     name: "Owner",
-    description: "...",
     isSystem: true,
     sortOrder: 10,
   },
   create: {
     key: "OWNER",
     name: "Owner",
-    description: "...",
+    description: null,
     isSystem: true,
     sortOrder: 10,
   },
 })
 ```
 
+`update` reconciles `name` / `isSystem` / `sortOrder` and does not overwrite `description`.
 Equivalent behavior applies to every canonical Role.
 
 ---
@@ -1244,14 +1246,16 @@ The unique `key` constraint provides the database safety boundary.
 
 # Seed Metadata Updates
 
-The seed may reconcile approved non-identity metadata such as:
+The seed reconciles approved non-identity metadata:
 
 ```text
 name
-description
 isSystem
 sortOrder
 ```
+
+Existing `description` values are preserved on reconcile.
+Canonical Foundation creates use `description: null`.
 
 This behavior must be deliberate.
 

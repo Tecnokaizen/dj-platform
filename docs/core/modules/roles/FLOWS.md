@@ -272,7 +272,7 @@ Role ID
    ↓
 Validate UUID
    ↓
-Role Repository
+Roles-owned service / @/lib/prisma
    ↓
 Find Role
    ↓
@@ -296,7 +296,7 @@ Role Key
    ↓
 Normalize / Validate
    ↓
-Role Repository
+Roles-owned service / @/lib/prisma
    ↓
 Find Role by key
    ↓
@@ -361,7 +361,7 @@ Roles may expose the canonical system Role catalog.
 ```text
 Request Roles
     ↓
-Role Repository
+Roles-owned service / @/lib/prisma
     ↓
 Load System Roles
     ↓
@@ -1008,16 +1008,20 @@ Application code must not create multiple records with the same canonical key.
 
 Seed behavior must be conservative.
 
-Possible approved behavior:
+Approved Foundation seed reconciliation:
 
 ```text
 Role exists
     ↓
 Compare approved metadata
     ↓
-Update name / description / sortOrder if intentionally configured
+Update name / isSystem / sortOrder
+    ↓
+Preserve existing description
 ```
 
+Canonical Foundation descriptions are `null` on create.
+Seed must not overwrite an existing `description` during reconcile.
 Seed must not silently modify security semantics.
 
 ---
