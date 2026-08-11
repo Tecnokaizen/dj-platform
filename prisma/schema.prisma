@@ -173,6 +173,15 @@ enum MembershipStatus {
   @@map("membership_status")
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+
+  @@map("invitation_status")
+}
+
 model Profile {
   id                String           @id @db.Uuid
   username          String?          @unique @db.VarChar(50)
