@@ -36,5 +36,19 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
         select: invitationRecordSelect,
       })
     },
+
+    async findPendingByOrganizationAndEmail(
+      organizationId: string,
+      normalizedEmail: string
+    ): Promise<InvitationRecord | null> {
+      return client.organizationInvitation.findFirst({
+        where: {
+          organizationId,
+          normalizedEmail,
+          status: 'PENDING',
+        },
+        select: invitationRecordSelect,
+      })
+    },
   }
 }
