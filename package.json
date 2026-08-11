@@ -39,7 +39,8 @@
     "test:memberships:token-security": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-token-security.test.ts",
     "test:memberships:invitation-lifecycle": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-lifecycle.test.ts",
     "test:memberships:invitation-acceptance": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-acceptance.test.ts",
-    "test:memberships:owner-safety": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/owner-safety.test.ts"
+    "test:memberships:owner-safety": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/owner-safety.test.ts",
+    "test:memberships:access-foundation": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-access-foundation.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

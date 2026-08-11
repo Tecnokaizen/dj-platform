@@ -2828,6 +2828,131 @@ Avoid direct browser writes to Memberships tables.
 
 ---
 
+# Phase 11 Access Audit Evidence
+
+Audit date:
+
+```text
+2026-08-12
+```
+
+Audited schema target:
+
+```text
+local PostgreSQL test database
+dj_platform_test @ localhost:5433
+```
+
+The target contains the current Memberships migration and both tables:
+
+```text
+public.organization_memberships
+public.organization_invitations
+```
+
+The audit inspected:
+
+```sql
+SELECT rolname
+FROM pg_roles
+WHERE rolname IN ('anon', 'authenticated');
+
+SELECT grantee, table_name, privilege_type
+FROM information_schema.role_table_grants
+WHERE table_schema = 'public'
+  AND table_name IN (
+    'organization_memberships',
+    'organization_invitations'
+  )
+  AND grantee IN ('anon', 'authenticated');
+
+SELECT relname, relrowsecurity, relforcerowsecurity
+FROM pg_class
+JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+WHERE pg_namespace.nspname = 'public'
+  AND relname IN (
+    'organization_memberships',
+    'organization_invitations'
+  );
+
+SELECT tablename, policyname, roles, cmd
+FROM pg_policies
+WHERE schemaname = 'public'
+  AND tablename IN (
+    'organization_memberships',
+    'organization_invitations'
+  );
+```
+
+Observed result:
+
+| Check | `organization_memberships` | `organization_invitations` |
+|---|---:|---:|
+| `anon` grants | none; role absent | none; role absent |
+| `authenticated` grants | none; role absent | none; role absent |
+| RLS enabled | no | no |
+| RLS forced | no | no |
+| policies | none | none |
+
+Decision:
+
+```text
+No client-role access exists on the audited target.
+Therefore Phase 11 adds no RLS migration and no permissive policy.
+```
+
+The local development database at `localhost:5432` was also inspected. It has
+neither Supabase client roles nor the Memberships tables because the current
+Memberships migration has not been applied to that local database. It is not
+used as positive Memberships grant evidence.
+
+This audit is local Foundation evidence only. It does not claim that a future
+hosted Supabase, staging or production database has the same grants. Before
+deploying Memberships tables to an environment where `anon` or `authenticated`
+exists, repeat the audit. If either role has table access, enable RLS in
+deny-by-default mode without permissive policies until M-087 supplies the
+approved Memberships-based tenant policies.
+
+---
+
+# Canonical Future Membership RLS Identity Mapping
+
+The implemented Identity contract maps authentication and application identity
+by the same UUID:
+
+```text
+Supabase auth.users.id
+        =
+public.profiles.id
+```
+
+Evidence:
+
+- `profiles_auth_user_fkey` references `auth.users(id)` from `profiles(id)`;
+- the new-user trigger inserts `NEW.id` into `profiles.id`;
+- `getCurrentProfile()` resolves `profiles.id = user.id`.
+
+Future M-087 tenant relationship policies must therefore resolve:
+
+```text
+auth.uid()
+        ↓ equality
+Profile.id
+        ↓ OrganizationMembership.profileId
+OrganizationMembership.organizationId
+        ↓ required state
+OrganizationMembership.status = ACTIVE
+```
+
+`OrganizationMembership` is the only approved tenant-membership source. Do not
+introduce `organization_users`, `user_organizations`,
+`Profile.organizationIds` or another parallel relationship.
+
+This predicate establishes active tenant belonging only. It does not replace
+Permissions or prove authorization for every Organization operation.
+
+---
+
 # Prisma Connection and RLS
 
 Application authorization must remain correct regardless of whether the Prisma database connection is subject to or bypasses PostgreSQL RLS.
