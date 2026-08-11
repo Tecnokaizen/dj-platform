@@ -57,6 +57,16 @@ export type Organization = Prisma.OrganizationModel
  */
 export type Role = Prisma.RoleModel
 /**
+ * Model OrganizationMembership
+ * 
+ */
+export type OrganizationMembership = Prisma.OrganizationMembershipModel
+/**
+ * Model OrganizationInvitation
+ * 
+ */
+export type OrganizationInvitation = Prisma.OrganizationInvitationModel
+/**
  * Model Artist
  * 
  */

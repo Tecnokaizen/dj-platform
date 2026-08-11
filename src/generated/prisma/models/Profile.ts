@@ -238,6 +238,8 @@ export type ProfileWhereInput = {
   isAdmin?: Prisma.BoolFilter<"Profile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
+  memberships?: Prisma.OrganizationMembershipListRelationFilter
+  acceptedInvitations?: Prisma.OrganizationInvitationListRelationFilter
   userTracks?: Prisma.UserTrackListRelationFilter
   tags?: Prisma.TagListRelationFilter
   playlists?: Prisma.PlaylistListRelationFilter
@@ -258,6 +260,8 @@ export type ProfileOrderByWithRelationInput = {
   isAdmin?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  memberships?: Prisma.OrganizationMembershipOrderByRelationAggregateInput
+  acceptedInvitations?: Prisma.OrganizationInvitationOrderByRelationAggregateInput
   userTracks?: Prisma.UserTrackOrderByRelationAggregateInput
   tags?: Prisma.TagOrderByRelationAggregateInput
   playlists?: Prisma.PlaylistOrderByRelationAggregateInput
@@ -281,6 +285,8 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   isAdmin?: Prisma.BoolFilter<"Profile"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
+  memberships?: Prisma.OrganizationMembershipListRelationFilter
+  acceptedInvitations?: Prisma.OrganizationInvitationListRelationFilter
   userTracks?: Prisma.UserTrackListRelationFilter
   tags?: Prisma.TagListRelationFilter
   playlists?: Prisma.PlaylistListRelationFilter
@@ -337,6 +343,8 @@ export type ProfileCreateInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
@@ -357,6 +365,8 @@ export type ProfileUncheckedCreateInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
@@ -377,6 +387,8 @@ export type ProfileUpdateInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
@@ -397,6 +409,8 @@ export type ProfileUncheckedUpdateInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
@@ -494,14 +508,14 @@ export type ProfileMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type ProfileNullableScalarRelationFilter = {
-  is?: Prisma.ProfileWhereInput | null
-  isNot?: Prisma.ProfileWhereInput | null
-}
-
 export type ProfileScalarRelationFilter = {
   is?: Prisma.ProfileWhereInput
   isNot?: Prisma.ProfileWhereInput
+}
+
+export type ProfileNullableScalarRelationFilter = {
+  is?: Prisma.ProfileWhereInput | null
+  isNot?: Prisma.ProfileWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -522,6 +536,36 @@ export type BoolFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type ProfileCreateNestedOneWithoutMembershipsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutMembershipsInput, Prisma.ProfileUncheckedCreateWithoutMembershipsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutMembershipsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneRequiredWithoutMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutMembershipsInput, Prisma.ProfileUncheckedCreateWithoutMembershipsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutMembershipsInput
+  upsert?: Prisma.ProfileUpsertWithoutMembershipsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutMembershipsInput, Prisma.ProfileUpdateWithoutMembershipsInput>, Prisma.ProfileUncheckedUpdateWithoutMembershipsInput>
+}
+
+export type ProfileCreateNestedOneWithoutAcceptedInvitationsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutAcceptedInvitationsInput, Prisma.ProfileUncheckedCreateWithoutAcceptedInvitationsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutAcceptedInvitationsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneWithoutAcceptedInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutAcceptedInvitationsInput, Prisma.ProfileUncheckedCreateWithoutAcceptedInvitationsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutAcceptedInvitationsInput
+  upsert?: Prisma.ProfileUpsertWithoutAcceptedInvitationsInput
+  disconnect?: Prisma.ProfileWhereInput | boolean
+  delete?: Prisma.ProfileWhereInput | boolean
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutAcceptedInvitationsInput, Prisma.ProfileUpdateWithoutAcceptedInvitationsInput>, Prisma.ProfileUncheckedUpdateWithoutAcceptedInvitationsInput>
 }
 
 export type ProfileCreateNestedOneWithoutIngestionJobsInput = {
@@ -598,6 +642,206 @@ export type ProfileUpdateOneWithoutPlaylistTracksAddedNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutPlaylistTracksAddedInput, Prisma.ProfileUpdateWithoutPlaylistTracksAddedInput>, Prisma.ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput>
 }
 
+export type ProfileCreateWithoutMembershipsInput = {
+  id: string
+  username?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
+  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileUncheckedCreateWithoutMembershipsInput = {
+  id: string
+  username?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
+  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileCreateOrConnectWithoutMembershipsInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutMembershipsInput, Prisma.ProfileUncheckedCreateWithoutMembershipsInput>
+}
+
+export type ProfileUpsertWithoutMembershipsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutMembershipsInput, Prisma.ProfileUncheckedUpdateWithoutMembershipsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutMembershipsInput, Prisma.ProfileUncheckedCreateWithoutMembershipsInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutMembershipsInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutMembershipsInput, Prisma.ProfileUncheckedUpdateWithoutMembershipsInput>
+}
+
+export type ProfileUpdateWithoutMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
+  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
+  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileCreateWithoutAcceptedInvitationsInput = {
+  id: string
+  username?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
+  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileUncheckedCreateWithoutAcceptedInvitationsInput = {
+  id: string
+  username?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
+  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileCreateOrConnectWithoutAcceptedInvitationsInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutAcceptedInvitationsInput, Prisma.ProfileUncheckedCreateWithoutAcceptedInvitationsInput>
+}
+
+export type ProfileUpsertWithoutAcceptedInvitationsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutAcceptedInvitationsInput, Prisma.ProfileUncheckedUpdateWithoutAcceptedInvitationsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutAcceptedInvitationsInput, Prisma.ProfileUncheckedCreateWithoutAcceptedInvitationsInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutAcceptedInvitationsInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutAcceptedInvitationsInput, Prisma.ProfileUncheckedUpdateWithoutAcceptedInvitationsInput>
+}
+
+export type ProfileUpdateWithoutAcceptedInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
+  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutAcceptedInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
+  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
 export type ProfileCreateWithoutIngestionJobsInput = {
   id: string
   username?: string | null
@@ -611,6 +855,8 @@ export type ProfileCreateWithoutIngestionJobsInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
@@ -630,6 +876,8 @@ export type ProfileUncheckedCreateWithoutIngestionJobsInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
@@ -665,6 +913,8 @@ export type ProfileUpdateWithoutIngestionJobsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
@@ -684,6 +934,8 @@ export type ProfileUncheckedUpdateWithoutIngestionJobsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
@@ -703,6 +955,8 @@ export type ProfileCreateWithoutUserTracksInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
@@ -722,6 +976,8 @@ export type ProfileUncheckedCreateWithoutUserTracksInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
@@ -757,6 +1013,8 @@ export type ProfileUpdateWithoutUserTracksInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
@@ -776,6 +1034,8 @@ export type ProfileUncheckedUpdateWithoutUserTracksInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
@@ -795,6 +1055,8 @@ export type ProfileCreateWithoutTagsInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
@@ -814,6 +1076,8 @@ export type ProfileUncheckedCreateWithoutTagsInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
@@ -849,6 +1113,8 @@ export type ProfileUpdateWithoutTagsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
@@ -868,6 +1134,8 @@ export type ProfileUncheckedUpdateWithoutTagsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
@@ -887,6 +1155,8 @@ export type ProfileCreateWithoutPlaylistsInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
@@ -906,6 +1176,8 @@ export type ProfileUncheckedCreateWithoutPlaylistsInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
@@ -941,6 +1213,8 @@ export type ProfileUpdateWithoutPlaylistsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
@@ -960,6 +1234,8 @@ export type ProfileUncheckedUpdateWithoutPlaylistsInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
@@ -979,6 +1255,8 @@ export type ProfileCreateWithoutPlaylistTracksAddedInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
   tags?: Prisma.TagCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
@@ -998,6 +1276,8 @@ export type ProfileUncheckedCreateWithoutPlaylistTracksAddedInput = {
   isAdmin?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
   userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
   tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
   playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
@@ -1033,6 +1313,8 @@ export type ProfileUpdateWithoutPlaylistTracksAddedInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
@@ -1052,6 +1334,8 @@ export type ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput = {
   isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
   userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
   tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
   playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
@@ -1064,6 +1348,8 @@ export type ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput = {
  */
 
 export type ProfileCountOutputType = {
+  memberships: number
+  acceptedInvitations: number
   userTracks: number
   tags: number
   playlists: number
@@ -1072,6 +1358,8 @@ export type ProfileCountOutputType = {
 }
 
 export type ProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  memberships?: boolean | ProfileCountOutputTypeCountMembershipsArgs
+  acceptedInvitations?: boolean | ProfileCountOutputTypeCountAcceptedInvitationsArgs
   userTracks?: boolean | ProfileCountOutputTypeCountUserTracksArgs
   tags?: boolean | ProfileCountOutputTypeCountTagsArgs
   playlists?: boolean | ProfileCountOutputTypeCountPlaylistsArgs
@@ -1087,6 +1375,20 @@ export type ProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
    * Select specific fields to fetch from the ProfileCountOutputType
    */
   select?: Prisma.ProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrganizationMembershipWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountAcceptedInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrganizationInvitationWhereInput
 }
 
 /**
@@ -1138,6 +1440,8 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   isAdmin?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  memberships?: boolean | Prisma.Profile$membershipsArgs<ExtArgs>
+  acceptedInvitations?: boolean | Prisma.Profile$acceptedInvitationsArgs<ExtArgs>
   userTracks?: boolean | Prisma.Profile$userTracksArgs<ExtArgs>
   tags?: boolean | Prisma.Profile$tagsArgs<ExtArgs>
   playlists?: boolean | Prisma.Profile$playlistsArgs<ExtArgs>
@@ -1193,6 +1497,8 @@ export type ProfileSelectScalar = {
 
 export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "displayName" | "djName" | "avatarUrl" | "bio" | "countryCode" | "preferredLanguage" | "experienceLevel" | "isAdmin" | "createdAt" | "updatedAt", ExtArgs["result"]["profile"]>
 export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  memberships?: boolean | Prisma.Profile$membershipsArgs<ExtArgs>
+  acceptedInvitations?: boolean | Prisma.Profile$acceptedInvitationsArgs<ExtArgs>
   userTracks?: boolean | Prisma.Profile$userTracksArgs<ExtArgs>
   tags?: boolean | Prisma.Profile$tagsArgs<ExtArgs>
   playlists?: boolean | Prisma.Profile$playlistsArgs<ExtArgs>
@@ -1206,6 +1512,8 @@ export type ProfileIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Profile"
   objects: {
+    memberships: Prisma.$OrganizationMembershipPayload<ExtArgs>[]
+    acceptedInvitations: Prisma.$OrganizationInvitationPayload<ExtArgs>[]
     userTracks: Prisma.$UserTrackPayload<ExtArgs>[]
     tags: Prisma.$TagPayload<ExtArgs>[]
     playlists: Prisma.$PlaylistPayload<ExtArgs>[]
@@ -1619,6 +1927,8 @@ readonly fields: ProfileFieldRefs;
  */
 export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  memberships<T extends Prisma.Profile$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  acceptedInvitations<T extends Prisma.Profile$acceptedInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$acceptedInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userTracks<T extends Prisma.Profile$userTracksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$userTracksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tags<T extends Prisma.Profile$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   playlists<T extends Prisma.Profile$playlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$playlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2055,6 +2365,54 @@ export type ProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Profiles to delete.
    */
   limit?: number
+}
+
+/**
+ * Profile.memberships
+ */
+export type Profile$membershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrganizationMembership
+   */
+  select?: Prisma.OrganizationMembershipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrganizationMembership
+   */
+  omit?: Prisma.OrganizationMembershipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrganizationMembershipInclude<ExtArgs> | null
+  where?: Prisma.OrganizationMembershipWhereInput
+  orderBy?: Prisma.OrganizationMembershipOrderByWithRelationInput | Prisma.OrganizationMembershipOrderByWithRelationInput[]
+  cursor?: Prisma.OrganizationMembershipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrganizationMembershipScalarFieldEnum | Prisma.OrganizationMembershipScalarFieldEnum[]
+}
+
+/**
+ * Profile.acceptedInvitations
+ */
+export type Profile$acceptedInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrganizationInvitation
+   */
+  select?: Prisma.OrganizationInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrganizationInvitation
+   */
+  omit?: Prisma.OrganizationInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrganizationInvitationInclude<ExtArgs> | null
+  where?: Prisma.OrganizationInvitationWhereInput
+  orderBy?: Prisma.OrganizationInvitationOrderByWithRelationInput | Prisma.OrganizationInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.OrganizationInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrganizationInvitationScalarFieldEnum | Prisma.OrganizationInvitationScalarFieldEnum[]
 }
 
 /**

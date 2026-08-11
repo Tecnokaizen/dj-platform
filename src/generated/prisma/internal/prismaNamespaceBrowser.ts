@@ -54,6 +54,8 @@ export const ModelName = {
   Profile: 'Profile',
   Organization: 'Organization',
   Role: 'Role',
+  OrganizationMembership: 'OrganizationMembership',
+  OrganizationInvitation: 'OrganizationInvitation',
   Artist: 'Artist',
   Track: 'Track',
   TrackArtist: 'TrackArtist',
@@ -138,6 +140,41 @@ export const RoleScalarFieldEnum = {
 } as const
 
 export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const OrganizationMembershipScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  profileId: 'profileId',
+  roleId: 'roleId',
+  status: 'status',
+  suspendedAt: 'suspendedAt',
+  removedAt: 'removedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationMembershipScalarFieldEnum = (typeof OrganizationMembershipScalarFieldEnum)[keyof typeof OrganizationMembershipScalarFieldEnum]
+
+
+export const OrganizationInvitationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  recipientEmail: 'recipientEmail',
+  normalizedEmail: 'normalizedEmail',
+  roleId: 'roleId',
+  status: 'status',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  invitedByMembershipId: 'invitedByMembershipId',
+  acceptedByProfileId: 'acceptedByProfileId',
+  acceptedAt: 'acceptedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationInvitationScalarFieldEnum = (typeof OrganizationInvitationScalarFieldEnum)[keyof typeof OrganizationInvitationScalarFieldEnum]
 
 
 export const ArtistScalarFieldEnum = {
