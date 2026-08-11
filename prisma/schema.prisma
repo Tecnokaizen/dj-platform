@@ -196,11 +196,12 @@ model Profile {
   createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  memberships         OrganizationMembership[]
   userTracks          UserTrack[]
   tags                Tag[]
   playlists           Playlist[]
-  ingestionJobs       IngestionJob[]  @relation("IngestionRequestedBy")
-  playlistTracksAdded PlaylistTrack[] @relation("PlaylistTrackAddedBy")
+  ingestionJobs       IngestionJob[]           @relation("IngestionRequestedBy")
+  playlistTracksAdded PlaylistTrack[]          @relation("PlaylistTrackAddedBy")
 
   @@map("profiles")
 }
@@ -217,6 +218,8 @@ model Organization {
   updatedAt  DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
   archivedAt DateTime?          @map("archived_at") @db.Timestamptz(6)
 
+  memberships OrganizationMembership[]
+
   @@index([status])
   @@map("organizations")
 }
@@ -231,7 +234,28 @@ model Role {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  memberships OrganizationMembership[]
+
   @@map("roles")
+}
+
+model OrganizationMembership {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  profileId      String           @map("profile_id") @db.Uuid
+  roleId         String           @map("role_id") @db.Uuid
+  status         MembershipStatus @default(ACTIVE)
+  suspendedAt    DateTime?        @map("suspended_at") @db.Timestamptz(6)
+  removedAt      DateTime?        @map("removed_at") @db.Timestamptz(6)
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  profile      Profile      @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  role         Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, profileId], map: "organization_memberships_organization_profile_unique")
+  @@map("organization_memberships")
 }
 
 model Artist {
