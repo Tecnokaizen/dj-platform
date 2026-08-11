@@ -414,6 +414,10 @@ Application composition may coordinate capabilities without taking ownership of 
 
 # Current Technology Stack
 
+Runtime:
+
+- Node.js 22 LTS
+
 Frontend:
 
 - Next.js 16
@@ -455,6 +459,8 @@ Deployment direction:
 Package manager:
 
 - npm
+
+The repository runtime is pinned in `.nvmrc`.
 
 ---
 

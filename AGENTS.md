@@ -454,6 +454,7 @@ Infrastructure adapters do not own business semantics.
 
 Current approved repository stack includes:
 
+- Node.js 22 LTS;
 - Next.js 16;
 - React 19;
 - TypeScript 5;
@@ -465,6 +466,8 @@ Current approved repository stack includes:
 - `@supabase/supabase-js`;
 - `pg`;
 - npm.
+
+Use the repository-pinned runtime from `.nvmrc` before installing dependencies or running validation.
 
 Verify exact versions from `package.json` when implementation depends on them.
 

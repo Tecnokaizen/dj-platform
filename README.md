@@ -221,6 +221,10 @@ Forbidden:
 
 ## Current Technology Stack
 
+Runtime:
+
+- Node.js 22 LTS
+
 Application:
 
 - Next.js 16
@@ -243,6 +247,8 @@ Authentication:
 Package manager:
 
 - npm
+
+The repository pins the local runtime in `.nvmrc`. Run `nvm use` before installing dependencies or executing validation.
 
 Infrastructure direction:
 
