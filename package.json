@@ -36,7 +36,8 @@
     "test:roles:boundary": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-boundary.test.ts",
     "test:memberships:reads": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-read-services.test.ts",
     "test:memberships:lifecycle": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-lifecycle.test.ts",
-    "test:memberships:token-security": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-token-security.test.ts"
+    "test:memberships:token-security": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-token-security.test.ts",
+    "test:memberships:invitation-lifecycle": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-lifecycle.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

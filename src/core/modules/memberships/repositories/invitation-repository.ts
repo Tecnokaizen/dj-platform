@@ -24,8 +24,48 @@ export type InvitationRecord = Prisma.OrganizationInvitationGetPayload<{
   select: typeof invitationRecordSelect
 }>
 
+export type CreateInvitationRecordInput = {
+  organizationId: string
+  recipientEmail: string
+  normalizedEmail: string
+  roleId: string
+  tokenHash: string
+  expiresAt: Date
+  invitedByMembershipId: string
+}
+
 export function createInvitationRepository(client: InvitationRepositoryClient) {
   return {
+    async create(
+      input: CreateInvitationRecordInput
+    ): Promise<InvitationRecord> {
+      return client.organizationInvitation.create({
+        data: {
+          organizationId: input.organizationId,
+          recipientEmail: input.recipientEmail,
+          normalizedEmail: input.normalizedEmail,
+          roleId: input.roleId,
+          status: 'PENDING',
+          tokenHash: input.tokenHash,
+          expiresAt: input.expiresAt,
+          invitedByMembershipId: input.invitedByMembershipId,
+          acceptedByProfileId: null,
+          acceptedAt: null,
+          revokedAt: null,
+        },
+        select: invitationRecordSelect,
+      })
+    },
+
+    async findById(invitationId: string): Promise<InvitationRecord | null> {
+      return client.organizationInvitation.findUnique({
+        where: {
+          id: invitationId,
+        },
+        select: invitationRecordSelect,
+      })
+    },
+
     async findByTokenHash(
       tokenHash: string
     ): Promise<InvitationRecord | null> {
@@ -62,6 +102,77 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
         },
         select: invitationRecordSelect,
       })
+    },
+
+    async expirePending(
+      invitationId: string,
+      expectedUpdatedAt: Date,
+      now: Date
+    ): Promise<InvitationRecord | null> {
+      const [updated] = await client.organizationInvitation.updateManyAndReturn({
+        where: {
+          id: invitationId,
+          status: 'PENDING',
+          expiresAt: {
+            lte: now,
+          },
+          updatedAt: expectedUpdatedAt,
+        },
+        data: {
+          status: 'EXPIRED',
+        },
+        select: invitationRecordSelect,
+      })
+
+      return updated ?? null
+    },
+
+    async revokePending(
+      invitationId: string,
+      expectedUpdatedAt: Date,
+      now: Date
+    ): Promise<InvitationRecord | null> {
+      const [updated] = await client.organizationInvitation.updateManyAndReturn({
+        where: {
+          id: invitationId,
+          status: 'PENDING',
+          expiresAt: {
+            gt: now,
+          },
+          updatedAt: expectedUpdatedAt,
+        },
+        data: {
+          status: 'REVOKED',
+          revokedAt: now,
+        },
+        select: invitationRecordSelect,
+      })
+
+      return updated ?? null
+    },
+
+    async rotatePendingToken(
+      invitationId: string,
+      expectedUpdatedAt: Date,
+      tokenHash: string,
+      now: Date
+    ): Promise<InvitationRecord | null> {
+      const [updated] = await client.organizationInvitation.updateManyAndReturn({
+        where: {
+          id: invitationId,
+          status: 'PENDING',
+          expiresAt: {
+            gt: now,
+          },
+          updatedAt: expectedUpdatedAt,
+        },
+        data: {
+          tokenHash,
+        },
+        select: invitationRecordSelect,
+      })
+
+      return updated ?? null
     },
   }
 }
