@@ -1,14 +1,48 @@
-# DJ Platform
+# Platform Core
 
-> AI-native knowledge and content Product for Electronic Dance Music, built on a reusable SaaS foundation.
+> Reusable, business-agnostic SaaS foundation and the primary implementation focus of this repository.
 
 ---
 
-## Overview
+## Platform Overview
 
-DJ Platform is a Product focused on DJs, electronic music and structured music knowledge.
+**Platform Core** is the repository's primary project. It provides reusable SaaS capabilities whose semantics are independent from a specific business vertical.
 
-Its broader direction includes:
+**DJ Platform** is the first and reference Product that composes Platform Core with the **DJ** Business Domain. It is the current validation consumer of Platform Core, not the owner of Core capabilities.
+
+**DJ** is the current reference Business Domain. It owns electronic-music-specific semantics and consumes Platform Core; it is not synonymous with DJ Platform.
+
+Conceptually, Products are customer-facing compositions:
+
+    Product
+        ↓
+    App Composition
+        +
+    Platform Core
+        +
+    one or more Business Domains
+        +
+    Shared Technical Capabilities
+        +
+    Infrastructure
+
+Product and Domain are not synonyms.
+
+---
+
+## Platform Vision
+
+The long-term goal is to develop Platform Core as a reusable, business-agnostic SaaS foundation through approved capabilities and real Product validation.
+
+Business Domains provide vertical-specific semantics. Products compose Platform Core and one or more Domains into customer-facing applications. Neither Products nor Domains own Core capabilities.
+
+Platform Core is not independently deployed or Production Ready merely because it is reusable; Core capabilities operate as part of a deployed Product runtime when applicable.
+
+---
+
+## DJ Platform Reference Product Vision
+
+DJ Platform is an AI-native knowledge and content Product for Electronic Dance Music and DJ culture. Its broader Product direction may include:
 
 - DJs and artists
 - genres
@@ -21,57 +55,12 @@ Its broader direction includes:
 - editorial content
 - relationships between music entities
 - discovery
-- AI-assisted workflows
 
-The repository is also being used to develop and validate a reusable SaaS foundation called **Platform Core**.
-
-Conceptually:
-
-    DJ Platform
-        ↓
-    App Composition
-        +
-    Platform Core
-        +
-    DJ Domain
-        +
-    Shared Technical Capabilities
-        +
-    Infrastructure
-
-DJ Platform is the Product.
-
-DJ is the Business Domain.
-
-Platform Core is the reusable SaaS foundation.
-
-Product and Domain are not synonyms.
+Strategic Product scope is broader than current implementation. Roadmap presence does not mean a capability is already implemented.
 
 ---
 
-## Product Vision
-
-The long-term goal is to build a high-quality knowledge platform for DJs and electronic music.
-
-Users should eventually be able to understand:
-
-- who an artist is
-- how they sound
-- which genres they represent
-- their career and context
-- relevant festivals
-- important sessions
-- related artists
-- rankings
-- relationships within electronic music culture
-
-Strategic Product scope is broader than current implementation.
-
-Roadmap presence does not mean a capability is already implemented.
-
----
-
-## Platform Core
+## Core Foundation
 
 Platform Core contains reusable SaaS capabilities whose semantics are independent from a specific business vertical.
 
@@ -92,12 +81,12 @@ Current Foundation sequence:
 Current status:
 
 - Identity foundation implemented
-- Organizations specified
-- Roles specified
-- Memberships specified
-- Permissions specified
+- Organizations Foundation Stage 1 CONDITIONAL PASS
+- Roles Foundation Stage 1 CLOSED / PASS
+- Memberships Foundation implementation in progress
+- Permissions pending / deferred
 
-Specified does not mean implemented.
+The Memberships schema, enums, models, migration and repository lookups exist, but Memberships Foundation remains incomplete.
 
 Future capabilities are not promoted into Platform Core merely because they could theoretically be reused.
 
@@ -421,7 +410,7 @@ Staging is not assumed.
 
 Production is not currently verified.
 
-DJ Platform is not currently considered Production Ready.
+No Product or Platform Core runtime is currently considered Production Ready.
 
 ---
 
@@ -484,11 +473,11 @@ License strategy is not yet finalized.
 
 ## Final Principle
 
-DJ Platform is the current Product.
+Platform Core is the repository's primary reusable, business-agnostic SaaS foundation.
 
-Platform Core is the reusable SaaS foundation.
+DJ Platform is its first/reference Product and current validation consumer.
 
-The DJ Domain owns electronic-music-specific semantics.
+The DJ Domain is the current reference Business Domain and owns electronic-music-specific semantics.
 
 App composes capabilities.
 

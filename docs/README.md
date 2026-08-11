@@ -2,20 +2,22 @@
 title: Platform Documentation
 version: 2.0.0
 status: Living Document
-updated: 2026-08-09
+updated: 2026-08-11
 ---
 
 # Platform Documentation
 
 ## Purpose
 
-This directory contains the main documentation for the `dj-platform` repository.
+This directory contains the main documentation for the `dj-platform` repository, whose primary project is Platform Core.
 
 The repository currently contains and documents:
 
-- DJ Platform as the current Product;
-- Platform Core as the reusable SaaS foundation;
-- the DJ Business Domain;
+- Platform Core as the reusable, business-agnostic SaaS foundation and current implementation focus;
+- Product composition;
+- Business Domains;
+- DJ Platform as the first/reference Product and current validation consumer;
+- DJ as the current reference Business Domain;
 - system Architecture;
 - Engineering standards;
 - Backend and Frontend implementation guidance;
@@ -37,6 +39,8 @@ For current repository state use:
 
 # Conceptual Model
 
+Platform Core is the repository's primary project. Products consume and compose Platform Core with one or more Business Domains; Domains provide vertical-specific semantics and do not own Core capabilities.
+
 The repository follows this conceptual model:
 
     Product
@@ -51,13 +55,13 @@ The repository follows this conceptual model:
         +
     Infrastructure
 
-For the current Product:
+For the first/reference Product:
 
     DJ Platform
         ↓
     Platform Core
         +
-    DJ Domain
+    DJ Business Domain
 
 Product and Domain are not synonyms.
 
@@ -192,7 +196,7 @@ Location:
 
 Business Domains own business-specific semantics.
 
-Current Domain:
+Current reference Domain:
 
     DJ
 
@@ -220,7 +224,9 @@ Do not classify a Product itself as a Domain.
 
 # Products
 
-DJ Platform is the current Product.
+Products are customer-facing compositions that consume Platform Core and one or more Business Domains.
+
+DJ Platform is the first/reference Product and current validation consumer.
 
 Products compose:
 
@@ -230,7 +236,7 @@ Products compose:
 - Shared technical capabilities;
 - infrastructure.
 
-Future Products may reuse Platform Core.
+Future Products may reuse Platform Core when demonstrated requirements justify them.
 
 Their exact repository and Domain organization should be decided when demonstrated requirements exist.
 
@@ -606,11 +612,11 @@ Not established.
 
 Documentation exists to make ownership, decisions, behavior and maturity understandable.
 
-DJ Platform is the current Product.
+Platform Core is the repository's primary reusable, business-agnostic SaaS foundation and current implementation focus.
 
-Platform Core is the reusable SaaS foundation.
+DJ Platform is the first/reference Product and current validation consumer.
 
-Business Domains own business-specific semantics.
+DJ is the current reference Business Domain. Business Domains own business-specific semantics and do not own Core capabilities.
 
 Architecture defines boundaries.
 

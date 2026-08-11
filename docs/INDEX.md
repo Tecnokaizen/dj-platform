@@ -2,18 +2,20 @@
 title: Documentation Index
 version: 2.0.0
 status: Living Document
-updated: 2026-08-09
+updated: 2026-08-11
 ---
 
 # Documentation Index
 
-This document is the navigation entry point for the documentation contained in the `dj-platform` repository.
+This document is the navigation entry point for the documentation contained in the `dj-platform` repository, whose primary project is Platform Core.
 
 The repository documents:
 
-- DJ Platform as the current Product;
-- Platform Core as the reusable SaaS foundation;
+- Platform Core as the reusable, business-agnostic SaaS foundation and current implementation focus;
+- Product composition;
 - Business Domains;
+- DJ Platform as the first/reference Product and current validation consumer;
+- DJ as the current reference Business Domain;
 - Architecture;
 - Engineering;
 - Backend and Frontend standards;
@@ -163,7 +165,7 @@ Purpose:
 
 Defines business-specific semantics.
 
-Current Domain:
+Current reference Domain:
 
 - DJ
 
@@ -191,23 +193,25 @@ Do not classify future Products automatically as Domains.
 
 # Product Composition
 
-DJ Platform is the current Product.
+Products are customer-facing compositions that consume Platform Core and one or more Business Domains. Platform Core remains reusable and business-agnostic; Domains own vertical-specific semantics and do not own Core capabilities.
+
+DJ Platform is the first/reference Product and current validation consumer.
 
 Conceptually:
 
-    DJ Platform
+    Reference Product: DJ Platform
         ↓
     App Composition
         +
     Platform Core
         +
-    DJ Domain
+    Reference Business Domain: DJ
         +
     Shared Technical Capabilities
         +
     Infrastructure
 
-A Product may compose one or more Domains plus Core capabilities.
+A Product may compose one or more Domains plus Platform Core capabilities.
 
 Product composition does not transfer ownership of Core or Domain semantics into `src/app`.
 
@@ -555,13 +559,11 @@ If no:
 
 # Final Principle
 
-This repository contains a Product, reusable platform capabilities and business-specific Domain semantics.
+This repository's primary project is Platform Core: reusable, business-agnostic SaaS capabilities.
 
-DJ Platform is the current Product.
+DJ Platform is the first/reference Product and current validation consumer.
 
-Platform Core is the reusable SaaS foundation.
-
-Domains own business semantics.
+DJ is the current reference Business Domain. Domains own vertical-specific semantics and do not own Core capabilities.
 
 Architecture defines ownership and boundaries.
 

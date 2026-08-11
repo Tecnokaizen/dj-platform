@@ -18,21 +18,21 @@ It does not replace Architecture, Business, Engineering, Core or Domain document
 
 # Project
 
-Name:
+Primary project and implementation focus:
 
-DJ Platform
+Platform Core
 
-Repository:
+Repository technical identifier:
 
 `dj-platform`
 
-Primary Product:
+Reference Product:
 
 DJ Platform
 
-Architectural Foundation:
+Reference Business Domain:
 
-Platform Core
+DJ
 
 Current State:
 
@@ -40,7 +40,7 @@ Architecture consolidated.
 
 Core Foundation partially implemented and partially specified.
 
-Product implementation in progress.
+Platform Core Foundation implementation in progress; DJ Platform is its current validation consumer.
 
 Production readiness not established.
 
@@ -48,9 +48,13 @@ Production readiness not established.
 
 # Product Strategy
 
-DJ Platform is the first Product being built on a reusable SaaS foundation called Platform Core.
+Platform Core is the primary project: a reusable SaaS foundation whose capabilities have business-agnostic semantics.
 
-The long-term architecture supports additional Products without duplicating common SaaS capabilities.
+Products are customer-facing compositions that consume Platform Core together with one or more Business Domains. Business Domains own vertical-specific semantics and do not own Core capabilities.
+
+DJ Platform is the first/reference Product and current validation consumer of Platform Core. DJ is the current reference Business Domain; it is not synonymous with DJ Platform.
+
+The long-term architecture may support additional Products when demonstrated requirements justify them, without duplicating common SaaS capabilities.
 
 Conceptually:
 
@@ -70,7 +74,7 @@ Product and Domain are not synonyms.
 
 ---
 
-# DJ Platform Mission
+# DJ Platform Reference-Product Context
 
 DJ Platform is an AI-native knowledge and content Product focused on Electronic Dance Music and DJ culture.
 
@@ -236,11 +240,14 @@ Memberships:
 
 Specification complete.
 
-Implementation pending.
+Foundation implementation in progress.
 
-Next Core module after Roles Foundation closeout:
+Implemented work includes:
 
-Memberships Foundation
+- Membership schema, enums, models and migration;
+- Membership repository lookups.
+
+Memberships Foundation remains incomplete.
 
 Conceptual link:
 
@@ -260,7 +267,7 @@ Permissions:
 
 Specification complete.
 
-Implementation pending.
+Implementation pending / deferred.
 
 Other future Core capabilities must not be implemented speculatively.
 
@@ -764,13 +771,14 @@ The repository currently contains:
 - generated Prisma client;
 - Organizations Foundation Stage 1 CONDITIONAL PASS (pausable);
 - Roles Foundation Stage 1 CLOSED / PASS;
+- Memberships Foundation implementation in progress;
 - initial Domain and Core source boundaries.
 
 Organizations operational tenancy remains incomplete.
 Deferred Organizations tasks: O-017, O-018, O-021.
 
 Roles Foundation Stage 1 is closed.
-Memberships Foundation is the next Core module.
+Memberships Foundation is the current Core implementation work and remains incomplete. Its schema, enums, models, migration and repository lookups exist.
 
 Large parts of DJ Domain functionality remain unimplemented.
 
@@ -934,11 +942,11 @@ Organizations Foundation Stage 1 is CONDITIONAL PASS and may be paused.
 
 Roles Foundation Stage 1 is CLOSED / PASS.
 
-Current next module:
+Current implementation module:
 
 Memberships Foundation
 
-Conceptual next link:
+Current implementation link:
 
     Profile
         ↓
@@ -1013,11 +1021,11 @@ Better repository knowledge should reduce prompt complexity and implementation m
 
 # Final Principle
 
-DJ Platform is the first Product.
+Platform Core is the repository's primary reusable, business-agnostic SaaS foundation and current implementation focus.
 
-Platform Core is the reusable SaaS foundation.
+DJ Platform is the first/reference Product and current validation consumer.
 
-Business Domains own Product-specific semantics.
+DJ is the current reference Business Domain. Business Domains own vertical-specific semantics; Products and Domains do not own Core capabilities.
 
 App composes capabilities into Products.
 
