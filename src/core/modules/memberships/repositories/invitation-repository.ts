@@ -1,0 +1,40 @@
+import 'server-only'
+
+import type { Prisma, PrismaClient } from '@/generated/prisma/client'
+
+type InvitationRepositoryClient = Pick<PrismaClient, 'organizationInvitation'>
+
+const invitationRecordSelect = {
+  id: true,
+  organizationId: true,
+  recipientEmail: true,
+  normalizedEmail: true,
+  roleId: true,
+  status: true,
+  expiresAt: true,
+  invitedByMembershipId: true,
+  acceptedByProfileId: true,
+  acceptedAt: true,
+  revokedAt: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
+export type InvitationRecord = Prisma.OrganizationInvitationGetPayload<{
+  select: typeof invitationRecordSelect
+}>
+
+export function createInvitationRepository(client: InvitationRepositoryClient) {
+  return {
+    async findByTokenHash(
+      tokenHash: string
+    ): Promise<InvitationRecord | null> {
+      return client.organizationInvitation.findUnique({
+        where: {
+          tokenHash,
+        },
+        select: invitationRecordSelect,
+      })
+    },
+  }
+}
