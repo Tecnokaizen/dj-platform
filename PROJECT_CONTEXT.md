@@ -2,7 +2,7 @@
 title: Project Context
 version: 2.0.0
 status: Living Document
-updated: 2026-08-10
+updated: 2026-08-11
 repository: dj-platform
 ---
 
@@ -186,7 +186,6 @@ Deferred Organizations tasks (not completed):
 
 Still pending for operational tenancy (cross-module / later capabilities, not Organizations-owned Stage 1 defects):
 
-- Role persistence
 - OrganizationMembership persistence
 - OWNER ownership workflow
 - Permissions
@@ -203,13 +202,59 @@ Roles:
 
 Specification complete.
 
-Implementation pending.
+Roles Foundation Stage 1:
+
+CLOSED / PASS (R-036).
+
+R-001 → R-036 completed.
+
+Implemented and validated:
+
+- Role Prisma model and migration
+- canonical catalog OWNER / ADMIN / MANAGER / MEMBER / VIEWER
+- idempotent system Role seed (reconciles name / isSystem / sortOrder; preserves description)
+- persistence access via Roles-owned services/functions (ADR-007; Repository not mandatory)
+- RoleDto, Zod validation schemas, stable RoleError codes
+- getRole / getRoleByKey / listSystemRoles / resolveRequiredRole / validateSystemRoleCatalog
+- security and boundary reviews (visibility ≠ possession; no Membership/Permission ownership leak)
+- Roles integration tests (27/27)
+- Prisma format / validate / generate PASS
+- typecheck / lint PASS
+- documentation aligned with CURRENT implementation
+
+No Roles-owned defect blocks Memberships specification or implementation.
+
+Deferred / future (not Roles Foundation Stage 1):
+
+- OrganizationMembership / tenant Role possession
+- ownership enforcement
+- Permissions / RolePermission
+- tenant context
+- custom tenant Roles
 
 Memberships:
 
 Specification complete.
 
 Implementation pending.
+
+Next Core module after Roles Foundation closeout:
+
+Memberships Foundation
+
+Conceptual link:
+
+    Profile
+        ↓
+    OrganizationMembership
+        ↓
+    Organization + Role
+
+Dependencies already available:
+
+- Identity
+- Organizations
+- Roles
 
 Permissions:
 
@@ -718,10 +763,14 @@ The repository currently contains:
 - Prisma foundation;
 - generated Prisma client;
 - Organizations Foundation Stage 1 CONDITIONAL PASS (pausable);
+- Roles Foundation Stage 1 CLOSED / PASS;
 - initial Domain and Core source boundaries.
 
 Organizations operational tenancy remains incomplete.
 Deferred Organizations tasks: O-017, O-018, O-021.
+
+Roles Foundation Stage 1 is closed.
+Memberships Foundation is the next Core module.
 
 Large parts of DJ Domain functionality remain unimplemented.
 
@@ -883,9 +932,25 @@ Identity foundation already exists.
 
 Organizations Foundation Stage 1 is CONDITIONAL PASS and may be paused.
 
+Roles Foundation Stage 1 is CLOSED / PASS.
+
 Current next module:
 
-Roles.
+Memberships Foundation
+
+Conceptual next link:
+
+    Profile
+        ↓
+    OrganizationMembership
+        ↓
+    Organization + Role
+
+Dependencies already available for Memberships:
+
+- Identity
+- Organizations
+- Roles
 
 The Core implementation work should respect this dependency order unless Architecture explicitly changes it.
 
