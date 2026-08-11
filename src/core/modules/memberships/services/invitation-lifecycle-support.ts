@@ -39,6 +39,11 @@ export type InvitationTransactionRepositories = {
   membershipRepository: MembershipRepository
 }
 
+export type AuthenticatedRecipientIdentity = {
+  profileId: string
+  email: string
+}
+
 export type InvitationLifecycleDependencies = {
   invitationRepository: InvitationRepository
   membershipRepository: MembershipRepository
@@ -48,6 +53,7 @@ export type InvitationLifecycleDependencies = {
     ) => Promise<Result>
   ) => Promise<Result>
   getCurrentActorProfileId: () => Promise<string | null>
+  getCurrentRecipientIdentity: () => Promise<AuthenticatedRecipientIdentity | null>
   findOrganizationById: (
     organizationId: string
   ) => Promise<Organization | null>
@@ -139,6 +145,16 @@ export function createInvitationLifecycleSupport(
     return membership
   }
 
+  async function requireAuthenticatedRecipient(): Promise<AuthenticatedRecipientIdentity> {
+    const identity = await dependencies.getCurrentRecipientIdentity()
+
+    if (!identity) {
+      throw new Error('UNAUTHENTICATED')
+    }
+
+    return identity
+  }
+
   async function findRecipientMembership(
     organizationId: string,
     normalizedEmail: string
@@ -194,6 +210,7 @@ export function createInvitationLifecycleSupport(
     rejectOwnerRole,
     requireActiveActorMembership,
     requireActiveOrganization,
+    requireAuthenticatedRecipient,
     requireInvitation,
     requireRole,
     throwInvitationStateError,
@@ -219,6 +236,18 @@ export const invitationLifecycleSupport = createInvitationLifecycleSupport({
   getCurrentActorProfileId: async () => {
     const session = await getCurrentProfile()
     return session?.profile?.id ?? null
+  },
+  getCurrentRecipientIdentity: async () => {
+    const session = await getCurrentProfile()
+
+    if (!session?.profile?.id || !session.user.email) {
+      return null
+    }
+
+    return {
+      profileId: session.profile.id,
+      email: session.user.email,
+    }
   },
   findOrganizationById,
   findRoleById,

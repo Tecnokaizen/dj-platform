@@ -174,5 +174,31 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
 
       return updated ?? null
     },
+
+    async acceptPending(
+      invitationId: string,
+      expectedUpdatedAt: Date,
+      acceptedByProfileId: string,
+      acceptedAt: Date
+    ): Promise<InvitationRecord | null> {
+      const [updated] = await client.organizationInvitation.updateManyAndReturn({
+        where: {
+          id: invitationId,
+          status: 'PENDING',
+          expiresAt: {
+            gt: acceptedAt,
+          },
+          updatedAt: expectedUpdatedAt,
+        },
+        data: {
+          status: 'ACCEPTED',
+          acceptedByProfileId,
+          acceptedAt,
+        },
+        select: invitationRecordSelect,
+      })
+
+      return updated ?? null
+    },
   }
 }

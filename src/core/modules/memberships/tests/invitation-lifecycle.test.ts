@@ -186,6 +186,10 @@ async function createTestContext() {
         })
       ),
     getCurrentActorProfileId: async () => actorProfileId,
+    getCurrentRecipientIdentity: async () => ({
+      profileId: actorProfileId,
+      email: 'actor@example.com',
+    }),
     findOrganizationById: (organizationId) =>
       prisma.organization.findUnique({ where: { id: organizationId } }),
     findRoleById: (roleId) =>

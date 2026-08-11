@@ -1,0 +1,166 @@
+import 'server-only'
+
+import {
+  INVITATION_ERROR_CODES,
+  InvitationError,
+} from '@/core/modules/memberships/errors/invitation-error'
+import {
+  MEMBERSHIP_ERROR_CODES,
+  MembershipError,
+} from '@/core/modules/memberships/errors/membership-error'
+import { toInvitationDto } from '@/core/modules/memberships/mappers/to-invitation-dto'
+import { toMembershipDto } from '@/core/modules/memberships/mappers/to-membership-dto'
+import {
+  invitationLifecycleSupport,
+  type InvitationLifecycleSupport,
+} from '@/core/modules/memberships/services/invitation-lifecycle-support'
+import type { InvitationDto } from '@/core/modules/memberships/types/invitation-dto'
+import type { MembershipDto } from '@/core/modules/memberships/types/membership-dto'
+import { normalizeEmail } from '@/core/modules/memberships/utils/normalize-email'
+import { Prisma } from '@/generated/prisma/client'
+
+export type AcceptInvitationInput = {
+  token: string
+}
+
+export type AcceptInvitationResult = {
+  membership: MembershipDto
+  invitation: InvitationDto
+}
+
+export function createAcceptInvitationService(
+  support: InvitationLifecycleSupport,
+) {
+  return async function acceptInvitation(
+    input: AcceptInvitationInput,
+  ): Promise<AcceptInvitationResult> {
+    const tokenHash = support.hashInvitationToken(input.token)
+    const invitation =
+      await support.invitationRepository.findByTokenHash(tokenHash)
+
+    if (!invitation) {
+      throw new InvitationError(INVITATION_ERROR_CODES.TOKEN_INVALID)
+    }
+
+    if (invitation.status !== 'PENDING') {
+      support.throwInvitationStateError(invitation)
+    }
+
+    const now = support.now()
+
+    if (invitation.expiresAt <= now) {
+      throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
+    }
+
+    const identity = await support.requireAuthenticatedRecipient()
+
+    if (normalizeEmail(identity.email) !== invitation.normalizedEmail) {
+      throw new InvitationError(INVITATION_ERROR_CODES.RECIPIENT_MISMATCH)
+    }
+
+    await support.requireActiveOrganization(invitation.organizationId)
+    const role = await support.requireRole(invitation.roleId)
+    support.rejectOwnerRole(role)
+
+    try {
+      const accepted = await support.runInTransaction(
+        async ({ invitationRepository, membershipRepository }) => {
+          const currentInvitation =
+            await invitationRepository.findByTokenHash(tokenHash)
+
+          if (!currentInvitation) {
+            throw new InvitationError(INVITATION_ERROR_CODES.TOKEN_INVALID)
+          }
+
+          if (currentInvitation.status !== 'PENDING') {
+            support.throwInvitationStateError(currentInvitation)
+          }
+
+          if (currentInvitation.expiresAt <= now) {
+            throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
+          }
+
+          const currentMembership =
+            await membershipRepository.findByOrganizationAndProfile(
+              currentInvitation.organizationId,
+              identity.profileId,
+            )
+
+          if (currentMembership?.status === 'ACTIVE') {
+            throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
+          }
+
+          if (currentMembership?.status === 'SUSPENDED') {
+            throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
+          }
+
+          const claimed = await invitationRepository.acceptPending(
+            currentInvitation.id,
+            currentInvitation.updatedAt,
+            identity.profileId,
+            now,
+          )
+
+          if (!claimed) {
+            const latest = await invitationRepository.findById(
+              currentInvitation.id,
+            )
+
+            if (!latest) {
+              throw new InvitationError(INVITATION_ERROR_CODES.NOT_FOUND)
+            }
+
+            if (latest.status !== 'PENDING') {
+              support.throwInvitationStateError(latest)
+            }
+
+            if (latest.expiresAt <= now) {
+              throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
+            }
+
+            throw new InvitationError(INVITATION_ERROR_CODES.NOT_PENDING)
+          }
+
+          const membership = currentMembership
+            ? await membershipRepository.restoreRemoved(
+                currentMembership.id,
+                currentMembership.roleId,
+                role.id,
+              )
+            : await membershipRepository.create({
+                organizationId: currentInvitation.organizationId,
+                profileId: identity.profileId,
+                roleId: role.id,
+              })
+
+          if (!membership) {
+            throw new MembershipError(MEMBERSHIP_ERROR_CODES.INVALID_STATE)
+          }
+
+          return {
+            membership,
+            invitation: claimed,
+          }
+        },
+      )
+
+      return {
+        membership: toMembershipDto(accepted.membership),
+        invitation: toInvitationDto(accepted.invitation),
+      }
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
+      }
+
+      throw error
+    }
+  }
+}
+
+export const acceptInvitation = createAcceptInvitationService(
+  invitationLifecycleSupport,
+)
