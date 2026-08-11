@@ -255,6 +255,9 @@ model OrganizationMembership {
   role         Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
 
   @@unique([organizationId, profileId], map: "organization_memberships_organization_profile_unique")
+  @@index([organizationId, status], map: "organization_memberships_organization_status_idx")
+  @@index([profileId, status], map: "organization_memberships_profile_status_idx")
+  @@index([roleId], map: "organization_memberships_role_idx")
   @@map("organization_memberships")
 }
 
