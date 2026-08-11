@@ -3,7 +3,7 @@ title: Identity Architecture
 version: 2.0.0
 status: Living Document
 owner: Platform Architecture
-updated: 2026-08-09
+updated: 2026-08-12
 related:
   - ARCHITECTURE.md
   - CORE.md
@@ -921,6 +921,52 @@ Memberships owns invitation recipient data.
 Identity owns authenticated identity.
 
 Neither module should create a second competing email identity system.
+
+Identity exposes a narrow lookup from normalized canonical Auth email to
+`Profile.id`. The lookup uses the nullable `Profile.authEmailNormalized`
+projection maintained from `auth.users.email` by Supabase database triggers.
+
+The projection is not a second email authority:
+
+```text
+auth.users.email
+        ↓ canonical source
+trim + lowercase
+        ↓ derived lookup projection
+Profile.authEmailNormalized
+```
+
+Required properties:
+
+- unique when present;
+- `NULL` for identities without an email or Profiles without a matching Auth
+  identity;
+- never writable by authenticated application clients;
+- never accepted as authentication proof;
+- never exposed as a normal Membership or Profile DTO field;
+- resolved through Identity-owned, server-only services, including a
+  transaction-scoped variant when a consumer must revalidate inside a database
+  transaction.
+
+Supabase-triggered insert and email-change synchronization owns the projection.
+Application registration and Profile-edit forms do not write it.
+
+## Profile Column Update Boundary
+
+RLS determines which Profile rows an authenticated caller may update; column
+privileges determine which attributes they may change. The current client-edit
+surface is limited to:
+
+```text
+display_name
+dj_name
+bio
+preferred_language
+```
+
+The database owns `updated_at`. Authenticated clients must not update identity
+keys, `is_admin`, timestamps or the Auth email projection. Expanding the
+editable set requires explicit Identity and security review.
 
 ---
 

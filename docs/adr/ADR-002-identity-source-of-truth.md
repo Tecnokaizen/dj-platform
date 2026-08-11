@@ -2,6 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-08-09
+**Updated:** 2026-08-12
 **Decision Type:** Foundation Architecture
 
 ## Context
@@ -81,6 +82,32 @@ The Profile identifier must maintain a stable relationship with the authenticate
 The exact persistence mapping is defined by the active Prisma schema and approved Identity architecture.
 
 Application code must resolve authentication identity through the approved Identity boundary rather than creating competing identity records.
+
+## Derived Auth Email Projection
+
+Identity may maintain a nullable, normalized email projection on `Profile` when
+another Core capability must resolve an existing application identity by the
+canonical Supabase Auth email.
+
+The approved projection is:
+
+```text
+auth.users.email
+        ↓ Supabase-owned trigger synchronization
+Profile.authEmailNormalized
+```
+
+This field is a derived lookup index only:
+
+- Supabase `auth.users` remains canonical;
+- application clients cannot write the projection;
+- the projection stores no credentials, sessions or tokens;
+- empty or email-less Auth identities project to `NULL`;
+- normalization is `trim` followed by lowercase;
+- consumers resolve only the corresponding `Profile.id` through Identity.
+
+The projection must not be exposed as a second authentication identity or used
+to authenticate a caller.
 
 ## DJ and Artist Identity
 
@@ -209,6 +236,12 @@ Application code must not use Supabase `auth.users` as a replacement for applica
 Conversely, Profile must not become a shadow authentication database.
 
 Authentication-sensitive operations should use the approved Identity services and infrastructure adapters.
+
+Because `Profile` contains Identity- and authorization-sensitive columns,
+row-level ownership alone is insufficient for client updates. Authenticated
+clients receive update privileges only for explicitly approved editable
+profile columns. Canonical identifiers, administrative state, timestamps and
+Auth-derived projections remain database-owned.
 
 ## Rejected Alternatives
 

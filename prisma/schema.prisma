@@ -183,18 +183,19 @@ enum InvitationStatus {
 }
 
 model Profile {
-  id                String           @id @db.Uuid
-  username          String?          @unique @db.VarChar(50)
-  displayName       String?          @map("display_name") @db.VarChar(120)
-  djName            String?          @map("dj_name") @db.VarChar(120)
-  avatarUrl         String?          @map("avatar_url")
-  bio               String?          @db.Text
-  countryCode       String?          @map("country_code") @db.Char(2)
-  preferredLanguage String           @default("es") @map("preferred_language") @db.VarChar(10)
-  experienceLevel   ExperienceLevel? @map("experience_level")
-  isAdmin           Boolean          @default(false) @map("is_admin")
-  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                  String           @id @db.Uuid
+  username            String?          @unique @db.VarChar(50)
+  authEmailNormalized String?          @unique(map: "profiles_auth_email_normalized_unique") @map("auth_email_normalized") @db.VarChar(320)
+  displayName         String?          @map("display_name") @db.VarChar(120)
+  djName              String?          @map("dj_name") @db.VarChar(120)
+  avatarUrl           String?          @map("avatar_url")
+  bio                 String?          @db.Text
+  countryCode         String?          @map("country_code") @db.Char(2)
+  preferredLanguage   String           @default("es") @map("preferred_language") @db.VarChar(10)
+  experienceLevel     ExperienceLevel? @map("experience_level")
+  isAdmin             Boolean          @default(false) @map("is_admin")
+  createdAt           DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   memberships         OrganizationMembership[]
   acceptedInvitations OrganizationInvitation[] @relation("InvitationAcceptedByProfile")
