@@ -287,6 +287,8 @@ model OrganizationInvitation {
   invitedByMembership OrganizationMembership @relation("InvitationInviterMembership", fields: [invitedByMembershipId], references: [id], onDelete: Restrict)
   acceptedByProfile   Profile?               @relation("InvitationAcceptedByProfile", fields: [acceptedByProfileId], references: [id], onDelete: Restrict)
 
+  @@index([organizationId, status], map: "organization_invitations_organization_status_idx")
+  @@index([status, expiresAt], map: "organization_invitations_status_expires_idx")
   @@map("organization_invitations")
 }
 
