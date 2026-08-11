@@ -85,13 +85,15 @@ describe('Roles Foundation boundary (R-030)', () => {
     }
   })
 
-  it('Role Prisma model does not require organizationId or Membership relations', async () => {
+  it('Role Prisma model remains global with approved Memberships inverse relations', async () => {
     const schema = await readFile(SCHEMA_PATH, 'utf8')
     const roleModel = extractRoleModelBlock(schema)
 
-    for (const token of forbiddenTokens()) {
-      expect(roleModel).not.toContain(token)
-    }
+    expect(roleModel).not.toContain(['organization', 'Id'].join(''))
+    expect(roleModel).not.toContain(['Role', 'Permission'].join(''))
+    expect(roleModel).not.toContain('Permission')
+    expect(roleModel).toMatch(/memberships\s+OrganizationMembership\[\]/)
+    expect(roleModel).toMatch(/invitations\s+OrganizationInvitation\[\]/)
   })
 
   it('Roles tests remain independently runnable without Memberships/Permissions modules', async () => {
