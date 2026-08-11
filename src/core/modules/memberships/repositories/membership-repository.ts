@@ -45,5 +45,19 @@ export function createMembershipRepository(client: MembershipRepositoryClient) {
         select: membershipRecordSelect,
       })
     },
+
+    async findActiveByOrganizationAndProfile(
+      organizationId: string,
+      profileId: string
+    ): Promise<MembershipRecord | null> {
+      return client.organizationMembership.findFirst({
+        where: {
+          organizationId,
+          profileId,
+          status: 'ACTIVE',
+        },
+        select: membershipRecordSelect,
+      })
+    },
   }
 }
