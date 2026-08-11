@@ -1,6 +1,6 @@
 import 'server-only'
 
-import type { Prisma, PrismaClient } from '@/generated/prisma/client'
+import type { InvitationStatus, Prisma, PrismaClient } from '@/generated/prisma/client'
 
 type InvitationRepositoryClient = Pick<PrismaClient, 'organizationInvitation'>
 
@@ -46,6 +46,19 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
           organizationId,
           normalizedEmail,
           status: 'PENDING',
+        },
+        select: invitationRecordSelect,
+      })
+    },
+
+    async listByOrganization(
+      organizationId: string,
+      status?: InvitationStatus
+    ): Promise<InvitationRecord[]> {
+      return client.organizationInvitation.findMany({
+        where: {
+          organizationId,
+          ...(status !== undefined ? { status } : {}),
         },
         select: invitationRecordSelect,
       })
