@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from 'node:crypto'
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
+import { createFindProfileIdByNormalizedAuthEmail } from '@/core/identity/profile/services/find-profile-id-by-normalized-auth-email'
 import {
   INVITATION_ERROR_CODES,
   InvitationError,
@@ -76,7 +77,9 @@ async function cleanupInvitationAcceptanceRecords(): Promise<void> {
   })
 }
 
-async function createTestContext() {
+async function createTestContext(options?: {
+  transactionMembershipStatusOverride?: string
+}) {
   const { prisma } = await import('@/lib/prisma')
   const { seedSystemRoles } =
     await import('@/core/modules/roles/seed/seed-system-roles')
@@ -124,6 +127,7 @@ async function createTestContext() {
   }
   const identity: {
     current: AuthenticatedRecipientIdentity | null
+    onResolve?: () => void
   } = {
     current: {
       profileId: recipientProfileId,
@@ -134,14 +138,45 @@ async function createTestContext() {
     invitationRepository: createInvitationRepository(prisma),
     membershipRepository: createMembershipRepository(prisma),
     runInTransaction: (operation) =>
-      prisma.$transaction((client) =>
-        operation({
+      prisma.$transaction((client) => {
+        const repository = createMembershipRepository(client)
+        const membershipRepository =
+          options?.transactionMembershipStatusOverride === undefined
+            ? repository
+            : {
+                ...repository,
+                async findByOrganizationAndProfile(
+                  organizationId: string,
+                  profileId: string,
+                ) {
+                  const membership =
+                    await repository.findByOrganizationAndProfile(
+                      organizationId,
+                      profileId,
+                    )
+
+                  return membership
+                    ? {
+                        ...membership,
+                        status:
+                          options.transactionMembershipStatusOverride as never,
+                      }
+                    : null
+                },
+              }
+
+        return operation({
           invitationRepository: createInvitationRepository(client),
-          membershipRepository: createMembershipRepository(client),
-        }),
-      ),
+          membershipRepository,
+          findProfileIdByNormalizedAuthEmail:
+            createFindProfileIdByNormalizedAuthEmail(client),
+        })
+      }),
     getCurrentActorProfileId: async () => inviterProfileId,
-    getCurrentRecipientIdentity: async () => identity.current,
+    getCurrentRecipientIdentity: async () => {
+      identity.onResolve?.()
+      return identity.current
+    },
     findOrganizationById: (organizationId) =>
       prisma.organization.findUnique({ where: { id: organizationId } }),
     findRoleById: (roleId) => prisma.role.findUnique({ where: { id: roleId } }),
@@ -293,6 +328,7 @@ describe('Invitation acceptance services (M-047 → M-054)', () => {
       id: created.invitation.id,
       status: 'ACCEPTED',
       acceptedAt: INITIAL_NOW.toISOString(),
+      updatedAt: INITIAL_NOW.toISOString(),
     })
     await expect(
       context.prisma.organizationInvitation.findUniqueOrThrow({
@@ -302,6 +338,7 @@ describe('Invitation acceptance services (M-047 → M-054)', () => {
       acceptedByProfileId: context.recipientProfileId,
       acceptedAt: INITIAL_NOW,
       status: 'ACCEPTED',
+      updatedAt: INITIAL_NOW,
     })
   })
 
@@ -408,6 +445,61 @@ describe('Invitation acceptance services (M-047 → M-054)', () => {
       INVITATION_ERROR_CODES.EXPIRED,
     )
 
+    await expect(
+      context.prisma.organizationInvitation.findUniqueOrThrow({
+        where: { id: created.invitation.id },
+      }),
+    ).resolves.toMatchObject({ status: 'PENDING' })
+  })
+
+  it('uses a fresh transaction clock after identity I/O', async () => {
+    const context = await createTestContext()
+    const expiresAt = new Date(INITIAL_NOW.getTime() + 1)
+    const created = await context.createInvitation({ expiresAt })
+    context.identity.onResolve = () => {
+      context.clock.now = new Date(expiresAt)
+    }
+
+    await expectInvitationError(
+      context.acceptInvitation({ token: created.rawToken }),
+      INVITATION_ERROR_CODES.EXPIRED,
+    )
+    await expect(
+      context.prisma.organizationInvitation.findUniqueOrThrow({
+        where: { id: created.invitation.id },
+      }),
+    ).resolves.toMatchObject({ status: 'PENDING' })
+    await expect(
+      context.prisma.organizationMembership.findUnique({
+        where: {
+          organizationId_profileId: {
+            organizationId: context.organization.id,
+            profileId: context.recipientProfileId,
+          },
+        },
+      }),
+    ).resolves.toBeNull()
+  })
+
+  it('fails closed for an unrecognized Membership state', async () => {
+    const context = await createTestContext({
+      transactionMembershipStatusOverride: 'FUTURE_STATE',
+    })
+    await context.prisma.organizationMembership.create({
+      data: {
+        organizationId: context.organization.id,
+        profileId: context.recipientProfileId,
+        roleId: context.managerRole.id,
+        status: 'REMOVED',
+        removedAt: INITIAL_NOW,
+      },
+    })
+    const created = await context.createInvitation()
+
+    await expectMembershipError(
+      context.acceptInvitation({ token: created.rawToken }),
+      MEMBERSHIP_ERROR_CODES.INVALID_STATE,
+    )
     await expect(
       context.prisma.organizationInvitation.findUniqueOrThrow({
         where: { id: created.invitation.id },

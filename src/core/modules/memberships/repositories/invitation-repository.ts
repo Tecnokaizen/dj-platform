@@ -1,6 +1,10 @@
 import 'server-only'
 
-import type { InvitationStatus, Prisma, PrismaClient } from '@/generated/prisma/client'
+import type {
+  InvitationStatus,
+  Prisma,
+  PrismaClient,
+} from '@/generated/prisma/client'
 
 type InvitationRepositoryClient = Pick<PrismaClient, 'organizationInvitation'>
 
@@ -37,7 +41,7 @@ export type CreateInvitationRecordInput = {
 export function createInvitationRepository(client: InvitationRepositoryClient) {
   return {
     async create(
-      input: CreateInvitationRecordInput
+      input: CreateInvitationRecordInput,
     ): Promise<InvitationRecord> {
       return client.organizationInvitation.create({
         data: {
@@ -66,9 +70,7 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
       })
     },
 
-    async findByTokenHash(
-      tokenHash: string
-    ): Promise<InvitationRecord | null> {
+    async findByTokenHash(tokenHash: string): Promise<InvitationRecord | null> {
       return client.organizationInvitation.findUnique({
         where: {
           tokenHash,
@@ -79,7 +81,7 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
 
     async findPendingByOrganizationAndEmail(
       organizationId: string,
-      normalizedEmail: string
+      normalizedEmail: string,
     ): Promise<InvitationRecord | null> {
       return client.organizationInvitation.findFirst({
         where: {
@@ -93,7 +95,7 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
 
     async listByOrganization(
       organizationId: string,
-      status?: InvitationStatus
+      status?: InvitationStatus,
     ): Promise<InvitationRecord[]> {
       return client.organizationInvitation.findMany({
         where: {
@@ -107,22 +109,25 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
     async expirePending(
       invitationId: string,
       expectedUpdatedAt: Date,
-      now: Date
+      now: Date,
     ): Promise<InvitationRecord | null> {
-      const [updated] = await client.organizationInvitation.updateManyAndReturn({
-        where: {
-          id: invitationId,
-          status: 'PENDING',
-          expiresAt: {
-            lte: now,
+      const [updated] = await client.organizationInvitation.updateManyAndReturn(
+        {
+          where: {
+            id: invitationId,
+            status: 'PENDING',
+            expiresAt: {
+              lte: now,
+            },
+            updatedAt: expectedUpdatedAt,
           },
-          updatedAt: expectedUpdatedAt,
+          data: {
+            status: 'EXPIRED',
+            updatedAt: now,
+          },
+          select: invitationRecordSelect,
         },
-        data: {
-          status: 'EXPIRED',
-        },
-        select: invitationRecordSelect,
-      })
+      )
 
       return updated ?? null
     },
@@ -130,23 +135,26 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
     async revokePending(
       invitationId: string,
       expectedUpdatedAt: Date,
-      now: Date
+      now: Date,
     ): Promise<InvitationRecord | null> {
-      const [updated] = await client.organizationInvitation.updateManyAndReturn({
-        where: {
-          id: invitationId,
-          status: 'PENDING',
-          expiresAt: {
-            gt: now,
+      const [updated] = await client.organizationInvitation.updateManyAndReturn(
+        {
+          where: {
+            id: invitationId,
+            status: 'PENDING',
+            expiresAt: {
+              gt: now,
+            },
+            updatedAt: expectedUpdatedAt,
           },
-          updatedAt: expectedUpdatedAt,
+          data: {
+            status: 'REVOKED',
+            revokedAt: now,
+            updatedAt: now,
+          },
+          select: invitationRecordSelect,
         },
-        data: {
-          status: 'REVOKED',
-          revokedAt: now,
-        },
-        select: invitationRecordSelect,
-      })
+      )
 
       return updated ?? null
     },
@@ -155,22 +163,25 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
       invitationId: string,
       expectedUpdatedAt: Date,
       tokenHash: string,
-      now: Date
+      now: Date,
     ): Promise<InvitationRecord | null> {
-      const [updated] = await client.organizationInvitation.updateManyAndReturn({
-        where: {
-          id: invitationId,
-          status: 'PENDING',
-          expiresAt: {
-            gt: now,
+      const [updated] = await client.organizationInvitation.updateManyAndReturn(
+        {
+          where: {
+            id: invitationId,
+            status: 'PENDING',
+            expiresAt: {
+              gt: now,
+            },
+            updatedAt: expectedUpdatedAt,
           },
-          updatedAt: expectedUpdatedAt,
+          data: {
+            tokenHash,
+            updatedAt: now,
+          },
+          select: invitationRecordSelect,
         },
-        data: {
-          tokenHash,
-        },
-        select: invitationRecordSelect,
-      })
+      )
 
       return updated ?? null
     },
@@ -179,24 +190,27 @@ export function createInvitationRepository(client: InvitationRepositoryClient) {
       invitationId: string,
       expectedUpdatedAt: Date,
       acceptedByProfileId: string,
-      acceptedAt: Date
+      acceptedAt: Date,
     ): Promise<InvitationRecord | null> {
-      const [updated] = await client.organizationInvitation.updateManyAndReturn({
-        where: {
-          id: invitationId,
-          status: 'PENDING',
-          expiresAt: {
-            gt: acceptedAt,
+      const [updated] = await client.organizationInvitation.updateManyAndReturn(
+        {
+          where: {
+            id: invitationId,
+            status: 'PENDING',
+            expiresAt: {
+              gt: acceptedAt,
+            },
+            updatedAt: expectedUpdatedAt,
           },
-          updatedAt: expectedUpdatedAt,
+          data: {
+            status: 'ACCEPTED',
+            acceptedByProfileId,
+            acceptedAt,
+            updatedAt: acceptedAt,
+          },
+          select: invitationRecordSelect,
         },
-        data: {
-          status: 'ACCEPTED',
-          acceptedByProfileId,
-          acceptedAt,
-        },
-        select: invitationRecordSelect,
-      })
+      )
 
       return updated ?? null
     },

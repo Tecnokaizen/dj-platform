@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
+import { createFindProfileIdByNormalizedAuthEmail } from '@/core/identity/profile/services/find-profile-id-by-normalized-auth-email'
 import {
   MEMBERSHIP_ERROR_CODES,
   MembershipError,
@@ -29,7 +30,7 @@ const TEST_PREFIX = 'm055-m059-test-'
 const INITIAL_NOW = new Date('2026-08-11T12:00:00.000Z')
 
 async function expectOwnerTransferRequired(
-  promise: Promise<unknown>
+  promise: Promise<unknown>,
 ): Promise<void> {
   try {
     await promise
@@ -37,7 +38,7 @@ async function expectOwnerTransferRequired(
   } catch (error) {
     expect(error).toBeInstanceOf(MembershipError)
     expect((error as MembershipError).code).toBe(
-      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
+      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED,
     )
   }
 }
@@ -93,9 +94,8 @@ async function cleanupOwnerSafetyRecords(): Promise<void> {
 
 async function createTestContext() {
   const { prisma } = await import('@/lib/prisma')
-  const { seedSystemRoles } = await import(
-    '@/core/modules/roles/seed/seed-system-roles'
-  )
+  const { seedSystemRoles } =
+    await import('@/core/modules/roles/seed/seed-system-roles')
 
   await seedSystemRoles(prisma)
 
@@ -177,7 +177,9 @@ async function createTestContext() {
         operation({
           invitationRepository: createInvitationRepository(client),
           membershipRepository: createMembershipRepository(client),
-        })
+          findProfileIdByNormalizedAuthEmail:
+            createFindProfileIdByNormalizedAuthEmail(client),
+        }),
       ),
     getCurrentActorProfileId: async () => memberProfileId,
     getCurrentRecipientIdentity: async () => ({
@@ -186,8 +188,7 @@ async function createTestContext() {
     }),
     findOrganizationById: (organizationId) =>
       prisma.organization.findUnique({ where: { id: organizationId } }),
-    findRoleById: (roleId) =>
-      prisma.role.findUnique({ where: { id: roleId } }),
+    findRoleById: (roleId) => prisma.role.findUnique({ where: { id: roleId } }),
     generateInvitationToken,
     hashInvitationToken,
     invitationLifetimeMs: INVITATION_LIFETIME_HOURS * 60 * 60 * 1000,
@@ -234,22 +235,22 @@ describe('OWNER safety foundation (M-055 → M-059)', () => {
     const context = await createTestContext()
 
     await expectOwnerTransferRequired(
-      suspendMembership(context.ownerMembership.id)
+      suspendMembership(context.ownerMembership.id),
     )
     await expectOwnerTransferRequired(
-      removeMembership(context.ownerMembership.id)
+      removeMembership(context.ownerMembership.id),
     )
     await expectOwnerTransferRequired(
       changeMembershipRole({
         membershipId: context.ownerMembership.id,
         roleId: context.adminRole.id,
-      })
+      }),
     )
 
     await expect(
       context.prisma.organizationMembership.findUniqueOrThrow({
         where: { id: context.ownerMembership.id },
-      })
+      }),
     ).resolves.toMatchObject({
       roleId: context.ownerRole.id,
       status: 'ACTIVE',
@@ -266,19 +267,19 @@ describe('OWNER safety foundation (M-055 → M-059)', () => {
         organizationId: context.organization.id,
         profileId: context.candidateProfileId,
         roleId: context.ownerRole.id,
-      })
+      }),
     )
     await expectOwnerTransferRequired(
       restoreRemovedMembership({
         membershipId: context.removedMembership.id,
         targetRoleId: context.ownerRole.id,
-      })
+      }),
     )
     await expectOwnerTransferRequired(
       changeMembershipRole({
         membershipId: context.memberMembership.id,
         roleId: context.ownerRole.id,
-      })
+      }),
     )
 
     const ownerMemberships =
@@ -301,7 +302,7 @@ describe('OWNER safety foundation (M-055 → M-059)', () => {
         organizationId: context.organization.id,
         recipientEmail: 'candidate@example.com',
         roleId: context.ownerRole.id,
-      })
+      }),
     )
 
     await expect(
@@ -309,7 +310,7 @@ describe('OWNER safety foundation (M-055 → M-059)', () => {
         where: {
           organizationId: context.organization.id,
         },
-      })
+      }),
     ).resolves.toBe(0)
   })
 })

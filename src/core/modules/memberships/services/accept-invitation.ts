@@ -46,9 +46,9 @@ export function createAcceptInvitationService(
       support.throwInvitationStateError(invitation)
     }
 
-    const now = support.now()
+    const observedAt = support.now()
 
-    if (invitation.expiresAt <= now) {
+    if (invitation.expiresAt <= observedAt) {
       throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
     }
 
@@ -65,6 +65,7 @@ export function createAcceptInvitationService(
     try {
       const accepted = await support.runInTransaction(
         async ({ invitationRepository, membershipRepository }) => {
+          const claimAt = support.now()
           const currentInvitation =
             await invitationRepository.findByTokenHash(tokenHash)
 
@@ -76,7 +77,7 @@ export function createAcceptInvitationService(
             support.throwInvitationStateError(currentInvitation)
           }
 
-          if (currentInvitation.expiresAt <= now) {
+          if (currentInvitation.expiresAt <= claimAt) {
             throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
           }
 
@@ -86,19 +87,24 @@ export function createAcceptInvitationService(
               identity.profileId,
             )
 
-          if (currentMembership?.status === 'ACTIVE') {
-            throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
-          }
-
-          if (currentMembership?.status === 'SUSPENDED') {
-            throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
+          if (currentMembership) {
+            switch (currentMembership.status) {
+              case 'ACTIVE':
+                throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
+              case 'SUSPENDED':
+                throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
+              case 'REMOVED':
+                break
+              default:
+                throw new MembershipError(MEMBERSHIP_ERROR_CODES.INVALID_STATE)
+            }
           }
 
           const claimed = await invitationRepository.acceptPending(
             currentInvitation.id,
             currentInvitation.updatedAt,
             identity.profileId,
-            now,
+            claimAt,
           )
 
           if (!claimed) {
@@ -114,24 +120,25 @@ export function createAcceptInvitationService(
               support.throwInvitationStateError(latest)
             }
 
-            if (latest.expiresAt <= now) {
+            if (latest.expiresAt <= claimAt) {
               throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
             }
 
             throw new InvitationError(INVITATION_ERROR_CODES.NOT_PENDING)
           }
 
-          const membership = currentMembership
-            ? await membershipRepository.restoreRemoved(
-                currentMembership.id,
-                currentMembership.roleId,
-                role.id,
-              )
-            : await membershipRepository.create({
-                organizationId: currentInvitation.organizationId,
-                profileId: identity.profileId,
-                roleId: role.id,
-              })
+          const membership =
+            currentMembership?.status === 'REMOVED'
+              ? await membershipRepository.restoreRemoved(
+                  currentMembership.id,
+                  currentMembership.roleId,
+                  role.id,
+                )
+              : await membershipRepository.create({
+                  organizationId: currentInvitation.organizationId,
+                  profileId: identity.profileId,
+                  roleId: role.id,
+                })
 
           if (!membership) {
             throw new MembershipError(MEMBERSHIP_ERROR_CODES.INVALID_STATE)

@@ -25,29 +25,17 @@ export type CreateInvitationInput = {
 
 export function createInvitationService(support: InvitationLifecycleSupport) {
   return async function createInvitation(
-    input: CreateInvitationInput
+    input: CreateInvitationInput,
   ): Promise<CreatedInvitationSecret> {
     await support.requireActiveOrganization(input.organizationId)
     const actorMembership = await support.requireActiveActorMembership(
-      input.organizationId
+      input.organizationId,
     )
     const role = await support.requireRole(input.roleId)
     support.rejectOwnerRole(role)
 
     const recipientEmail = input.recipientEmail.trim()
     const normalizedEmail = normalizeEmail(recipientEmail)
-    const recipientMembership = await support.findRecipientMembership(
-      input.organizationId,
-      normalizedEmail
-    )
-
-    if (recipientMembership?.status === 'ACTIVE') {
-      throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
-    }
-
-    if (recipientMembership?.status === 'SUSPENDED') {
-      throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
-    }
 
     const now = support.now()
     const rawToken = support.generateInvitationToken()
@@ -55,40 +43,57 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
 
     try {
       const invitation = await support.runInTransaction(
-        async ({ invitationRepository, membershipRepository }) => {
+        async ({
+          invitationRepository,
+          membershipRepository,
+          findProfileIdByNormalizedAuthEmail,
+        }) => {
           const currentActorMembership =
             await membershipRepository.findActiveByOrganizationAndProfile(
               input.organizationId,
-              actorMembership.profileId
+              actorMembership.profileId,
             )
 
           if (!currentActorMembership) {
             throw new MembershipError(MEMBERSHIP_ERROR_CODES.NOT_ACTIVE)
           }
 
+          const recipientProfileId =
+            await findProfileIdByNormalizedAuthEmail(normalizedEmail)
+          const recipientMembership = recipientProfileId
+            ? await membershipRepository.findByOrganizationAndProfile(
+                input.organizationId,
+                recipientProfileId,
+              )
+            : null
+
+          if (recipientMembership?.status === 'ACTIVE') {
+            throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
+          }
+
+          if (recipientMembership?.status === 'SUSPENDED') {
+            throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
+          }
+
           const existing =
             await invitationRepository.findPendingByOrganizationAndEmail(
               input.organizationId,
-              normalizedEmail
+              normalizedEmail,
             )
 
           if (existing) {
             if (existing.expiresAt > now) {
-              throw new InvitationError(
-                INVITATION_ERROR_CODES.ALREADY_PENDING
-              )
+              throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_PENDING)
             }
 
             const expired = await invitationRepository.expirePending(
               existing.id,
               existing.updatedAt,
-              now
+              now,
             )
 
             if (!expired) {
-              throw new InvitationError(
-                INVITATION_ERROR_CODES.ALREADY_PENDING
-              )
+              throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_PENDING)
             }
           }
 
@@ -101,7 +106,7 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
             expiresAt: support.getExpiresAt(now),
             invitedByMembershipId: currentActorMembership.id,
           })
-        }
+        },
       )
 
       return {
@@ -122,5 +127,5 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
 }
 
 export const createInvitation = createInvitationService(
-  invitationLifecycleSupport
+  invitationLifecycleSupport,
 )

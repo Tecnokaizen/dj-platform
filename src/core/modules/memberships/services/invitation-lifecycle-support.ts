@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { createFindProfileIdByNormalizedAuthEmail } from '@/core/identity/profile/services/find-profile-id-by-normalized-auth-email'
 import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
 import {
   INVITATION_ERROR_CODES,
@@ -38,6 +39,9 @@ type MembershipRepository = ReturnType<typeof createMembershipRepository>
 export type InvitationTransactionRepositories = {
   invitationRepository: InvitationRepository
   membershipRepository: MembershipRepository
+  findProfileIdByNormalizedAuthEmail: (
+    normalizedEmail: string,
+  ) => Promise<string | null>
 }
 
 export type AuthenticatedRecipientIdentity = {
@@ -50,18 +54,13 @@ export type InvitationLifecycleDependencies = {
   membershipRepository: MembershipRepository
   runInTransaction: <Result>(
     operation: (
-      repositories: InvitationTransactionRepositories
-    ) => Promise<Result>
+      repositories: InvitationTransactionRepositories,
+    ) => Promise<Result>,
   ) => Promise<Result>
   getCurrentActorProfileId: () => Promise<string | null>
   getCurrentRecipientIdentity: () => Promise<AuthenticatedRecipientIdentity | null>
-  findOrganizationById: (
-    organizationId: string
-  ) => Promise<Organization | null>
+  findOrganizationById: (organizationId: string) => Promise<Organization | null>
   findRoleById: (roleId: string) => Promise<Role | null>
-  findRecipientProfileIdByNormalizedEmail?: (
-    normalizedEmail: string
-  ) => Promise<string | null>
   generateInvitationToken: () => string
   hashInvitationToken: (rawToken: string) => string
   invitationLifetimeMs: number
@@ -69,10 +68,10 @@ export type InvitationLifecycleDependencies = {
 }
 
 export function createInvitationLifecycleSupport(
-  dependencies: InvitationLifecycleDependencies
+  dependencies: InvitationLifecycleDependencies,
 ) {
   async function requireInvitation(
-    invitationId: string
+    invitationId: string,
   ): Promise<InvitationRecord> {
     const invitation =
       await dependencies.invitationRepository.findById(invitationId)
@@ -85,7 +84,7 @@ export function createInvitationLifecycleSupport(
   }
 
   async function requireActiveOrganization(
-    organizationId: string
+    organizationId: string,
   ): Promise<void> {
     const organization = await dependencies.findOrganizationById(organizationId)
 
@@ -110,14 +109,12 @@ export function createInvitationLifecycleSupport(
 
   function rejectOwnerRole(role: Role): void {
     if (isOwnerRole(role)) {
-      throw new MembershipError(
-        MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
-      )
+      throw new MembershipError(MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED)
     }
   }
 
   async function requireActiveActorMembership(
-    organizationId: string
+    organizationId: string,
   ): Promise<MembershipRecord> {
     const actorProfileId = await dependencies.getCurrentActorProfileId()
 
@@ -128,7 +125,7 @@ export function createInvitationLifecycleSupport(
     const membership =
       await dependencies.membershipRepository.findByOrganizationAndProfile(
         organizationId,
-        actorProfileId
+        actorProfileId,
       )
 
     if (!membership) {
@@ -156,29 +153,6 @@ export function createInvitationLifecycleSupport(
     return identity
   }
 
-  async function findRecipientMembership(
-    organizationId: string,
-    normalizedEmail: string
-  ): Promise<MembershipRecord | null> {
-    if (!dependencies.findRecipientProfileIdByNormalizedEmail) {
-      return null
-    }
-
-    const profileId =
-      await dependencies.findRecipientProfileIdByNormalizedEmail(
-        normalizedEmail
-      )
-
-    if (!profileId) {
-      return null
-    }
-
-    return dependencies.membershipRepository.findByOrganizationAndProfile(
-      organizationId,
-      profileId
-    )
-  }
-
   function getExpiresAt(now: Date): Date {
     return new Date(now.getTime() + dependencies.invitationLifetimeMs)
   }
@@ -203,7 +177,6 @@ export function createInvitationLifecycleSupport(
     invitationRepository: dependencies.invitationRepository,
     membershipRepository: dependencies.membershipRepository,
     runInTransaction: dependencies.runInTransaction,
-    findRecipientMembership,
     generateInvitationToken: dependencies.generateInvitationToken,
     getExpiresAt,
     hashInvitationToken: dependencies.hashInvitationToken,
@@ -232,7 +205,9 @@ export const invitationLifecycleSupport = createInvitationLifecycleSupport({
       operation({
         invitationRepository: createInvitationRepository(client),
         membershipRepository: createMembershipRepository(client),
-      })
+        findProfileIdByNormalizedAuthEmail:
+          createFindProfileIdByNormalizedAuthEmail(client),
+      }),
     ),
   getCurrentActorProfileId: async () => {
     const session = await getCurrentProfile()

@@ -13,12 +13,12 @@ import {
 import type { CreatedInvitationSecret } from '@/core/modules/memberships/types/created-invitation-secret'
 
 export function createResendInvitationService(
-  support: InvitationLifecycleSupport
+  support: InvitationLifecycleSupport,
 ) {
   const createInvitation = createInvitationService(support)
 
   return async function resendInvitation(
-    invitationId: string
+    invitationId: string,
   ): Promise<CreatedInvitationSecret> {
     const invitation = await support.requireInvitation(invitationId)
     await support.requireActiveActorMembership(invitation.organizationId)
@@ -30,6 +30,9 @@ export function createResendInvitationService(
     if (invitation.status === 'REVOKED') {
       throw new InvitationError(INVITATION_ERROR_CODES.REVOKED)
     }
+
+    const role = await support.requireRole(invitation.roleId)
+    support.rejectOwnerRole(role)
 
     const now = support.now()
 
@@ -47,7 +50,7 @@ export function createResendInvitationService(
       invitation.id,
       invitation.updatedAt,
       tokenHash,
-      now
+      now,
     )
 
     if (!rotated) {
@@ -64,5 +67,5 @@ export function createResendInvitationService(
 }
 
 export const resendInvitation = createResendInvitationService(
-  invitationLifecycleSupport
+  invitationLifecycleSupport,
 )
