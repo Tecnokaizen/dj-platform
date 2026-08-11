@@ -30,5 +30,20 @@ export function createMembershipRepository(client: MembershipRepositoryClient) {
         select: membershipRecordSelect,
       })
     },
+
+    async findByOrganizationAndProfile(
+      organizationId: string,
+      profileId: string
+    ): Promise<MembershipRecord | null> {
+      return client.organizationMembership.findUnique({
+        where: {
+          organizationId_profileId: {
+            organizationId,
+            profileId,
+          },
+        },
+        select: membershipRecordSelect,
+      })
+    },
   }
 }
