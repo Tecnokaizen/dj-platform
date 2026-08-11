@@ -1,6 +1,6 @@
 import 'server-only'
 
-import type { Prisma, PrismaClient } from '@/generated/prisma/client'
+import type { MembershipStatus, Prisma, PrismaClient } from '@/generated/prisma/client'
 
 type MembershipRepositoryClient = Pick<PrismaClient, 'organizationMembership'>
 
@@ -54,6 +54,31 @@ export function createMembershipRepository(client: MembershipRepositoryClient) {
         where: {
           organizationId,
           profileId,
+          status: 'ACTIVE',
+        },
+        select: membershipRecordSelect,
+      })
+    },
+
+    async listByOrganization(
+      organizationId: string,
+      status?: MembershipStatus
+    ): Promise<MembershipRecord[]> {
+      return client.organizationMembership.findMany({
+        where: {
+          organizationId,
+          ...(status !== undefined ? { status } : {}),
+        },
+        select: membershipRecordSelect,
+      })
+    },
+
+    async listActiveByOrganization(
+      organizationId: string
+    ): Promise<MembershipRecord[]> {
+      return client.organizationMembership.findMany({
+        where: {
+          organizationId,
           status: 'ACTIVE',
         },
         select: membershipRecordSelect,
