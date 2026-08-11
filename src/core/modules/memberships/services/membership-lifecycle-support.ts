@@ -14,6 +14,7 @@ import {
   createMembershipRepository,
   type MembershipRecord,
 } from '@/core/modules/memberships/repositories/membership-repository'
+import { isOwnerRole } from '@/core/modules/memberships/services/owner-safety'
 import {
   ORGANIZATION_ERROR_CODES,
   OrganizationError,
@@ -88,7 +89,7 @@ export function createMembershipLifecycleSupport(
   }
 
   function rejectOwnerRole(role: Role): void {
-    if (role.key === 'OWNER') {
+    if (isOwnerRole(role)) {
       throw new MembershipError(
         MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
       )
