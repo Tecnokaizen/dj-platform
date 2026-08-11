@@ -3,7 +3,7 @@ title: Memberships Flows
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-08
+updated: 2026-08-11
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -141,6 +141,24 @@ Security Validation
         ↓
 Memberships Foundation Ready
 ```
+
+Memberships adopts the Membership Repository and Invitation Repository under
+ADR-007. ADR-007 makes repositories optional globally; Memberships requires
+them for complex queries, secret `tokenHash` projections, and transactional
+operations.
+
+```text
+Consumer
+        ↓
+Memberships Service
+        ↓
+Membership or Invitation Repository
+        ↓
+Prisma
+```
+
+The Service owns the transaction. The Repository receives the Prisma Client or
+the transaction client supplied by that Service.
 
 ---
 
@@ -300,7 +318,11 @@ Memberships is the source of truth for belonging.
 
 The first Organization Membership is created during complete Organization onboarding.
 
-This is a cross-module transaction.
+This is a cross-module transaction exclusively implemented by M-084.
+
+Normal Membership creation, invitation, and Role-change flows reject OWNER.
+OWNER promotion or transfer is exclusively implemented by M-088. Controlled
+internal test fixtures may insert OWNER through a dedicated internal test path.
 
 ## Flow
 
@@ -489,11 +511,9 @@ status = SUSPENDED?
         ↓
 Resolve Organization
         ↓
-Organization permits Membership activation?
+Organization.status = ACTIVE?
         ↓
-Resolve Membership Role
-        ↓
-Role valid?
+Keep existing roleId and validate its Role
         ↓
 Authorize Actor
         ↓
@@ -569,18 +589,18 @@ Resolve REMOVED Membership
         ↓
 Validate Organization
         ↓
-Resolve Existing Role
+Organization.status = ACTIVE?
         ↓
-Role Still Valid?
+Require explicit targetRoleId
         ↓
-Determine Approved Restored Role
+Resolve and validate target Role (non-OWNER)
         ↓
 Authorize Restore
         ↓
 Update Membership
         ↓
 status = ACTIVE
-roleId = approved Role
+roleId = explicit targetRoleId
 removedAt = null
 suspendedAt = null
         ↓
@@ -863,6 +883,8 @@ Resolve Actor ACTIVE Membership
         ↓
 Resolve Organization
         ↓
+Organization.status = ACTIVE?
+        ↓
 Authorize Invitation Creation
         ↓
 Normalize Recipient Email
@@ -879,9 +901,11 @@ Check Existing PENDING Invitation
         ↓
 Expire Stale PENDING Invitation if needed
         ↓
-Generate Cryptographically Strong Raw Token
+crypto.randomBytes(32)
         ↓
-Hash Token
+base64url transport encoding
+        ↓
+SHA-256 lowercase hexadecimal hash
         ↓
 Persist OrganizationInvitation
         ↓
@@ -913,7 +937,7 @@ raw token transiently available
 The database stores:
 
 ```text
-tokenHash
+SHA-256 lowercase hexadecimal tokenHash
 ```
 
 only.
@@ -1180,7 +1204,7 @@ Matches Invitation.normalizedEmail?
         ↓
 Resolve Organization
         ↓
-Organization permits acceptance?
+Organization.status = ACTIVE?
         ↓
 Resolve Invitation Role
         ↓
@@ -1588,14 +1612,12 @@ because raw tokens are not persisted.
 
 # Token Generation
 
-Invitation tokens must use a cryptographically secure random source.
-
-Conceptual:
+Invitation tokens must use this exact trusted server-side procedure:
 
 ```text
-secure random bytes
+crypto.randomBytes(32)
         ↓
-URL-safe encoding
+base64url transport encoding
         ↓
 raw token
 ```
@@ -1605,12 +1627,13 @@ Then:
 ```text
 raw token
         ↓
-one-way hash
+SHA-256 lowercase hexadecimal hash
         ↓
 tokenHash
 ```
 
-Exact implementation belongs to Security/implementation standards.
+Persist only `tokenHash`; return the raw token once only to the trusted
+server-side delivery consumer.
 
 ---
 
@@ -1846,6 +1869,11 @@ Roles ordering is not Permissions.
 
 Memberships is the canonical tenant relationship for RLS.
 
+Foundation / Phase 11 adds no tenant RLS policies. First audit effective
+database grants; if `anon` or `authenticated` can access these tables, enable
+RLS deny-by-default with no permissive policies. M-087 later adds
+Memberships-based tenant policies.
+
 Conceptual read check:
 
 ```text
@@ -1889,6 +1917,9 @@ must not satisfy normal tenant Membership RLS checks.
 # Invitation RLS
 
 Invitation persistence contains security-sensitive fields.
+
+Foundation / Phase 11 adds no Invitation tenant policy. Apply the same grant
+audit and deny-by-default RLS rule; M-087 is the later policy milestone.
 
 Preferred architecture:
 

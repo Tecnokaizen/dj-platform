@@ -3,7 +3,7 @@ title: Memberships Data Model
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-08
+updated: 2026-08-11
 related:
   - SPEC.md
   - FLOWS.md
@@ -340,6 +340,8 @@ SUSPENDED → ACTIVE
 suspendedAt = null
 ```
 
+The transition keeps and validates the existing `roleId`; it does not assign a new Role.
+
 Historical suspension events should eventually be preserved through Audit rather than by turning the Membership row into an event log.
 
 ---
@@ -491,6 +493,8 @@ UNIQUE (
 ```
 
 This applies regardless of Membership status.
+
+Membership uniqueness is the full `UNIQUE(organizationId, profileId)` constraint; it is not a partial ACTIVE-only uniqueness rule.
 
 ---
 
@@ -689,6 +693,8 @@ Memberships
 ---
 
 # OWNER Membership State
+
+Normal Membership creation, normal invitations and normal Role changes reject OWNER. The first OWNER is created only through M-084, and OWNER promotion or transfer occurs only through M-088. Controlled test fixtures may insert OWNER through a dedicated internal path.
 
 An operational Organization requires exactly one:
 
@@ -1005,7 +1011,7 @@ Required.
 
 Unique.
 
-The raw invitation token must not normally be persisted.
+The raw invitation token is generated with `crypto.randomBytes(32)`, encoded as base64url for transport, and returned once only to a trusted server-side consumer. `tokenHash` is the SHA-256 lowercase hexadecimal digest and is the only persisted token representation.
 
 Conceptually:
 
@@ -1021,7 +1027,7 @@ tokenHash stored
 
 # Raw Invitation Token
 
-The raw token may exist transiently when creating the invitation.
+The raw token may exist transiently when creating the invitation and is returned once only to a trusted server-side consumer.
 
 It may be delivered through a secure invitation URL.
 
@@ -1328,16 +1334,17 @@ partial unique index
 conceptually:
 
 ```sql
-UNIQUE (
-  organization_id,
-  normalized_email
-)
-WHERE status = 'PENDING'
+CREATE UNIQUE INDEX
+  "organization_invitations_pending_email_unique"
+ON
+  "organization_invitations"
+  ("organization_id", "normalized_email")
+WHERE
+  "status" = 'PENDING';
 ```
 
-Prisma schema support for this exact index must be verified.
-
-If Prisma cannot represent the required partial index declaratively, migration SQL may be used deliberately.
+This index is implemented exclusively through deliberate PostgreSQL migration SQL.
+Do not represent it through Prisma schema/index declarations.
 
 ---
 
@@ -1483,6 +1490,8 @@ Mark Invitation ACCEPTED
 ```
 
 Do not create another Membership row.
+
+The restore uses `invitation.roleId` explicitly as the target Role; it does not implicitly reuse the Role retained by the REMOVED Membership.
 
 ---
 
@@ -1647,7 +1656,7 @@ Conceptual flow:
 ```text
 Raw Token
         ↓
-Hash using approved algorithm
+SHA-256 lowercase hexadecimal digest
         ↓
 Find Invitation by tokenHash
 ```
@@ -1658,17 +1667,18 @@ The raw value is never queried or persisted directly.
 
 # Token Hashing
 
-The chosen hashing mechanism must be suitable for high-entropy random invitation tokens.
-
-The exact algorithm belongs to security implementation.
-
-The architecture requires:
+The invitation token procedure is fixed:
 
 ```text
-one-way persisted representation
+crypto.randomBytes(32)
+        ↓
+base64url transport encoding
+        ↓
+SHA-256 lowercase hexadecimal digest persisted as tokenHash
 ```
 
-not plaintext storage.
+The raw token is returned once only to a trusted server-side consumer.
+Only the one-way `tokenHash` is persisted; plaintext tokens are never stored.
 
 ---
 
@@ -1892,14 +1902,18 @@ Historical transition history belongs to Audit.
 
 `roleId` remains persisted when Membership becomes REMOVED.
 
+That persisted `roleId` is historical context only.
+
 Reasons:
 
 - historical semantic context;
-- deterministic rejoin policy;
 - audit correlation;
 - no nullable Role state.
 
-Restoration may retain or explicitly replace the Role.
+It is not an implicit restoration target.
+
+Every `REMOVED → ACTIVE` restoration requires a supplied and validated `targetRoleId`,
+even when that target equals the previous Role.
 
 ---
 
@@ -1910,16 +1924,18 @@ A REMOVED Membership should not automatically regain powerful stale authorizatio
 Before restoration:
 
 ```text
-Existing Role
+Explicit targetRoleId supplied
         ↓
-Role still valid?
+targetRoleId resolves and is non-OWNER?
         ↓
 Authorization policy allows restoration?
         ↓
-Approved Role assignment?
+Assign roleId = targetRoleId
 ```
 
-The workflow may retain or replace Role explicitly.
+The workflow must not retain the existing Role implicitly.
+The historical persisted `roleId` may inform policy review, but restoration always
+requires an explicit `targetRoleId`.
 
 ---
 
@@ -2098,6 +2114,8 @@ Organization = ACTIVE
 Membership = ACTIVE
 ```
 
+Invitation creation, invitation acceptance, Membership activation and Membership restoration require `Organization.status = ACTIVE`.
+
 Example denied:
 
 ```text
@@ -2135,6 +2153,8 @@ with:
 ```text
 status = ACTIVE
 ```
+
+Memberships Foundation does not implement tenant RLS policies. It audits actual grants on Memberships tables; if `anon` or `authenticated` can access them, Foundation enables deny-by-default RLS with no permissive policies. M-087 is reserved for Membership-based tenant policies.
 
 ---
 
@@ -2724,13 +2744,13 @@ expiresAt > now
 
 token matches tokenHash
 
-Organization permits acceptance
+Organization.status = ACTIVE
 
 Role exists
 
 recipient identity matches
 
-Membership state permits acceptance
+Membership relationship does not conflict with acceptance
 ```
 
 ---

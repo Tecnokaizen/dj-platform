@@ -3,7 +3,7 @@ title: Memberships Prisma Implementation
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-08
+updated: 2026-08-11
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -1233,11 +1233,20 @@ tokenHash persisted
 
 # Token Hash Length
 
-The schema allows enough space for the approved high-entropy token hashing representation.
+The fixed invitation token representation is:
 
-The exact algorithm belongs to security implementation.
+```text
+crypto.randomBytes(32)
+        ↓
+base64url transport encoding
+        ↓
+SHA-256 lowercase hexadecimal digest persisted as tokenHash
+```
 
-If the chosen representation changes beyond the persisted field capacity, update the schema deliberately.
+The raw token is returned once only to a trusted server-side consumer.
+
+The schema must accommodate the SHA-256 lowercase hexadecimal digest.
+If that persisted representation ever changes beyond field capacity, update the schema deliberately.
 
 ---
 
@@ -1535,37 +1544,33 @@ This protects concurrent invitation creation.
 
 # Prisma Partial Index Strategy
 
-The repository must choose one deliberate implementation path based on the active Prisma configuration.
+The partial unique index is implemented exclusively through deliberate
+PostgreSQL migration SQL:
 
-Option A:
-
-```text
-Represent the partial unique index through the active Prisma schema/index capabilities
+```sql
+CREATE UNIQUE INDEX
+  "organization_invitations_pending_email_unique"
+ON
+  "organization_invitations"
+  ("organization_id", "normalized_email")
+WHERE
+  "status" = 'PENDING';
 ```
 
-if those capabilities are explicitly enabled and validated in this project.
-
-Option B:
-
-```text
-Create the PostgreSQL partial unique index through migration SQL
-```
-
-and preserve/document it as a database-level invariant.
-
-Do not enable new Prisma preview behavior casually merely for convenience.
+Do not represent this invariant through Prisma schema/index declarations.
+Do not enable Prisma preview features merely to express this constraint.
 
 ---
 
 # Migration SQL Is Part of Architecture
 
-If raw migration SQL is used for:
+The migration SQL for:
 
 ```text
 organization_invitations_pending_email_unique
 ```
 
-the index is not an incidental migration artifact.
+is not an incidental migration artifact.
 
 It is an intentional Memberships invariant.
 
@@ -2030,6 +2035,14 @@ Initial Core Membership persistence must remain explicit.
 
 # Membership Repository
 
+Memberships adopts the Membership Repository and Invitation Repository under
+ADR-007. ADR-007 makes repositories optional globally; Memberships requires
+them because it has complex queries, secret `tokenHash` projections, and
+transactional operations.
+
+The Service owns each transaction boundary. Each repository receives either the
+Prisma Client or the transaction client provided by the Service.
+
 Recommended location:
 
 ```text
@@ -2148,7 +2161,8 @@ resendInvitation
 
 Services consume repositories.
 
-Services should not spread Prisma calls throughout `src/app`.
+Services must not use direct Prisma persistence calls for Memberships; they
+coordinate repositories and must not spread Prisma calls throughout `src/app`.
 
 ---
 
@@ -2200,12 +2214,17 @@ Token generation belongs to trusted server-side application/security logic.
 Flow:
 
 ```text
-secure random token
+crypto.randomBytes(32)
         ↓
-hash token
+base64url transport encoding
+        ↓
+SHA-256 lowercase hexadecimal hash
         ↓
 Prisma persists tokenHash
 ```
+
+The raw token is returned once only to the trusted server-side delivery
+consumer; it is never persisted.
 
 ---
 
@@ -2725,13 +2744,18 @@ Fine-grained authorization belongs to Permissions.
 
 Memberships itself contains security-relevant tenant relationships.
 
+Foundation / Phase 11 introduces no tenant RLS policies. First audit the
+effective database grants. If `anon` or `authenticated` can access these tables,
+enable RLS deny-by-default with no permissive policies.
+
 Do not introduce a broad policy such as:
 
 ```text
 all authenticated users can read all Memberships
 ```
 
-Production policies must be intentionally Organization scoped.
+M-087 later introduces intentionally Organization-scoped, Memberships-based
+tenant policies.
 
 ---
 
@@ -2750,6 +2774,10 @@ acceptance metadata
 ```
 
 It requires restrictive access.
+
+Foundation / Phase 11 follows the same grant audit and deny-by-default rule:
+no tenant policies are added here. M-087 is the later Memberships-based policy
+milestone.
 
 Preferred initial architecture:
 
@@ -2996,7 +3024,7 @@ Domain-specific Membership fields
 
 # Raw SQL Migration Block
 
-If the project chooses migration SQL for pending Invitation uniqueness, the migration should contain the equivalent of:
+The Memberships migration must create the pending Invitation partial unique index using the equivalent of:
 
 ```sql
 CREATE UNIQUE INDEX

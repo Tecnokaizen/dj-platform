@@ -3,7 +3,7 @@ title: Memberships Specification
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-08
+updated: 2026-08-11
 related:
   - DATA_MODEL.md
   - FLOWS.md
@@ -480,7 +480,7 @@ REMOVED
 
 may be supported only through an explicit restore/rejoin workflow.
 
-Restoration must revalidate:
+Restoration requires `Organization.status = ACTIVE` and must revalidate:
 
 ```text
 Organization state
@@ -530,6 +530,12 @@ REMOVED
 the Role may also remain persisted for historical meaning.
 
 Restoration must still validate that the Role remains valid.
+
+## Restore Role Rules
+
+`SUSPENDED → ACTIVE` keeps the existing `roleId` and validates it; it does not receive a new Role.
+
+`REMOVED → ACTIVE` requires an explicit `targetRoleId`; the existing Role is not implicitly restored. When reactivation results from invitation acceptance, the explicit target is `invitation.roleId`.
 
 ---
 
@@ -609,6 +615,8 @@ It does not redefine that invariant.
 ---
 
 # OWNER Protection
+
+Normal Membership creation, normal invitations and normal Role changes reject the OWNER Role. The first OWNER is created only through M-084; OWNER promotion or transfer occurs only through M-088. Controlled test fixtures may insert OWNER through a dedicated internal path.
 
 An OWNER Membership must not be:
 
@@ -718,6 +726,8 @@ Organization = SUSPENDED
 does not imply normal tenant access.
 
 Effective tenant access requires both Organization and Membership state to permit access.
+
+Invitation creation, invitation acceptance, Membership activation and Membership restoration require `Organization.status = ACTIVE`.
 
 ---
 
@@ -904,7 +914,7 @@ Acceptance additionally requires:
 
 - invitation not expired;
 - invitation not revoked;
-- Organization state permits acceptance;
+- Organization.status = ACTIVE;
 - Role still valid;
 - recipient identity matches invitation policy;
 - Membership relationship does not conflict.
@@ -951,21 +961,17 @@ Exact persistence behavior belongs in DATA_MODEL.md and PRISMA.md.
 
 # Invitation Token
 
-Invitation acceptance must use a cryptographically strong, unguessable token or equivalent secure mechanism.
-
-The database should not persist a reusable raw secret when avoidable.
-
-Preferred principle:
+Generate the raw token with `crypto.randomBytes(32)` and encode it as base64url for transport. Persist only its SHA-256 lowercase hexadecimal digest as `tokenHash`.
 
 ```text
-Raw Token
-→ delivered to recipient
+Raw token
+→ returned once to a trusted server-side consumer only
 
-Token Hash
+tokenHash
 → persisted
 ```
 
-The exact implementation will be defined in the persistence/security design.
+The raw token must not be persisted or exposed through normal DTOs, logs, analytics or audit payloads.
 
 ---
 
@@ -1095,9 +1101,9 @@ If a Membership exists in:
 REMOVED
 ```
 
-state, rejoining should reuse or restore the existing durable Membership relationship rather than create a duplicate record.
+state, rejoining reuses or restores the existing durable Membership relationship rather than creating a duplicate record.
 
-Exact restoration policy will be defined in Membership flows.
+The restore requires an explicit `targetRoleId`; invitation acceptance supplies `invitation.roleId` as that target.
 
 ---
 
@@ -1492,6 +1498,8 @@ Final RLS design must use the real Membership model.
 
 Do not implement competing tenant membership tables.
 
+Memberships Foundation does not implement tenant RLS policies. It audits the actual grants on Memberships tables; if `anon` or `authenticated` can access them, Foundation enables deny-by-default RLS with no permissive policies. M-087 is reserved for Membership-based tenant policies.
+
 ---
 
 # RLS Membership State
@@ -1796,7 +1804,9 @@ OrganizationMembership
 OrganizationInvitation
 ```
 
-Recommended boundaries:
+ADR-007 keeps repositories optional globally. Memberships explicitly adopts repositories because its persistence has complex queries, secret projections such as `tokenHash`, and transactional operations.
+
+Required boundaries:
 
 ```text
 Membership Repository
@@ -1807,6 +1817,16 @@ Invitation Repository
 Repositories contain persistence logic.
 
 They do not contain final authorization policy.
+
+```text
+Consumer
+    ↓
+Memberships Service
+    ↓
+Membership Repository / Invitation Repository
+    ↓
+Prisma
+```
 
 ---
 
@@ -1833,6 +1853,8 @@ revoke Invitation
 ```
 
 Cross-module services may coordinate Organizations and Roles where required.
+
+Services own transaction boundaries. Repositories receive a Prisma Client or Transaction Client; Memberships services do not use Prisma directly for Memberships persistence.
 
 ---
 

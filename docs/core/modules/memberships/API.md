@@ -3,7 +3,7 @@ title: Memberships API
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-08
+updated: 2026-08-11
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -688,9 +688,13 @@ Required:
 ```text
 Organization exists
 
+Organization.status = ACTIVE
+
 Profile exists
 
 Role exists
+
+Role != OWNER for normal creation
 
 No Membership already exists for Organization + Profile
 
@@ -729,7 +733,12 @@ to client callers.
 
 Creates the first OWNER Membership during complete Organization onboarding.
 
-This is a cross-module tenancy operation.
+This is a cross-module tenancy operation, exclusively implemented by M-084.
+
+Normal Membership creation, invitation, and Role-change flows must reject OWNER.
+OWNER promotion or transfer is exclusively implemented by M-088. Controlled
+internal test fixtures may insert OWNER only through a dedicated internal test
+path; that exception is not an application capability.
 
 ---
 
@@ -870,9 +879,9 @@ Membership exists
 
 status = SUSPENDED
 
-Organization permits activation
+Organization.status = ACTIVE
 
-Role remains valid
+Existing roleId remains assigned and its Role remains valid
 
 authorization succeeds
 ```
@@ -960,11 +969,12 @@ Conceptually:
 ```ts
 type RestoreRemovedMembershipInput = {
   membershipId: string
-  roleId: string
+  targetRoleId: string
 }
 ```
 
-The Role may be the previously assigned Role or a newly approved Role.
+`targetRoleId` is required explicitly. The restore flow must not reuse the
+previous Role implicitly.
 
 ---
 
@@ -973,9 +983,9 @@ The Role may be the previously assigned Role or a newly approved Role.
 ```text
 status = REMOVED
 
-Organization permits activation
+Organization.status = ACTIVE
 
-Role valid
+targetRoleId resolves to a valid non-OWNER Role
 
 rejoin policy satisfied
 
@@ -989,7 +999,7 @@ authorization satisfied
 ```text
 status = ACTIVE
 
-roleId = approved Role
+roleId = explicit target Role
 
 removedAt = null
 
@@ -1069,6 +1079,9 @@ another Role
 ```
 
 if that operation bypasses the dedicated ownership transfer workflow.
+
+Normal Role change must reject an OWNER target Role. OWNER promotion or transfer
+is exclusively handled by M-088.
 
 ---
 
@@ -1158,6 +1171,8 @@ blindly from the client as authoritative actor identity.
 ```text
 Organization exists
 
+Organization.status = ACTIVE
+
 Actor has ACTIVE Membership
 
 Actor authorized
@@ -1198,14 +1213,17 @@ The raw token must only be delivered to the trusted notification layer.
 `createInvitation()` must:
 
 ```text
-generate cryptographically strong raw token
+crypto.randomBytes(32)
 
-hash token
+base64url transport encoding
 
-persist only tokenHash
+SHA-256 lowercase hexadecimal hash
+
+persist only that hash as tokenHash
 ```
 
 Normal application DTOs must never expose `tokenHash`.
+The raw token is returned once only to the trusted server-side consumer.
 
 ---
 
@@ -1420,11 +1438,11 @@ Authenticated Profile exists
 
 Authenticated identity matches recipient email
 
-Organization permits acceptance
+Organization.status = ACTIVE
 
 Invitation Role exists
 
-Membership state permits acceptance
+Membership relationship does not conflict with acceptance
 ```
 
 ---
@@ -2076,6 +2094,14 @@ Prisma
 
 # Membership Repository
 
+Memberships adopts the Membership Repository and Invitation Repository under
+ADR-007. ADR-007 makes repositories optional globally; Memberships requires
+them because it has complex queries, secret `tokenHash` projections, and
+transactional operations.
+
+Services own transaction boundaries. Repositories receive either the Prisma
+Client or the transaction client supplied by the Service.
+
 Possible initial operations:
 
 ```text
@@ -2127,6 +2153,8 @@ Persistence details remain hidden from API consumers.
 # Service Boundary
 
 Memberships services own lifecycle rules.
+They own transactions and call the Membership or Invitation Repository; services
+must not use direct Prisma access for Memberships persistence.
 
 Examples:
 
@@ -2401,6 +2429,11 @@ with:
 ```text
 Membership status = ACTIVE
 ```
+
+Foundation / Phase 11 creates no tenant RLS policies. First audit effective
+database grants. If `anon` or `authenticated` can access these tables, enable
+RLS with deny-by-default and add no permissive policies. M-087 later introduces
+Memberships-based tenant policies.
 
 ---
 

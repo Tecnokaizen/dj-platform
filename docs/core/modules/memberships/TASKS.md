@@ -3,7 +3,7 @@ title: Memberships Tasks
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-08
+updated: 2026-08-11
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -61,34 +61,28 @@ Memberships must not duplicate those entities or absorb their architectural resp
 
 # Implementation Strategy
 
-Memberships will be implemented in stages.
-
 ```text
-Stage 1
-Memberships Persistence Foundation
+Memberships Foundation
+= Phases 1–14 / M-xxx internal work
 
 ↓
 
 Stage 2
-Membership Lifecycle Foundation
-
-↓
-
-Stage 3
-Invitation Foundation
-
-↓
-
-Stage 4
 Tenancy Integration
 
 ↓
 
-Stage 5
+Stage 3
 Permissions Integration
 ```
 
-Stage 1 through the internal service foundation may be implemented before the full Permissions module exists.
+## Glossary
+
+- **Memberships Foundation:** Phases 1–14 and internal `M-xxx` work that establish Memberships persistence, services and security boundaries.
+- **Stage 2:** cross-module Tenancy Integration, available only after Memberships Foundation.
+- **Stage 3:** Permissions Integration for production-facing administrative authorization.
+
+Memberships Foundation may be implemented before the full Permissions module exists.
 
 Production-facing administrative Membership management must not be exposed without approved authorization.
 
@@ -471,19 +465,20 @@ WHERE
 
 ### Implementation Rule
 
-Use either:
+Implement the partial unique index exclusively through deliberate migration SQL:
 
-```text
-the already-approved Prisma partial-index capability
+```sql
+CREATE UNIQUE INDEX
+  "organization_invitations_pending_email_unique"
+ON
+  "organization_invitations"
+  ("organization_id", "normalized_email")
+WHERE
+  "status" = 'PENDING';
 ```
 
-or:
-
-```text
-deliberate migration SQL
-```
-
-Do not enable a new Prisma preview feature casually merely to implement this constraint.
+Do not represent this invariant through Prisma schema/index declarations.
+Do not enable a Prisma preview feature merely to implement this constraint.
 
 ### Acceptance Criteria
 
@@ -612,6 +607,22 @@ Generated Prisma files are not manually edited.
 
 # Phase 2 — Membership Repository Foundation
 
+## Repository Decision
+
+ADR-007 keeps repositories optional globally. Memberships explicitly adopts them because it requires complex queries, secret projections such as `tokenHash`, and transactional operations.
+
+```text
+Consumer
+    ↓
+Memberships Service
+    ↓
+Membership Repository / Invitation Repository
+    ↓
+Prisma
+```
+
+Services own transaction boundaries. Repositories receive a Prisma Client or Transaction Client and contain capability-specific persistence access; services do not use Prisma directly for Memberships persistence.
+
 ## M-012
 
 ### Create Membership Repository
@@ -650,6 +661,7 @@ Repository:
 
 - is the Membership persistence boundary;
 - accesses Prisma directly;
+- receives a Prisma Client or Transaction Client;
 - contains no final Permission evaluation;
 - contains no HTTP behavior;
 - contains no UI logic;
@@ -805,6 +817,7 @@ rotateToken
 Repository:
 
 - accesses Prisma;
+- receives a Prisma Client or Transaction Client;
 - does not send email;
 - does not authenticate users;
 - does not expose tokenHash through normal DTOs;
@@ -1189,9 +1202,11 @@ ACTIVE
 ### Acceptance Criteria
 
 - Organization exists.
+- Organization.status is ACTIVE.
 - Profile exists.
 - Role exists.
 - roleId is valid.
+- Normal creation rejects the OWNER Role; the first OWNER is created only by M-084 and controlled test fixtures may insert OWNER through an internal-only path.
 - Duplicate Organization/Profile relation fails predictably.
 - This is not exposed as unrestricted public Membership creation.
 
@@ -1251,8 +1266,8 @@ removedAt = null
 
 ### Acceptance Criteria
 
-- Organization state checked.
-- Role still resolves.
+- Organization.status is ACTIVE.
+- Existing roleId still resolves and remains valid; no new Role is assigned.
 - Invalid transition fails safely.
 
 ---
@@ -1309,9 +1324,9 @@ workflow.
 ### Acceptance Criteria
 
 - Existing durable Membership reused.
-- Organization revalidated.
-- Role revalidated.
-- Role may be explicitly replaced.
+- Organization.status is ACTIVE.
+- An explicit targetRoleId is required and validated.
+- The existing Role is not reused implicitly.
 - removedAt cleared.
 - No duplicate Membership created.
 
@@ -1331,6 +1346,7 @@ OrganizationMembership.roleId
 
 - Target Role resolved through Roles.
 - Target Membership exists.
+- Normal Role changes reject OWNER as either source or target; OWNER promotion or transfer belongs only to M-088.
 - OWNER safety checked.
 - Generic Role mutation cannot bypass ownership transfer.
 - Permissions are not simulated with Role ordering.
@@ -1343,14 +1359,14 @@ OrganizationMembership.roleId
 
 ### Implement Secure Invitation Token Generation
 
-Generate high-entropy invitation tokens using a cryptographically secure source.
+Generate the raw token with `crypto.randomBytes(32)` and encode it for transport using base64url.
 
 ### Acceptance Criteria
 
-- Token is suitable for URL transport.
+- Transport encoding is base64url.
 - Token is unpredictable.
 - Token is never derived from invitation UUID/email.
-- No weak random source is used.
+- Raw token is returned once only to a trusted server-side consumer.
 
 ---
 
@@ -1358,7 +1374,7 @@ Generate high-entropy invitation tokens using a cryptographically secure source.
 
 ### Implement Invitation Token Hashing
 
-Persist only:
+Persist only SHA-256 of the raw token, encoded as lowercase hexadecimal, in:
 
 ```text
 tokenHash
@@ -1367,7 +1383,7 @@ tokenHash
 ### Acceptance Criteria
 
 - Raw token is not stored.
-- Hashing uses an approved one-way mechanism appropriate for high-entropy random tokens.
+- Hashing uses SHA-256 lowercase hexadecimal consistently during persistence and lookup.
 - Same transformation is used during lookup.
 - Secrets do not appear in logs.
 
@@ -1434,6 +1450,8 @@ Resolve Role
 
 Reject OWNER in normal invitation flow
 
+Require Organization.status = ACTIVE
+
 Check Membership conflict
 
 Check existing PENDING invitation
@@ -1454,8 +1472,8 @@ Return transient token to trusted delivery workflow
 ### Acceptance Criteria
 
 - invitedByMembershipId is server resolved.
-- Raw token is transient only.
-- tokenHash persisted.
+- Raw token is returned once only to a trusted server-side delivery consumer.
+- tokenHash is the SHA-256 lowercase hexadecimal value.
 - duplicate effective PENDING invitation prevented.
 - external email is not sent inside DB transaction.
 
@@ -1655,7 +1673,9 @@ set acceptedAt
 
 ### Acceptance Criteria
 
-Either all changes commit or none do.
+- Organization.status is ACTIVE.
+- Invitation roleId is valid and is not OWNER.
+- Either all changes commit or none do.
 
 ---
 
@@ -1710,7 +1730,7 @@ Use approved rejoin behavior:
 ```text
 restore existing Membership
 
-assign invitation Role
+assign invitation.roleId explicitly
 
 mark Invitation ACCEPTED
 ```
@@ -1719,7 +1739,9 @@ atomically.
 
 ### Acceptance Criteria
 
-No second Membership row is created.
+- Organization.status is ACTIVE.
+- invitation.roleId is validated and is not OWNER.
+- No second Membership row is created.
 
 ---
 
@@ -1836,11 +1858,12 @@ if it violates the Organization invariant.
 
 Normal Membership Role change or Invitation must not create a second OWNER.
 
-OWNER assignment belongs to ownership transfer.
+OWNER promotion or transfer belongs only to M-088.
+Controlled test fixtures may insert OWNER through a dedicated internal path.
 
 ---
 
-# Phase 11 — Membership-Based RLS Preparation
+# Phase 11 — Memberships Table Access Foundation
 
 ## M-060
 
@@ -1876,7 +1899,7 @@ models.
 
 ## M-061
 
-### Design Membership RLS Integration
+### Document Future Membership-Based RLS Integration
 
 Define how tenant-aware RLS will resolve:
 
@@ -1906,29 +1929,24 @@ Do not assume a Profile/auth mapping that differs from the implemented Identity 
 
 ## M-062
 
-### Protect Memberships Tables
+### Audit Memberships Table Grants
 
-Production RLS/access design must prevent:
-
-```text
-all authenticated users reading all Memberships
-
-unrelated tenants enumerating Membership relationships
-
-client-side arbitrary Membership mutation
-```
+Audit actual database grants on Memberships tables. This phase does not implement tenant RLS policies; M-087 is reserved for Membership-based tenant policies.
 
 ### Acceptance Criteria
 
-Access remains server-first and tenant scoped.
+- Actual grants for `anon` and `authenticated` are inspected and recorded.
+- If neither role can access Memberships tables, no RLS change is required by this task.
+- If either role can access a Memberships table, Foundation enables RLS in deny-by-default mode with no permissive policies.
+- Access remains server-first.
 
 ---
 
 ## M-063
 
-### Protect Invitations
+### Protect Invitation Secrets
 
-Invitation persistence must be stricter than ordinary public reference data.
+Foundation access controls must prevent normal clients from reading invitation secrets.
 
 ### Acceptance Criteria
 
@@ -2116,6 +2134,12 @@ Verify:
 ```text
 raw token not persisted
 
+crypto.randomBytes(32) generation
+
+base64url transport encoding
+
+SHA-256 lowercase hexadecimal tokenHash
+
 correct raw token resolves
 
 incorrect token fails
@@ -2217,9 +2241,15 @@ demote sole OWNER
 assign second OWNER through normal Role change
 
 invite recipient as OWNER
+
+create Membership with OWNER through normal creation
+
+change a normal Membership Role to OWNER
 ```
 
 All must be rejected or routed through ownership transfer.
+
+Controlled internal test fixtures may create OWNER only through their dedicated internal path.
 
 ---
 
@@ -2487,6 +2517,8 @@ Invitation acceptance atomic
 
 OWNER safety implemented
 
+Memberships table grants audited and deny-by-default RLS enabled if `anon` or `authenticated` access is present
+
 concurrency-sensitive flows tested
 
 documentation synchronized
@@ -2593,6 +2625,8 @@ OrganizationMembership
 model.
 
 Do not create temporary membership tables.
+
+M-087 is the first task that implements tenant policies; it is not part of Phase 11.
 
 ---
 
@@ -3160,6 +3194,7 @@ Memberships Foundation is complete when:
 - Invitation expiration is enforced.
 - Membership repository exists.
 - Invitation repository exists.
+- repositories receive Prisma Client or Transaction Client while services own transactions.
 - Membership lookups work.
 - Membership lifecycle works.
 - Membership Role replacement works.
@@ -3169,7 +3204,7 @@ Memberships Foundation is complete when:
 - Invitation resend securely rotates tokens.
 - Invitation acceptance is atomic.
 - recipient identity is verified.
-- ACTIVE Membership duplication is impossible.
+- Membership duplication is impossible for every status through full Organization/Profile uniqueness.
 - SUSPENDED Membership cannot bypass state through invitation.
 - REMOVED Membership uses the approved rejoin path.
 - concurrency-sensitive flows are protected.
