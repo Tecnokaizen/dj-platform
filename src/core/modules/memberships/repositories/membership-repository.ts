@@ -84,5 +84,24 @@ export function createMembershipRepository(client: MembershipRepositoryClient) {
         select: membershipRecordSelect,
       })
     },
+
+    async listByProfile(profileId: string): Promise<MembershipRecord[]> {
+      return client.organizationMembership.findMany({
+        where: {
+          profileId,
+        },
+        select: membershipRecordSelect,
+      })
+    },
+
+    async listActiveByProfile(profileId: string): Promise<MembershipRecord[]> {
+      return client.organizationMembership.findMany({
+        where: {
+          profileId,
+          status: 'ACTIVE',
+        },
+        select: membershipRecordSelect,
+      })
+    },
   }
 }
