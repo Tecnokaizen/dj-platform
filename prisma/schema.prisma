@@ -165,6 +165,14 @@ enum OrganizationStatus {
   ARCHIVED
 }
 
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+  REMOVED
+
+  @@map("membership_status")
+}
+
 model Profile {
   id                String           @id @db.Uuid
   username          String?          @unique @db.VarChar(50)
