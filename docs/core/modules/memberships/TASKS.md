@@ -2633,7 +2633,7 @@ are implemented and validated.
 
 ---
 
-## M-084 — BLOCKED UNTIL FOUNDATIONS EXIST
+## M-084
 
 ### Complete Organization Onboarding
 
@@ -2662,6 +2662,23 @@ Memberships
 
 Roles
 ```
+
+### Stage 2 Implementation — 2026-08-12
+
+Implemented as the Organizations-owned public onboarding service with explicit
+cross-module dependencies:
+
+```text
+authenticated Profile resolved server-side
+canonical OWNER resolved through Roles
+Organization + ACTIVE OWNER Membership created in one Prisma transaction
+```
+
+The Organizations persistence primitive is transaction-compatible, the
+Membership repository remains the relationship owner, and the service rejects
+any injected Role whose key is not `OWNER`. Six integration cases cover the
+successful invariant, missing Profile, Role mismatch, transactional rollback,
+slug conflict and concurrent duplicate onboarding.
 
 ---
 

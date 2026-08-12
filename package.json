@@ -43,7 +43,8 @@
     "test:memberships:invitation-acceptance": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-acceptance.test.ts",
     "test:memberships:owner-safety": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/owner-safety.test.ts",
     "test:memberships:access-foundation": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-access-foundation.test.ts",
-    "test:memberships:phase12": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/*.test.ts"
+    "test:memberships:phase12": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/*.test.ts",
+    "test:tenancy:onboarding": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-onboarding.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
