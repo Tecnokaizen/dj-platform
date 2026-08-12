@@ -1562,19 +1562,23 @@ Acceptance remains protected by real-time expiresAt checks even if status transi
 
 Implement secure resend behavior.
 
-Recommended initial policy:
+Implemented policy:
 
 ```text
 rotate raw token
 
 replace tokenHash
 
-optionally renew expiresAt according to approved configuration
+preserve expiresAt for a non-expired PENDING invitation
 
 commit
 
 send notification after commit
 ```
+
+An invitation already marked EXPIRED, or with `expiresAt <= now`, follows the
+reinvitation path and creates a new PENDING invitation with a fresh 72-hour
+lifetime.
 
 ### Acceptance Criteria
 
@@ -2439,6 +2443,18 @@ npx prisma generate
 
 All pass.
 
+### Phase 14 Validation — 2026-08-12
+
+Executed with Node.js `22.23.2` and Prisma `7.9.1`:
+
+```text
+npm run prisma:format   PASS
+npm run prisma:validate PASS
+npm run prisma:generate PASS
+```
+
+Generation produced no schema or generated-client drift.
+
 ---
 
 ## M-082
@@ -2457,6 +2473,22 @@ Run the approved automated test suite.
 ### Acceptance Criteria
 
 All required validation passes.
+
+### Phase 14 Validation — 2026-08-12
+
+```text
+npm run typecheck       PASS
+npm run lint            PASS
+npx next build --webpack PASS
+```
+
+The approved Identity, Organizations, Roles and Memberships matrix passed:
+
+```text
+22 test files
+126 tests
+0 failures
+```
 
 ---
 
@@ -2497,6 +2529,35 @@ documentation
 ### Acceptance Criteria
 
 No unresolved Memberships-owned defect blocks Tenancy Integration.
+
+### Phase 14 Review — 2026-08-12
+
+Review confirmed:
+
+- all five Prisma migrations are applied in the explicit test database and the
+  schema is up to date;
+- Membership and Invitation enums, tables, UUID relations, restrictive foreign
+  keys, query indexes and uniqueness constraints match the approved model;
+- PostgreSQL contains the required partial PENDING-email unique index;
+- repository projections exclude `tokenHash`, while services and security
+  helpers remain server-only;
+- raw tokens are generated from 32 random bytes, transported as base64url,
+  persisted only as SHA-256 lowercase hexadecimal hashes and returned only by
+  the trusted internal secret result;
+- lifecycle mutations use expected-state predicates, acceptance is atomic and
+  concurrency-sensitive behavior is covered by tests;
+- normal creation, invitation, suspension, removal and Role-change paths cannot
+  create, mutate or demote OWNER outside the dedicated future tenancy flow;
+- the explicit test database has neither `anon` nor `authenticated` roles, so
+  M-062 correctly requires no deny-by-default RLS change there; every deployed
+  environment must repeat the grant audit before exposure;
+- M-077 and Membership-based tenant RLS remain explicitly deferred to M-087,
+  and Permissions remains the boundary for administrative authorization;
+- Phase 13 documentation and the implemented source structure remain aligned.
+
+No unresolved Memberships-owned defect was found. Memberships Foundation is
+ready for the authorized Tenancy Integration work without claiming completion
+of Permissions or tenant RLS.
 
 ---
 
