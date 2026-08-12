@@ -2746,7 +2746,7 @@ never invoked when validation fails.
 
 ---
 
-## M-087 — BLOCKED PENDING RLS POLICY CONTRACT
+## M-087
 
 ### Membership-Based Tenant RLS
 
@@ -2762,7 +2762,7 @@ Do not create temporary membership tables.
 
 M-087 is the first task that implements tenant policies; it is not part of Phase 11.
 
-### Stage 2 Audit — 2026-08-12
+### Stage 2 Implementation — 2026-08-12
 
 The Identity, Organizations, Roles and Memberships persistence foundations now
 exist and confirm the canonical predicate:
@@ -2773,22 +2773,25 @@ auth.uid() = Profile.id
 ACTIVE OrganizationMembership for the target Organization
 ```
 
-Implementation remains blocked because the approved contract does not yet
-define, for each of `organizations`, `organization_memberships` and
-`organization_invitations`:
+Implemented in a dedicated Supabase migration with the following approved
+contract:
 
-- which operations are available to `authenticated`;
-- whether reads expose only the caller's Membership or tenant-wide rows;
-- how Invitation columns such as `token_hash` remain inaccessible (RLS filters
-  rows, not columns);
-- whether Organization lifecycle participates in each policy;
-- the exact grants and reusable helper ownership.
+- `authenticated` may SELECT active Organizations reached through its own
+  active Membership;
+- `authenticated` may SELECT only its own active Membership rows for active
+  Organizations;
+- `anon` has no tenant-table privileges;
+- client writes remain denied on Organizations, Memberships and Invitations;
+- Invitations have no client SELECT grant or permissive policy, preserving
+  `token_hash` as server-only persistence;
+- the reusable predicate is a hardened `SECURITY DEFINER` helper in the
+  non-exposed `private` schema.
 
-The current PostgreSQL test container is not a Supabase runtime and has no
-`anon`, `authenticated`, `auth.uid()` or PostgREST behavior, so it cannot prove
-these policies. Do not add permissive policies or claim RLS validation until a
-disposable Supabase-compatible test path and the table/operation contract are
-approved.
+The integration suite creates a disposable database, applies every Prisma
+migration, bootstraps the minimum Supabase role and `auth.uid()` behavior, then
+applies the RLS migration. It verifies Profile and tenant isolation,
+Membership/Organization lifecycle denial, Invitation secrecy, denied writes,
+`anon` denial, trusted-server access and the exact policy/grant inventory.
 
 ---
 

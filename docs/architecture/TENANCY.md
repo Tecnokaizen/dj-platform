@@ -1324,6 +1324,33 @@ for target organizationId
 
 Do not create Domain-specific copies of tenant Membership persistence.
 
+## Initial Supabase Client Contract
+
+The implemented Stage 2 RLS contract combines the canonical Membership
+predicate with Organization lifecycle:
+
+```text
+auth.uid() = Profile.id
++
+ACTIVE OrganizationMembership
++
+ACTIVE Organization
+```
+
+For the initial client-facing boundary:
+
+- `authenticated` receives read-only access to matching Organizations and its
+  own matching Membership rows;
+- `anon` receives no tenant-table access;
+- direct client writes remain denied until application Permissions define the
+  corresponding capabilities;
+- Invitations remain server-only because they contain `token_hash` and other
+  security-sensitive workflow state.
+
+The reusable predicate lives in a hardened function under the non-exposed
+`private` schema. Data owners may reuse it for future Organization-scoped
+tables, but each table must still define its own explicit grants and policies.
+
 ---
 
 # RLS Is Defense in Depth

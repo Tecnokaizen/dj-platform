@@ -238,9 +238,41 @@ Tenant isolation may be enforced through multiple complementary mechanisms, incl
 - tests;
 - transactional invariants.
 
-RLS must not be treated as currently verified protection merely because it exists in the architecture roadmap.
+RLS must not be treated as verified protection merely because it exists in the architecture roadmap.
 
 Server-side tenant validation remains mandatory.
+
+## Implemented Membership-Based RLS Boundary
+
+Stage 2 implements the initial tenant RLS boundary for Supabase client roles.
+The reusable database predicate is:
+
+    auth.uid() = Profile.id
+        +
+    OrganizationMembership.status = ACTIVE
+        +
+    Organization.status = ACTIVE
+
+The predicate is implemented by a hardened `SECURITY DEFINER` helper in the
+non-exposed `private` schema. Its search path is empty, every referenced object
+is schema-qualified and execution is granted only to `authenticated`.
+
+The initial client contract is deliberately read-only:
+
+- `authenticated` may select active Organizations to which it has an active
+  Membership;
+- `authenticated` may select only its own active Membership rows in active
+  Organizations;
+- `anon` has no access to tenant foundation tables;
+- neither client role may insert, update or delete Organizations, Memberships
+  or Invitations;
+- Organization Invitations remain server-only because row policies cannot
+  protect secret columns such as `token_hash`.
+
+This boundary proves tenant belonging only. It does not grant administrative
+capability, expose tenant-wide Membership lists or replace server-side
+Permissions. Trusted server connections remain responsible for authorized
+mutations and must continue validating tenant context.
 
 ## Organization Identifiers
 

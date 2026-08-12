@@ -2973,13 +2973,26 @@ It is not a replacement for Memberships service authorization.
 
 # Membership-Based Tenant RLS
 
-Once Memberships exists, other tenant-owned tables may use policies conceptually based on:
+Stage 2 implements the initial Supabase client policy based on:
 
 ```text
 active Membership for target organization
 ```
 
-The exact helper functions and policy patterns belong to Security/RLS architecture.
+The approved reusable helper is:
+
+```text
+private.has_active_organization_membership(organizationId)
+```
+
+It is a `SECURITY DEFINER` function with an empty search path and fully
+qualified references. It requires both an `ACTIVE` Membership for `auth.uid()`
+and an `ACTIVE` Organization. The function is not exposed through the Data API.
+
+Initial grants are intentionally narrow: `authenticated` receives SELECT only
+on matching Organizations and its own matching Membership rows. `anon` receives
+no access, client writes remain denied, and Invitations receive no client grant
+or permissive policy because RLS cannot hide `token_hash` from an allowed row.
 
 Do not duplicate Membership logic independently in every Domain if a reusable secure pattern can be established.
 
