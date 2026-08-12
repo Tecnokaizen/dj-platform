@@ -1,8 +1,8 @@
 ---
 title: Project Context
-version: 2.0.0
+version: 2.1.0
 status: Living Document
-updated: 2026-08-11
+updated: 2026-08-12
 repository: dj-platform
 ---
 
@@ -36,11 +36,13 @@ DJ
 
 Current State:
 
-Architecture consolidated.
+Architecture consolidated for the implemented Foundation boundary.
 
-Core Foundation partially implemented and partially specified.
+Platform Core Foundation implementation now reaches Identity, Organizations,
+Roles, Memberships, Tenancy Integration and Permissions. Known decision gates
+and deferred integrations remain explicit below.
 
-Platform Core Foundation implementation in progress; DJ Platform is its current validation consumer.
+DJ Platform remains the current validation consumer.
 
 Production readiness not established.
 
@@ -154,9 +156,9 @@ CONDITIONAL PASS (O-029).
 
 Foundation may be paused.
 
-Operational tenancy:
-
-INCOMPLETE.
+Organizations Stage 1 is not the whole operational tenancy boundary. The
+cross-module tenancy foundation is now implemented through Memberships and
+Tenancy Integration.
 
 Implemented and validated:
 
@@ -188,16 +190,22 @@ Deferred Organizations tasks (not completed):
 - O-018
 - O-021
 
-Still pending for operational tenancy (cross-module / later capabilities, not Organizations-owned Stage 1 defects):
+Implemented cross-module tenancy capabilities:
 
-- OrganizationMembership persistence
-- OWNER ownership workflow
-- Permissions
-- Tenancy Integration
-- tenant authorization final
-- Membership-based RLS
-- public createOrganization() workflow
-- Product Organization context
+- OrganizationMembership persistence and lifecycle;
+- atomic Organization onboarding with the initial OWNER Membership;
+- Organization discovery for the current Profile;
+- validated Organization context switching;
+- Membership-based tenant RLS;
+- explicit RolePermission authorization for Memberships administration.
+
+Remaining tenancy and Organizations decision gates:
+
+- M-088 ownership transfer and previous-owner Role policy;
+- database enforcement strategy for exactly one active OWNER;
+- O-017, O-018 and O-021;
+- Permissions integration for Organization read/update services;
+- Product-level Organization context composition where required.
 
 createOrganizationRecord remains an internal persistence primitive only.
 It is not the public createOrganization() workflow.
@@ -230,24 +238,31 @@ No Roles-owned defect blocks Memberships specification or implementation.
 
 Deferred / future (not Roles Foundation Stage 1):
 
-- OrganizationMembership / tenant Role possession
-- ownership enforcement
-- Permissions / RolePermission
-- tenant context
-- custom tenant Roles
+- ownership transfer policy and enforcement;
+- custom tenant Roles.
 
 Memberships:
 
 Specification complete.
 
-Foundation implementation in progress.
+Foundation implementation and quality gate complete through M-083.
 
 Implemented work includes:
 
-- Membership schema, enums, models and migration;
-- Membership repository lookups.
+- Membership and Invitation schema, migrations and generated Prisma client;
+- secure repository projections and transaction-compatible factories;
+- membership lifecycle and read services;
+- invitation token security, lifecycle, acceptance and resend flows;
+- DTO, validation and stable error contracts;
+- OWNER safety invariants;
+- behavioral, persistence and security tests;
+- documentation and Foundation quality gate;
+- Tenancy Integration M-084 through M-087;
+- Permissions Integration M-089 through M-094.
 
-Memberships Foundation remains incomplete.
+M-088 ownership transfer remains blocked pending an approved previous-owner
+Role policy. This is an explicit decision gate, not an incomplete Memberships
+Foundation implementation.
 
 Conceptual link:
 
@@ -267,7 +282,21 @@ Permissions:
 
 Specification complete.
 
-Implementation pending / deferred.
+Foundation implementation and validation complete for the approved scope:
+
+- Permission and RolePermission persistence;
+- canonical 12-key catalog;
+- explicit system Role policy and idempotent synchronization;
+- drift detection without silent deletion;
+- Permission reads and tenant-scoped authorization evaluation;
+- server-only persistence grants;
+- Memberships administrative integration.
+
+Protected administrative operations revalidate tenant context and explicit
+RolePermission mappings in the same serializable database transaction as their
+read or mutation. Permission-aware RLS, authorization caching, Domain extension,
+Organization-service integration and ownership-transfer integration remain
+deferred pending their documented decision gates.
 
 Other future Core capabilities must not be implemented speculatively.
 
@@ -472,7 +501,6 @@ Do not assume the repository currently contains:
 - shadcn/ui;
 - OpenAI SDK;
 - Anthropic SDK;
-- Vitest;
 - Playwright;
 - Storybook;
 - Redis;
@@ -516,6 +544,12 @@ Current repository baseline validation includes:
     npm run typecheck
     npm run lint
 
+Foundation persistence and behavior are additionally protected by capability
+specific Vitest suites for Identity, Organizations, Roles, Memberships, Tenancy
+and Permissions. Prisma changes require format, validation, generation,
+migration review and explicit test-database validation. A production build is
+part of the Foundation closure gate.
+
 Current typecheck command includes Next.js type generation and TypeScript validation.
 
 These checks are not equivalent to comprehensive automated testing.
@@ -524,19 +558,20 @@ These checks are not equivalent to comprehensive automated testing.
 
 # Testing Maturity
 
-Static validation exists.
+Static validation and substantial automated Foundation coverage exist.
 
-Comprehensive automated behavioral testing is pending.
+Current automated tests protect Core persistence, lifecycle invariants, tenant
+isolation, authorization policy, invitation security, migration behavior and
+critical Foundation boundaries. This is not equivalent to complete Product or
+production confidence.
 
-Future testing should progressively protect:
+Remaining testing maturity work includes:
 
-- Core invariants;
-- tenancy;
-- authorization;
-- Domain behavior;
-- migrations;
-- critical Product flows;
-- infrastructure boundaries.
+- Product end-to-end flows;
+- broader Domain behavior;
+- deployed Supabase and infrastructure verification;
+- backup and restore exercises;
+- production monitoring and operational validation.
 
 Do not claim production confidence from lint and typecheck alone.
 
@@ -777,14 +812,25 @@ The repository currently contains:
 - generated Prisma client;
 - Organizations Foundation Stage 1 CONDITIONAL PASS (pausable);
 - Roles Foundation Stage 1 CLOSED / PASS;
-- Memberships Foundation implementation in progress;
+- Memberships Foundation and quality gate complete;
+- atomic Organization onboarding, tenant discovery and context validation;
+- Membership-based tenant RLS;
+- Permissions Foundation and explicit system Role policy;
+- transaction-scoped Memberships administrative authorization;
 - initial Domain and Core source boundaries.
 
-Organizations operational tenancy remains incomplete.
-Deferred Organizations tasks: O-017, O-018, O-021.
+Organizations Foundation Stage 1 remains CONDITIONAL PASS. Its deferred tasks
+O-017, O-018 and O-021 are not silently closed by the cross-module tenancy
+implementation.
 
-Roles Foundation Stage 1 is closed.
-Memberships Foundation is the current Core implementation work and remains incomplete. Its schema, enums, models, migration and repository lookups exist.
+Roles Foundation Stage 1 and Memberships Foundation are closed for their
+approved scopes. Tenancy Integration M-084 through M-087 is implemented.
+Permissions Foundation and Memberships administrative integration M-089 through
+M-094 are implemented and validated.
+
+M-088 ownership transfer remains blocked pending approved policy. Organization
+service authorization, permission-aware RLS, caching and Domain Permission
+composition remain explicitly deferred.
 
 Large parts of DJ Domain functionality remain unimplemented.
 
@@ -878,15 +924,12 @@ Documentation must not be followed blindly when repository evidence proves it st
 
 Current consolidation priorities:
 
-1. finish repository context alignment;
-2. review `AGENTS.md`;
-3. review `.cursor/` instructions and session context;
-4. backfill foundational ADRs;
-5. perform formal Architecture Review;
-6. perform AI Agent / Cursor Readiness Review;
-7. validate repository state;
-8. commit the consolidated foundation;
-9. resume implementation from approved Core Foundation sequence.
+1. review and commit the Permissions Foundation change set;
+2. perform formal Foundation Architecture and security review;
+3. align remaining agent instructions with current repository maturity;
+4. backfill foundational ADRs where established decisions require records;
+5. resolve M-088 ownership-transfer policy before implementation;
+6. authorize the next bounded Core or Product milestone explicitly.
 
 ---
 
@@ -915,7 +958,6 @@ Known areas still requiring explicit decisions or implementation review may incl
 
 - ownership transfer behavior for the previous OWNER;
 - exact database enforcement of one active OWNER per Organization;
-- invitation uniqueness implementation;
 - future storage architecture;
 - future AI provider architecture;
 - future search architecture;
@@ -948,23 +990,24 @@ Organizations Foundation Stage 1 is CONDITIONAL PASS and may be paused.
 
 Roles Foundation Stage 1 is CLOSED / PASS.
 
-Current implementation module:
+Memberships Foundation and Tenancy Integration are implemented for their
+approved scopes.
 
-Memberships Foundation
+Permissions Foundation and Memberships administrative integration are the
+current closure milestone. No subsequent implementation module is authorized by
+this document.
 
-Current implementation link:
+Current authorization link:
 
     Profile
         ↓
-    OrganizationMembership
+    ACTIVE OrganizationMembership
         ↓
-    Organization + Role
-
-Dependencies already available for Memberships:
-
-- Identity
-- Organizations
-- Roles
+    Role
+        ↓
+    RolePermission
+        ↓
+    Permission
 
 The Core implementation work should respect this dependency order unless Architecture explicitly changes it.
 

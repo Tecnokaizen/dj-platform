@@ -2835,7 +2835,7 @@ The following production-facing administrative operations require the Permission
 
 ---
 
-## M-089 — BLOCKED
+## M-089 — DONE
 
 ### Authorize Member Invitation
 
@@ -2849,7 +2849,7 @@ Do not use Role `sortOrder` as a substitute.
 
 ---
 
-## M-090 — BLOCKED
+## M-090 — DONE
 
 ### Authorize Membership Suspension
 
@@ -2861,7 +2861,7 @@ suspendMembership
 
 ---
 
-## M-091 — BLOCKED
+## M-091 — DONE
 
 ### Authorize Membership Restoration
 
@@ -2873,7 +2873,7 @@ restoreMembership
 
 ---
 
-## M-092 — BLOCKED
+## M-092 — DONE
 
 ### Authorize Membership Removal
 
@@ -2885,7 +2885,7 @@ removeMembership
 
 ---
 
-## M-093 — BLOCKED
+## M-093 — DONE
 
 ### Authorize Membership Role Changes
 
@@ -2897,11 +2897,41 @@ changeMembershipRole
 
 ---
 
-## M-094 — BLOCKED
+## M-094 — DONE
 
 ### Authorize Membership Administration Reads
 
 Protect sensitive Organization Membership and Invitation administrative listings through Permissions.
+
+### Stage 3 Implementation — 2026-08-12
+
+Permissions Foundation now provides the canonical persisted Permission catalog,
+explicit system RolePermission policy, trusted tenant-context validation and
+deny-by-default `requirePermission` guard. Membership and Invitation
+administration is protected through the documented keys:
+
+```text
+memberships.read
+memberships.suspend
+memberships.restore
+memberships.remove
+memberships.change_role
+invitations.read
+invitations.create
+invitations.revoke
+invitations.resend
+```
+
+Every protected operation resolves the authenticated Profile before opening a
+database transaction. The target Organization, persisted ACTIVE Membership,
+Organization state, Role assignment and explicit RolePermission mapping are
+then revalidated inside the same `SERIALIZABLE` transaction that executes the
+Membership or Invitation operation. A denied authorization never reaches the
+protected callback. There is no OWNER bypass, Role `sortOrder` authorization or
+wildcard expansion. Memberships continues to own lifecycle, OWNER safety,
+invitation token security and safe DTO projection. Invitation acceptance
+remains an authorization bootstrap flow and does not require a pre-existing
+tenant Permission.
 
 ---
 

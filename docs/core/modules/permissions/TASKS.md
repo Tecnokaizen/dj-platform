@@ -1,9 +1,9 @@
 ---
 title: Permissions Tasks
-version: 1.0.0
+version: 1.1.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-09
+updated: 2026-08-12
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -67,6 +67,58 @@ Domain business rules
 # Current Implementation Position
 
 Permissions documentation may be completed before Permissions source implementation begins.
+
+## Foundation Implementation Closure — 2026-08-12
+
+The previously required foundations now exist. The active implementation
+includes:
+
+```text
+Permission + RolePermission persistence and migration
+canonical 12-key Platform Core catalog
+explicit OWNER / ADMIN / MANAGER / MEMBER / VIEWER policy
+idempotent catalog and policy synchronization
+explicit read-only catalog and policy validation
+drift detection without silent deletion or pre-validation writes
+Permission read services
+trusted tenant-scoped hasPermission / requirePermission
+Membership and Invitation administrative integration
+server-only Supabase grants for Permission persistence
+```
+
+The implementation consumes the canonical Organization context. Protected
+operations resolve authentication identity before opening a database
+transaction, then revalidate the ACTIVE Membership, active Organization, actual
+Role and explicit RolePermission mapping inside the same `SERIALIZABLE`
+transaction used by the protected callback. Behavioral tests prove both the
+allowed execution path and that denial cannot reach a write callback. It does
+not implement OWNER bypass, Role hierarchy, wildcard grants, tenant-local custom
+Roles, direct client mutation or permission-aware RLS.
+
+Task-local `BLOCKED` markers below preserve the original dependency plan. This
+closure ledger is the current status authority for the implemented scope:
+
+```text
+DONE
+P-010 → P-088
+P-100 → P-114
+P-140
+P-150 → P-162
+P-170 → P-185
+P-190 → P-194
+
+PARTIAL
+P-163 — Memberships and Invitations covered; Organizations remains deferred
+
+DEFERRED / BLOCKED
+P-090 → P-093 — Organization integration and ownership policy
+P-120 → P-123 — Domain Permission composition
+P-130 → P-134 — measurement-driven caching
+P-141 → P-142 — permission-aware RLS not currently justified
+```
+
+No deferred task is implicitly authorized by this closure. M-088 ownership
+transfer remains blocked by the previous-owner Role decision.
 
 Actual implementation must respect the approved dependency order:
 
