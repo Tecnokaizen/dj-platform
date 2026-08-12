@@ -200,6 +200,7 @@ describe('Tenancy discovery and context (M-085 → M-086)', () => {
       organizationId: organization.id,
       membershipId: membership.id,
       roleId: role.id,
+      roleKey: 'ADMIN',
     })
   })
 
@@ -315,6 +316,7 @@ describe('Tenancy discovery and context (M-085 → M-086)', () => {
       organizationId: randomUUID(),
       membershipId: randomUUID(),
       roleId: randomUUID(),
+      roleKey: 'MEMBER' as const,
     }
     const setActiveOrganizationContext = vi.fn(async () => undefined)
     const switchActiveOrganization = createSwitchActiveOrganizationService({

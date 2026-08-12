@@ -57,6 +57,16 @@ export type Organization = Prisma.OrganizationModel
  */
 export type Role = Prisma.RoleModel
 /**
+ * Model Permission
+ * 
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model RolePermission
+ * 
+ */
+export type RolePermission = Prisma.RolePermissionModel
+/**
  * Model OrganizationMembership
  * 
  */

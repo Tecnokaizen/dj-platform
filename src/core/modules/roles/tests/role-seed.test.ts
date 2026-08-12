@@ -23,6 +23,12 @@ type CanonicalRoleSnapshot = Pick<
 >
 
 let originalCanonicalRoles: CanonicalRoleSnapshot[] = []
+let originalCanonicalRolePermissions: Array<{
+  id: string
+  roleId: string
+  permissionId: string
+  createdAt: Date
+}> = []
 
 async function getPrisma() {
   const { prisma } = await import('@/lib/prisma')
@@ -66,6 +72,25 @@ async function loadCanonicalRoles(): Promise<CanonicalRoleSnapshot[]> {
 async function captureOriginalCanonicalRoles(): Promise<void> {
   assertRolesTestDatabase()
   originalCanonicalRoles = await loadCanonicalRoles()
+  const prisma = await getPrisma()
+  originalCanonicalRolePermissions = await prisma.rolePermission.findMany({
+    where: { roleId: { in: originalCanonicalRoles.map(({ id }) => id) } },
+  })
+}
+
+async function deleteCanonicalRoles(keys = CANONICAL_KEYS): Promise<void> {
+  const prisma = await getPrisma()
+  const roles = await prisma.role.findMany({
+    where: { key: { in: [...keys] } },
+    select: { id: true },
+  })
+
+  await prisma.rolePermission.deleteMany({
+    where: { roleId: { in: roles.map(({ id }) => id) } },
+  })
+  await prisma.role.deleteMany({
+    where: { key: { in: [...keys] } },
+  })
 }
 
 async function restoreOriginalCanonicalRoles(): Promise<void> {
@@ -73,13 +98,7 @@ async function restoreOriginalCanonicalRoles(): Promise<void> {
 
   const prisma = await getPrisma()
 
-  await prisma.role.deleteMany({
-    where: {
-      key: {
-        in: [...CANONICAL_KEYS],
-      },
-    },
-  })
+  await deleteCanonicalRoles()
 
   for (const role of originalCanonicalRoles) {
     await prisma.role.create({
@@ -93,6 +112,12 @@ async function restoreOriginalCanonicalRoles(): Promise<void> {
         createdAt: role.createdAt,
         updatedAt: role.updatedAt,
       },
+    })
+  }
+
+  if (originalCanonicalRolePermissions.length > 0) {
+    await prisma.rolePermission.createMany({
+      data: originalCanonicalRolePermissions,
     })
   }
 }
@@ -128,15 +153,7 @@ describe('System Role seed (R-026)', () => {
   })
 
   it('creates the canonical catalog on first seed', async () => {
-    const prisma = await getPrisma()
-
-    await prisma.role.deleteMany({
-      where: {
-        key: {
-          in: [...CANONICAL_KEYS],
-        },
-      },
-    })
+    await deleteCanonicalRoles()
 
     expect(await loadCanonicalRoles()).toHaveLength(0)
 
@@ -164,14 +181,11 @@ describe('System Role seed (R-026)', () => {
   })
 
   it('recreates a missing canonical Role through seed only', async () => {
-    const prisma = await getPrisma()
     const missingKey = SYSTEM_ROLE_METADATA[SYSTEM_ROLE_METADATA.length - 1].key
 
     await seedCatalog()
 
-    await prisma.role.delete({
-      where: { key: missingKey },
-    })
+    await deleteCanonicalRoles([missingKey])
 
     const { resolveRequiredRole } = await import(
       '@/core/modules/roles/services/resolve-required-role'

@@ -12,6 +12,10 @@ const TENANT_RLS_MIGRATION = path.join(
   process.cwd(),
   'supabase/migrations/20260812020000_membership_based_tenant_rls.sql'
 )
+const PERMISSIONS_SERVER_ONLY_MIGRATION = path.join(
+  process.cwd(),
+  'supabase/migrations/20260812150200_permissions_server_only.sql'
+)
 const DATABASE_NAME = `dj_platform_rls_${randomUUID().replaceAll('-', '')}`
 
 const ids = {
@@ -248,6 +252,11 @@ describe('Membership-based tenant RLS (M-087)', () => {
     await bootstrapSupabaseAuth(tenantClient)
     const migration = await readFile(TENANT_RLS_MIGRATION, 'utf8')
     await tenantClient.query(migration)
+    const permissionsMigration = await readFile(
+      PERMISSIONS_SERVER_ONLY_MIGRATION,
+      'utf8'
+    )
+    await tenantClient.query(permissionsMigration)
     await seedTenantFixtures(tenantClient)
   }, 30_000)
 
@@ -327,6 +336,26 @@ describe('Membership-based tenant RLS (M-087)', () => {
       expectInsufficientPrivilege(error)
       return true
     })
+  })
+
+  it('keeps the Permission catalog and Role policy server-only', async () => {
+    for (const table of ['permissions', 'role_permissions']) {
+      await expect(
+        queryAsAuthenticated(
+          ids.activeProfile,
+          `SELECT * FROM public.${table}`
+        )
+      ).rejects.toSatisfy((error: unknown) => {
+        expectInsufficientPrivilege(error)
+        return true
+      })
+      await expect(
+        queryAsAnon(`SELECT * FROM public.${table}`)
+      ).rejects.toSatisfy((error: unknown) => {
+        expectInsufficientPrivilege(error)
+        return true
+      })
+    }
   })
 
   it('denies authenticated writes to tenant foundation tables', async () => {

@@ -18,6 +18,9 @@ import { organizationIdSchema } from '@/core/modules/organizations/schemas/organ
 import { findOrganizationById } from '@/core/modules/organizations/services/find-organization-by-id'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import type { OrganizationContext } from '@/core/modules/organizations/types/organization-context'
+import { requiredSystemRoleKeySchema } from '@/core/modules/roles/schemas/required-system-role-key'
+import { findRoleById } from '@/core/modules/roles/services/find-role-by-id'
+import type { Role } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 type ActiveMembershipContext = {
@@ -36,6 +39,7 @@ export type ResolveOrganizationContextDependencies = {
     organizationId: string,
     profileId: string
   ) => Promise<ActiveMembershipContext | null>
+  findRoleById: (roleId: string) => Promise<Role | null>
 }
 
 export function createResolveOrganizationContextService(
@@ -71,11 +75,20 @@ export function createResolveOrganizationContextService(
       throw new OrganizationError(ORGANIZATION_ERROR_CODES.INVALID_STATE)
     }
 
+    const role = await dependencies.findRoleById(membership.roleId)
+
+    if (!role) {
+      throw new MembershipError(MEMBERSHIP_ERROR_CODES.ROLE_INVALID)
+    }
+
+    const roleKey = requiredSystemRoleKeySchema.parse(role.key)
+
     return {
       profileId,
       organizationId: organization.id,
       membershipId: membership.id,
       roleId: membership.roleId,
+      roleKey,
     }
   }
 }
@@ -112,6 +125,7 @@ export const resolveOrganizationContextDependencies: ResolveOrganizationContextD
     return session?.profile?.id ?? null
   },
   findOrganizationById,
+  findRoleById,
   findActiveMembership: (organizationId, profileId) =>
     membershipRepository.findActiveByOrganizationAndProfile(
       organizationId,

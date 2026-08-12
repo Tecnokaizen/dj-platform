@@ -46,7 +46,8 @@
     "test:memberships:phase12": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/*.test.ts",
     "test:tenancy:onboarding": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-onboarding.test.ts",
     "test:tenancy:context": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenancy-context.test.ts",
-    "test:tenancy:rls": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenant-rls.test.ts"
+    "test:tenancy:rls": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenant-rls.test.ts",
+    "test:permissions:foundation": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/permissions/tests/permissions-foundation.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

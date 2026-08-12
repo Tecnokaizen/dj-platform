@@ -90,13 +90,12 @@ describe('Roles Foundation boundary (R-030)', () => {
     const roleModel = extractRoleModelBlock(schema)
 
     expect(roleModel).not.toContain(['organization', 'Id'].join(''))
-    expect(roleModel).not.toContain(['Role', 'Permission'].join(''))
-    expect(roleModel).not.toContain('Permission')
     expect(roleModel).toMatch(/memberships\s+OrganizationMembership\[\]/)
     expect(roleModel).toMatch(/invitations\s+OrganizationInvitation\[\]/)
+    expect(roleModel).toMatch(/permissionMappings\s+RolePermission\[\]/)
   })
 
-  it('Roles tests remain independently runnable without Memberships/Permissions modules', async () => {
+  it('Roles tests remain independently runnable without importing Memberships/Permissions modules', async () => {
     const testFiles = (
       await listTypeScriptFiles(path.join(ROLES_ROOT, 'tests'))
     ).filter(
@@ -110,7 +109,6 @@ describe('Roles Foundation boundary (R-030)', () => {
       ['@/core/modules/', 'memberships'].join(''),
       ['@/core/modules/', 'permissions'].join(''),
       ['Organization', 'Membership'].join(''),
-      ['Role', 'Permission'].join(''),
     ]
 
     for (const filePath of testFiles) {

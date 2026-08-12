@@ -3,6 +3,7 @@ import 'dotenv/config'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '../src/generated/prisma/client'
 import { seedSystemRoles } from '../src/core/modules/roles/seed/seed-system-roles'
+import { syncPermissionsFoundation } from '../src/core/modules/permissions/seed/sync-permissions-foundation'
 
 const connectionString = process.env.DATABASE_URL
 
@@ -20,6 +21,7 @@ const prisma = new PrismaClient({
 
 async function main() {
   await seedSystemRoles(prisma)
+  await prisma.$transaction((client) => syncPermissionsFoundation(client))
 }
 
 main()

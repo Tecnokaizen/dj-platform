@@ -43,6 +43,12 @@ type CanonicalRoleSnapshot = Pick<
 >
 
 let originalCanonicalRoles: CanonicalRoleSnapshot[] = []
+let originalCanonicalRolePermissions: Array<{
+  id: string
+  roleId: string
+  permissionId: string
+  createdAt: Date
+}> = []
 
 async function getPrisma() {
   const { prisma } = await import('@/lib/prisma')
@@ -86,6 +92,10 @@ async function loadCanonicalRoles(): Promise<CanonicalRoleSnapshot[]> {
 async function captureOriginalCanonicalRoles(): Promise<void> {
   assertRolesTestDatabase()
   originalCanonicalRoles = await loadCanonicalRoles()
+  const prisma = await getPrisma()
+  originalCanonicalRolePermissions = await prisma.rolePermission.findMany({
+    where: { roleId: { in: originalCanonicalRoles.map(({ id }) => id) } },
+  })
 }
 
 async function restoreOriginalCanonicalRoles(): Promise<void> {
@@ -93,13 +103,14 @@ async function restoreOriginalCanonicalRoles(): Promise<void> {
 
   const prisma = await getPrisma()
 
-  await prisma.role.deleteMany({
-    where: {
-      key: {
-        in: [...CANONICAL_KEYS],
-      },
-    },
+  const roles = await prisma.role.findMany({
+    where: { key: { in: [...CANONICAL_KEYS] } },
+    select: { id: true },
   })
+  await prisma.rolePermission.deleteMany({
+    where: { roleId: { in: roles.map(({ id }) => id) } },
+  })
+  await prisma.role.deleteMany({ where: { key: { in: [...CANONICAL_KEYS] } } })
 
   for (const role of originalCanonicalRoles) {
     await prisma.role.create({
@@ -113,6 +124,12 @@ async function restoreOriginalCanonicalRoles(): Promise<void> {
         createdAt: role.createdAt,
         updatedAt: role.updatedAt,
       },
+    })
+  }
+
+  if (originalCanonicalRolePermissions.length > 0) {
+    await prisma.rolePermission.createMany({
+      data: originalCanonicalRolePermissions,
     })
   }
 }
