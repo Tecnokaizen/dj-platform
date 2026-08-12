@@ -614,4 +614,46 @@ describe('Invitation lifecycle services (M-042 → M-046)', () => {
       INVITATION_ERROR_CODES.ALREADY_ACCEPTED,
     )
   })
+
+  it('rejects reversal of ACCEPTED, REVOKED and EXPIRED states', async () => {
+    const context = await createTestContext()
+    const revoked = await createInvitationForTest(
+      context,
+      'terminal-revoked@example.com',
+    )
+    const expired = await createInvitationForTest(
+      context,
+      'terminal-expired@example.com',
+    )
+    const accepted = await createInvitationForTest(
+      context,
+      'terminal-accepted@example.com',
+    )
+    await context.revokeInvitation(revoked.invitation.id)
+    await context.prisma.organizationInvitation.update({
+      where: { id: expired.invitation.id },
+      data: { status: 'EXPIRED' },
+    })
+    await context.prisma.organizationInvitation.update({
+      where: { id: accepted.invitation.id },
+      data: {
+        status: 'ACCEPTED',
+        acceptedAt: INITIAL_NOW,
+        acceptedByProfileId: context.actorMembership.profileId,
+      },
+    })
+
+    await expectInvitationError(
+      context.expireInvitation(revoked.invitation.id),
+      INVITATION_ERROR_CODES.REVOKED,
+    )
+    await expectInvitationError(
+      context.revokeInvitation(expired.invitation.id),
+      INVITATION_ERROR_CODES.EXPIRED,
+    )
+    await expectInvitationError(
+      context.revokeInvitation(accepted.invitation.id),
+      INVITATION_ERROR_CODES.ALREADY_ACCEPTED,
+    )
+  })
 })

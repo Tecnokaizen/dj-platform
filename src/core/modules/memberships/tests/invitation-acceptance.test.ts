@@ -17,11 +17,14 @@ import { createInvitationRepository } from '@/core/modules/memberships/repositor
 import { createMembershipRepository } from '@/core/modules/memberships/repositories/membership-repository'
 import { hashInvitationToken } from '@/core/modules/memberships/security/invitation-token'
 import { createAcceptInvitationService } from '@/core/modules/memberships/services/accept-invitation'
+import { createExpireInvitationService } from '@/core/modules/memberships/services/expire-invitation'
 import {
   createInvitationLifecycleSupport,
   INVITATION_LIFETIME_HOURS,
   type AuthenticatedRecipientIdentity,
 } from '@/core/modules/memberships/services/invitation-lifecycle-support'
+import { createResendInvitationService } from '@/core/modules/memberships/services/resend-invitation'
+import { createRevokeInvitationService } from '@/core/modules/memberships/services/revoke-invitation'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
 
 const TEST_PREFIX = 'm047-m054-test-'
@@ -127,7 +130,7 @@ async function createTestContext(options?: {
   }
   const identity: {
     current: AuthenticatedRecipientIdentity | null
-    onResolve?: () => void
+    onResolve?: () => void | Promise<void>
   } = {
     current: {
       profileId: recipientProfileId,
@@ -174,7 +177,7 @@ async function createTestContext(options?: {
       }),
     getCurrentActorProfileId: async () => inviterProfileId,
     getCurrentRecipientIdentity: async () => {
-      identity.onResolve?.()
+      await identity.onResolve?.()
       return identity.current
     },
     findOrganizationById: (organizationId) =>
@@ -225,6 +228,7 @@ async function createTestContext(options?: {
     acceptInvitation: createAcceptInvitationService(support),
     clock,
     createInvitation,
+    expireInvitation: createExpireInvitationService(support),
     identity,
     managerRole,
     memberRole,
@@ -232,6 +236,8 @@ async function createTestContext(options?: {
     ownerRole,
     prisma,
     recipientProfileId,
+    resendInvitation: createResendInvitationService(support),
+    revokeInvitation: createRevokeInvitationService(support),
   }
 }
 
@@ -584,5 +590,90 @@ describe('Invitation acceptance services (M-047 → M-054)', () => {
       status: 'ACCEPTED',
       acceptedByProfileId: context.recipientProfileId,
     })
+  })
+
+  it('invalidates the old raw token after resend while the new token resolves', async () => {
+    const context = await createTestContext()
+    const created = await context.createInvitation()
+    const resent = await context.resendInvitation(created.invitation.id)
+
+    await expectInvitationError(
+      context.acceptInvitation({ token: created.rawToken }),
+      INVITATION_ERROR_CODES.TOKEN_INVALID,
+    )
+    await expect(
+      context.acceptInvitation({ token: resent.rawToken }),
+    ).resolves.toMatchObject({
+      invitation: {
+        id: created.invitation.id,
+        status: 'ACCEPTED',
+      },
+    })
+  })
+
+  it('allows only accept or revoke to win the same PENDING invitation', async () => {
+    const context = await createTestContext()
+    const created = await context.createInvitation()
+    const results = await Promise.allSettled([
+      context.acceptInvitation({ token: created.rawToken }),
+      context.revokeInvitation(created.invitation.id),
+    ])
+    const invitation =
+      await context.prisma.organizationInvitation.findUniqueOrThrow({
+        where: { id: created.invitation.id },
+      })
+    const memberships = await context.prisma.organizationMembership.findMany({
+      where: {
+        organizationId: context.organization.id,
+        profileId: context.recipientProfileId,
+      },
+    })
+
+    expect(results.filter(({ status }) => status === 'fulfilled')).toHaveLength(
+      1,
+    )
+    expect(results.filter(({ status }) => status === 'rejected')).toHaveLength(
+      1,
+    )
+    expect(['ACCEPTED', 'REVOKED']).toContain(invitation.status)
+    expect(memberships).toHaveLength(invitation.status === 'ACCEPTED' ? 1 : 0)
+  })
+
+  it('cannot accept after expiration wins during recipient identity I/O', async () => {
+    const context = await createTestContext()
+    const expiresAt = new Date(INITIAL_NOW.getTime() + 1)
+    const created = await context.createInvitation({ expiresAt })
+    let releaseIdentity!: () => void
+    let reportIdentityReached!: () => void
+    const identityReached = new Promise<void>((resolve) => {
+      reportIdentityReached = resolve
+    })
+    const identityRelease = new Promise<void>((resolve) => {
+      releaseIdentity = resolve
+    })
+    context.identity.onResolve = async () => {
+      reportIdentityReached()
+      await identityRelease
+    }
+
+    const acceptance = context.acceptInvitation({ token: created.rawToken })
+    await identityReached
+    context.clock.now = new Date(expiresAt)
+    await expect(
+      context.expireInvitation(created.invitation.id),
+    ).resolves.toMatchObject({ status: 'EXPIRED' })
+    releaseIdentity()
+
+    await expectInvitationError(acceptance, INVITATION_ERROR_CODES.EXPIRED)
+    await expect(
+      context.prisma.organizationMembership.findUnique({
+        where: {
+          organizationId_profileId: {
+            organizationId: context.organization.id,
+            profileId: context.recipientProfileId,
+          },
+        },
+      }),
+    ).resolves.toBeNull()
   })
 })

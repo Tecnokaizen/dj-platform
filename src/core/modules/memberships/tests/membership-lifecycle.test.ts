@@ -29,7 +29,7 @@ type TestContext = {
 
 async function expectMembershipError(
   promise: Promise<unknown>,
-  code: MembershipErrorCode
+  code: MembershipErrorCode,
 ): Promise<void> {
   try {
     await promise
@@ -91,9 +91,8 @@ async function cleanupMembershipLifecycleRecords(): Promise<void> {
 
 async function createTestContext(): Promise<TestContext> {
   const { prisma } = await import('@/lib/prisma')
-  const { seedSystemRoles } = await import(
-    '@/core/modules/roles/seed/seed-system-roles'
-  )
+  const { seedSystemRoles } =
+    await import('@/core/modules/roles/seed/seed-system-roles')
 
   await seedSystemRoles(prisma)
 
@@ -130,11 +129,10 @@ async function createTestContext(): Promise<TestContext> {
 
 async function createMembershipForTest(
   context: TestContext,
-  roleId = context.memberRoleId
+  roleId = context.memberRoleId,
 ) {
-  const { createMembership } = await import(
-    '@/core/modules/memberships/services/create-membership'
-  )
+  const { createMembership } =
+    await import('@/core/modules/memberships/services/create-membership')
 
   return createMembership({
     organizationId: context.organizationId,
@@ -179,20 +177,19 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
 
     await expectMembershipError(
       createMembershipForTest(context),
-      MEMBERSHIP_ERROR_CODES.ALREADY_EXISTS
+      MEMBERSHIP_ERROR_CODES.ALREADY_EXISTS,
     )
   })
 
   it('validates Organization, Profile, Role and OWNER creation boundaries', async () => {
     const context = await createTestContext()
     const { prisma } = await import('@/lib/prisma')
-    const { createMembership } = await import(
-      '@/core/modules/memberships/services/create-membership'
-    )
+    const { createMembership } =
+      await import('@/core/modules/memberships/services/create-membership')
 
     await expectMembershipError(
       createMembershipForTest(context, context.ownerRoleId),
-      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
+      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED,
     )
     await expectMembershipError(
       createMembership({
@@ -200,7 +197,7 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
         profileId: context.profileId,
         roleId: randomUUID(),
       }),
-      MEMBERSHIP_ERROR_CODES.ROLE_INVALID
+      MEMBERSHIP_ERROR_CODES.ROLE_INVALID,
     )
 
     try {
@@ -226,7 +223,7 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(OrganizationError)
       expect((error as OrganizationError).code).toBe(
-        ORGANIZATION_ERROR_CODES.INVALID_STATE
+        ORGANIZATION_ERROR_CODES.INVALID_STATE,
       )
     }
   })
@@ -234,9 +231,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('suspends ACTIVE Memberships while preserving Role assignment', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { suspendMembership } = await import(
-      '@/core/modules/memberships/services/suspend-membership'
-    )
+    const { suspendMembership } =
+      await import('@/core/modules/memberships/services/suspend-membership')
 
     const suspended = await suspendMembership(created.id)
 
@@ -247,19 +243,17 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
 
     await expectMembershipError(
       suspendMembership(created.id),
-      MEMBERSHIP_ERROR_CODES.SUSPENDED
+      MEMBERSHIP_ERROR_CODES.SUSPENDED,
     )
   })
 
   it('protects OWNER Memberships from direct suspension and removal', async () => {
     const context = await createTestContext()
     const { prisma } = await import('@/lib/prisma')
-    const { suspendMembership } = await import(
-      '@/core/modules/memberships/services/suspend-membership'
-    )
-    const { removeMembership } = await import(
-      '@/core/modules/memberships/services/remove-membership'
-    )
+    const { suspendMembership } =
+      await import('@/core/modules/memberships/services/suspend-membership')
+    const { removeMembership } =
+      await import('@/core/modules/memberships/services/remove-membership')
     const ownerMembership = await prisma.organizationMembership.create({
       data: {
         organizationId: context.organizationId,
@@ -270,11 +264,11 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
 
     await expectMembershipError(
       suspendMembership(ownerMembership.id),
-      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
+      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED,
     )
     await expectMembershipError(
       removeMembership(ownerMembership.id),
-      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
+      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED,
     )
   })
 
@@ -282,12 +276,10 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
     const { prisma } = await import('@/lib/prisma')
-    const { suspendMembership } = await import(
-      '@/core/modules/memberships/services/suspend-membership'
-    )
-    const { restoreMembership } = await import(
-      '@/core/modules/memberships/services/restore-membership'
-    )
+    const { suspendMembership } =
+      await import('@/core/modules/memberships/services/suspend-membership')
+    const { restoreMembership } =
+      await import('@/core/modules/memberships/services/restore-membership')
 
     await suspendMembership(created.id)
     await prisma.organization.update({
@@ -318,12 +310,10 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
     const suspendedContext = await createTestContext()
     const suspended = await createMembershipForTest(suspendedContext)
     const { prisma } = await import('@/lib/prisma')
-    const { suspendMembership } = await import(
-      '@/core/modules/memberships/services/suspend-membership'
-    )
-    const { removeMembership } = await import(
-      '@/core/modules/memberships/services/remove-membership'
-    )
+    const { suspendMembership } =
+      await import('@/core/modules/memberships/services/suspend-membership')
+    const { removeMembership } =
+      await import('@/core/modules/memberships/services/remove-membership')
 
     await suspendMembership(suspended.id)
 
@@ -335,7 +325,7 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
       expect(
         await prisma.organizationMembership.findUnique({
           where: { id: membershipId },
-        })
+        }),
       ).not.toBeNull()
     }
   })
@@ -343,12 +333,10 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('restores a REMOVED Membership with an explicit validated Role', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { removeMembership } = await import(
-      '@/core/modules/memberships/services/remove-membership'
-    )
-    const { restoreRemovedMembership } = await import(
-      '@/core/modules/memberships/services/restore-removed-membership'
-    )
+    const { removeMembership } =
+      await import('@/core/modules/memberships/services/remove-membership')
+    const { restoreRemovedMembership } =
+      await import('@/core/modules/memberships/services/restore-removed-membership')
 
     await removeMembership(created.id)
 
@@ -357,7 +345,7 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
         membershipId: created.id,
         targetRoleId: context.ownerRoleId,
       }),
-      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
+      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED,
     )
 
     const restored = await restoreRemovedMembership({
@@ -375,19 +363,17 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('changes Role only for ACTIVE non-OWNER Memberships', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { changeMembershipRole } = await import(
-      '@/core/modules/memberships/services/change-membership-role'
-    )
-    const { suspendMembership } = await import(
-      '@/core/modules/memberships/services/suspend-membership'
-    )
+    const { changeMembershipRole } =
+      await import('@/core/modules/memberships/services/change-membership-role')
+    const { suspendMembership } =
+      await import('@/core/modules/memberships/services/suspend-membership')
 
     await expectMembershipError(
       changeMembershipRole({
         membershipId: created.id,
         roleId: context.ownerRoleId,
       }),
-      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
+      MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED,
     )
 
     const changed = await changeMembershipRole({
@@ -402,7 +388,86 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
         membershipId: created.id,
         roleId: context.memberRoleId,
       }),
-      MEMBERSHIP_ERROR_CODES.SUSPENDED
+      MEMBERSHIP_ERROR_CODES.SUSPENDED,
+    )
+  })
+
+  it('keeps lifecycle timestamps consistent through suspend, restore, remove and rejoin', async () => {
+    const context = await createTestContext()
+    const created = await createMembershipForTest(context)
+    const { suspendMembership } =
+      await import('@/core/modules/memberships/services/suspend-membership')
+    const { restoreMembership } =
+      await import('@/core/modules/memberships/services/restore-membership')
+    const { removeMembership } =
+      await import('@/core/modules/memberships/services/remove-membership')
+    const { restoreRemovedMembership } =
+      await import('@/core/modules/memberships/services/restore-removed-membership')
+
+    expect(created).toMatchObject({
+      status: 'ACTIVE',
+      suspendedAt: null,
+      removedAt: null,
+    })
+
+    const suspended = await suspendMembership(created.id)
+    expect(suspended).toMatchObject({
+      status: 'SUSPENDED',
+      removedAt: null,
+    })
+    expect(suspended.suspendedAt).toEqual(expect.any(String))
+
+    const restored = await restoreMembership(created.id)
+    expect(restored).toMatchObject({
+      status: 'ACTIVE',
+      suspendedAt: null,
+      removedAt: null,
+    })
+
+    const removed = await removeMembership(created.id)
+    expect(removed).toMatchObject({
+      status: 'REMOVED',
+      suspendedAt: null,
+    })
+    expect(removed.removedAt).toEqual(expect.any(String))
+
+    const rejoined = await restoreRemovedMembership({
+      membershipId: created.id,
+      targetRoleId: context.adminRoleId,
+    })
+    expect(rejoined).toMatchObject({
+      status: 'ACTIVE',
+      suspendedAt: null,
+      removedAt: null,
+    })
+  })
+
+  it('rejects lifecycle operations from incompatible states', async () => {
+    const context = await createTestContext()
+    const created = await createMembershipForTest(context)
+    const { restoreMembership } =
+      await import('@/core/modules/memberships/services/restore-membership')
+    const { removeMembership } =
+      await import('@/core/modules/memberships/services/remove-membership')
+    const { restoreRemovedMembership } =
+      await import('@/core/modules/memberships/services/restore-removed-membership')
+
+    await expectMembershipError(
+      restoreMembership(created.id),
+      MEMBERSHIP_ERROR_CODES.INVALID_STATE,
+    )
+    await expectMembershipError(
+      restoreRemovedMembership({
+        membershipId: created.id,
+        targetRoleId: context.adminRoleId,
+      }),
+      MEMBERSHIP_ERROR_CODES.INVALID_STATE,
+    )
+
+    await removeMembership(created.id)
+    await expectMembershipError(
+      removeMembership(created.id),
+      MEMBERSHIP_ERROR_CODES.REMOVED,
     )
   })
 })
