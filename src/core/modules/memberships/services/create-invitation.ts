@@ -10,11 +10,13 @@ import {
 } from '@/core/modules/memberships/errors/membership-error'
 import { toInvitationDto } from '@/core/modules/memberships/mappers/to-invitation-dto'
 import {
-  invitationLifecycleSupport,
+  createInvitationLifecycleSupportForClient,
   type InvitationLifecycleSupport,
 } from '@/core/modules/memberships/services/invitation-lifecycle-support'
 import type { CreatedInvitationSecret } from '@/core/modules/memberships/types/created-invitation-secret'
 import { normalizeEmail } from '@/core/modules/memberships/utils/normalize-email'
+import { PERMISSION_KEYS } from '@/core/modules/permissions/constants/permission-keys'
+import { runAuthorizedOrganizationOperation } from '@/core/modules/permissions/services/require-organization-permission'
 import { Prisma } from '@/generated/prisma/client'
 
 export type CreateInvitationInput = {
@@ -25,11 +27,11 @@ export type CreateInvitationInput = {
 
 export function createInvitationService(support: InvitationLifecycleSupport) {
   return async function createInvitation(
-    input: CreateInvitationInput,
+    input: CreateInvitationInput
   ): Promise<CreatedInvitationSecret> {
     await support.requireActiveOrganization(input.organizationId)
     const actorMembership = await support.requireActiveActorMembership(
-      input.organizationId,
+      input.organizationId
     )
     const role = await support.requireRole(input.roleId)
     support.rejectOwnerRole(role)
@@ -51,7 +53,7 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
           const currentActorMembership =
             await membershipRepository.findActiveByOrganizationAndProfile(
               input.organizationId,
-              actorMembership.profileId,
+              actorMembership.profileId
             )
 
           if (!currentActorMembership) {
@@ -63,7 +65,7 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
           const recipientMembership = recipientProfileId
             ? await membershipRepository.findByOrganizationAndProfile(
                 input.organizationId,
-                recipientProfileId,
+                recipientProfileId
               )
             : null
 
@@ -78,7 +80,7 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
           const existing =
             await invitationRepository.findPendingByOrganizationAndEmail(
               input.organizationId,
-              normalizedEmail,
+              normalizedEmail
             )
 
           if (existing) {
@@ -89,7 +91,7 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
             const expired = await invitationRepository.expirePending(
               existing.id,
               existing.updatedAt,
-              now,
+              now
             )
 
             if (!expired) {
@@ -106,7 +108,7 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
             expiresAt: support.getExpiresAt(now),
             invitedByMembershipId: currentActorMembership.id,
           })
-        },
+        }
       )
 
       return {
@@ -126,6 +128,17 @@ export function createInvitationService(support: InvitationLifecycleSupport) {
   }
 }
 
-export const createInvitation = createInvitationService(
-  invitationLifecycleSupport,
-)
+export async function createInvitation(
+  input: CreateInvitationInput
+): Promise<CreatedInvitationSecret> {
+  return runAuthorizedOrganizationOperation({
+    permissionKey: PERMISSION_KEYS.INVITATIONS_CREATE,
+    resolveOrganizationId: async () => input.organizationId,
+    execute: async (client, context) =>
+      createInvitationService(
+        createInvitationLifecycleSupportForClient(client, {
+          actorProfileId: context.profileId,
+        })
+      )(input),
+  })
+}

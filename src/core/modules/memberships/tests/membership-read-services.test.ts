@@ -6,6 +6,8 @@ import {
   MEMBERSHIP_ERROR_CODES,
   MembershipError,
 } from '@/core/modules/memberships/errors/membership-error'
+import { createOrganizationMembershipListingServices } from '@/core/modules/memberships/services/list-memberships-for-organization'
+import { membershipReadRepository } from '@/core/modules/memberships/services/membership-read-support'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
 
 const TEST_PREFIX = 'm029-m032-test-'
@@ -228,9 +230,7 @@ describe('Membership read services (M-029 → M-032)', () => {
     const {
       listActiveMembershipsForOrganization,
       listMembershipsForOrganization,
-    } = await import(
-      '@/core/modules/memberships/services/list-memberships-for-organization'
-    )
+    } = createOrganizationMembershipListingServices(membershipReadRepository)
 
     const all = await listMembershipsForOrganization(context.organizationAId)
     const suspended = await listMembershipsForOrganization(

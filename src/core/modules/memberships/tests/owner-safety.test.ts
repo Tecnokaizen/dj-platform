@@ -13,7 +13,7 @@ import {
   generateInvitationToken,
   hashInvitationToken,
 } from '@/core/modules/memberships/security/invitation-token'
-import { changeMembershipRole } from '@/core/modules/memberships/services/change-membership-role'
+import { createChangeMembershipRoleService } from '@/core/modules/memberships/services/change-membership-role'
 import { createInvitationService } from '@/core/modules/memberships/services/create-invitation'
 import { createMembership } from '@/core/modules/memberships/services/create-membership'
 import {
@@ -21,13 +21,23 @@ import {
   INVITATION_LIFETIME_HOURS,
 } from '@/core/modules/memberships/services/invitation-lifecycle-support'
 import { isOwnerRole } from '@/core/modules/memberships/services/owner-safety'
-import { removeMembership } from '@/core/modules/memberships/services/remove-membership'
+import { membershipLifecycleSupport } from '@/core/modules/memberships/services/membership-lifecycle-support'
+import { createRemoveMembershipService } from '@/core/modules/memberships/services/remove-membership'
 import { restoreRemovedMembership } from '@/core/modules/memberships/services/restore-removed-membership'
-import { suspendMembership } from '@/core/modules/memberships/services/suspend-membership'
+import { createSuspendMembershipService } from '@/core/modules/memberships/services/suspend-membership'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
 
 const TEST_PREFIX = 'm055-m059-test-'
 const INITIAL_NOW = new Date('2026-08-11T12:00:00.000Z')
+const changeMembershipRole = createChangeMembershipRoleService(
+  membershipLifecycleSupport,
+)
+const removeMembership = createRemoveMembershipService(
+  membershipLifecycleSupport,
+)
+const suspendMembership = createSuspendMembershipService(
+  membershipLifecycleSupport,
+)
 
 async function expectOwnerTransferRequired(
   promise: Promise<unknown>,

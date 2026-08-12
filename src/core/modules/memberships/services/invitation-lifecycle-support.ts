@@ -27,10 +27,11 @@ import {
   ORGANIZATION_ERROR_CODES,
   OrganizationError,
 } from '@/core/modules/organizations/errors/organization-error'
+import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import { findOrganizationById } from '@/core/modules/organizations/services/find-organization-by-id'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import { findRoleById } from '@/core/modules/roles/services/find-role-by-id'
-import type { Role } from '@/generated/prisma/client'
+import type { PrismaClient, Role } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 type InvitationRepository = ReturnType<typeof createInvitationRepository>
@@ -40,7 +41,7 @@ export type InvitationTransactionRepositories = {
   invitationRepository: InvitationRepository
   membershipRepository: MembershipRepository
   findProfileIdByNormalizedAuthEmail: (
-    normalizedEmail: string,
+    normalizedEmail: string
   ) => Promise<string | null>
 }
 
@@ -54,8 +55,8 @@ export type InvitationLifecycleDependencies = {
   membershipRepository: MembershipRepository
   runInTransaction: <Result>(
     operation: (
-      repositories: InvitationTransactionRepositories,
-    ) => Promise<Result>,
+      repositories: InvitationTransactionRepositories
+    ) => Promise<Result>
   ) => Promise<Result>
   getCurrentActorProfileId: () => Promise<string | null>
   getCurrentRecipientIdentity: () => Promise<AuthenticatedRecipientIdentity | null>
@@ -68,10 +69,10 @@ export type InvitationLifecycleDependencies = {
 }
 
 export function createInvitationLifecycleSupport(
-  dependencies: InvitationLifecycleDependencies,
+  dependencies: InvitationLifecycleDependencies
 ) {
   async function requireInvitation(
-    invitationId: string,
+    invitationId: string
   ): Promise<InvitationRecord> {
     const invitation =
       await dependencies.invitationRepository.findById(invitationId)
@@ -84,7 +85,7 @@ export function createInvitationLifecycleSupport(
   }
 
   async function requireActiveOrganization(
-    organizationId: string,
+    organizationId: string
   ): Promise<void> {
     const organization = await dependencies.findOrganizationById(organizationId)
 
@@ -114,7 +115,7 @@ export function createInvitationLifecycleSupport(
   }
 
   async function requireActiveActorMembership(
-    organizationId: string,
+    organizationId: string
   ): Promise<MembershipRecord> {
     const actorProfileId = await dependencies.getCurrentActorProfileId()
 
@@ -125,7 +126,7 @@ export function createInvitationLifecycleSupport(
     const membership =
       await dependencies.membershipRepository.findByOrganizationAndProfile(
         organizationId,
-        actorProfileId,
+        actorProfileId
       )
 
     if (!membership) {
@@ -197,6 +198,51 @@ export type InvitationLifecycleSupport = ReturnType<
 
 export const INVITATION_LIFETIME_HOURS = 72
 
+type InvitationLifecycleClient = Pick<
+  PrismaClient,
+  | 'organizationInvitation'
+  | 'organizationMembership'
+  | 'organization'
+  | 'profile'
+  | 'role'
+>
+
+export type TransactionInvitationLifecycleOptions = {
+  actorProfileId: string
+  getCurrentRecipientIdentity?: () => Promise<AuthenticatedRecipientIdentity | null>
+  now?: () => Date
+}
+
+export function createInvitationLifecycleSupportForClient(
+  client: InvitationLifecycleClient,
+  options: TransactionInvitationLifecycleOptions
+): InvitationLifecycleSupport {
+  const transactionRepositories: InvitationTransactionRepositories = {
+    invitationRepository: createInvitationRepository(client),
+    membershipRepository: createMembershipRepository(client),
+    findProfileIdByNormalizedAuthEmail:
+      createFindProfileIdByNormalizedAuthEmail(client),
+  }
+
+  return createInvitationLifecycleSupport({
+    ...transactionRepositories,
+    runInTransaction: (operation) => operation(transactionRepositories),
+    getCurrentActorProfileId: async () => options.actorProfileId,
+    getCurrentRecipientIdentity:
+      options.getCurrentRecipientIdentity ?? (async () => null),
+    findOrganizationById: (organizationId) =>
+      client.organization.findUnique({
+        where: { id: organizationId },
+        select: organizationSelect,
+      }),
+    findRoleById: (roleId) => client.role.findUnique({ where: { id: roleId } }),
+    generateInvitationToken,
+    hashInvitationToken,
+    invitationLifetimeMs: INVITATION_LIFETIME_HOURS * 60 * 60 * 1000,
+    now: options.now ?? (() => new Date()),
+  })
+}
+
 export const invitationLifecycleSupport = createInvitationLifecycleSupport({
   invitationRepository: createInvitationRepository(prisma),
   membershipRepository: createMembershipRepository(prisma),
@@ -207,7 +253,7 @@ export const invitationLifecycleSupport = createInvitationLifecycleSupport({
         membershipRepository: createMembershipRepository(client),
         findProfileIdByNormalizedAuthEmail:
           createFindProfileIdByNormalizedAuthEmail(client),
-      }),
+      })
     ),
   getCurrentActorProfileId: async () => {
     const session = await getCurrentProfile()

@@ -5,11 +5,14 @@ import {
   InvitationError,
 } from '@/core/modules/memberships/errors/invitation-error'
 import { toInvitationDto } from '@/core/modules/memberships/mappers/to-invitation-dto'
+import { createInvitationRepository } from '@/core/modules/memberships/repositories/invitation-repository'
 import {
-  invitationLifecycleSupport,
+  createInvitationLifecycleSupportForClient,
   type InvitationLifecycleSupport,
 } from '@/core/modules/memberships/services/invitation-lifecycle-support'
 import type { InvitationDto } from '@/core/modules/memberships/types/invitation-dto'
+import { PERMISSION_KEYS } from '@/core/modules/permissions/constants/permission-keys'
+import { runAuthorizedOrganizationOperation } from '@/core/modules/permissions/services/require-organization-permission'
 
 export function createRevokeInvitationService(
   support: InvitationLifecycleSupport
@@ -51,6 +54,26 @@ export function createRevokeInvitationService(
   }
 }
 
-export const revokeInvitation = createRevokeInvitationService(
-  invitationLifecycleSupport
-)
+export async function revokeInvitation(
+  invitationId: string
+): Promise<InvitationDto> {
+  return runAuthorizedOrganizationOperation({
+    permissionKey: PERMISSION_KEYS.INVITATIONS_REVOKE,
+    resolveOrganizationId: async (client) => {
+      const invitation =
+        await createInvitationRepository(client).findById(invitationId)
+
+      if (!invitation) {
+        throw new InvitationError(INVITATION_ERROR_CODES.NOT_FOUND)
+      }
+
+      return invitation.organizationId
+    },
+    execute: async (client, context) =>
+      createRevokeInvitationService(
+        createInvitationLifecycleSupportForClient(client, {
+          actorProfileId: context.profileId,
+        })
+      )(invitationId),
+  })
+}

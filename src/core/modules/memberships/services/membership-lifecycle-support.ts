@@ -19,22 +19,19 @@ import {
   ORGANIZATION_ERROR_CODES,
   OrganizationError,
 } from '@/core/modules/organizations/errors/organization-error'
+import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import { findOrganizationById } from '@/core/modules/organizations/services/find-organization-by-id'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import { findRoleById } from '@/core/modules/roles/services/find-role-by-id'
-import type { Role } from '@/generated/prisma/client'
+import type { PrismaClient, Role } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 type MembershipRepository = ReturnType<typeof createMembershipRepository>
 
 export type MembershipLifecycleDependencies = {
   membershipRepository: MembershipRepository
-  findOrganizationById: (
-    organizationId: string
-  ) => Promise<Organization | null>
-  findProfileById: (
-    profileId: string
-  ) => Promise<ProfileReference | null>
+  findOrganizationById: (organizationId: string) => Promise<Organization | null>
+  findProfileById: (profileId: string) => Promise<ProfileReference | null>
   findRoleById: (roleId: string) => Promise<Role | null>
   now: () => Date
 }
@@ -45,9 +42,8 @@ export function createMembershipLifecycleSupport(
   async function requireMembership(
     membershipId: string
   ): Promise<MembershipRecord> {
-    const membership = await dependencies.membershipRepository.findById(
-      membershipId
-    )
+    const membership =
+      await dependencies.membershipRepository.findById(membershipId)
 
     if (!membership) {
       throw new MembershipError(MEMBERSHIP_ERROR_CODES.NOT_FOUND)
@@ -90,9 +86,7 @@ export function createMembershipLifecycleSupport(
 
   function rejectOwnerRole(role: Role): void {
     if (isOwnerRole(role)) {
-      throw new MembershipError(
-        MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED
-      )
+      throw new MembershipError(MEMBERSHIP_ERROR_CODES.OWNER_TRANSFER_REQUIRED)
     }
   }
 
@@ -123,6 +117,32 @@ export function createMembershipLifecycleSupport(
 export type MembershipLifecycleSupport = ReturnType<
   typeof createMembershipLifecycleSupport
 >
+
+type MembershipLifecycleClient = Pick<
+  PrismaClient,
+  'organizationMembership' | 'organization' | 'profile' | 'role'
+>
+
+export function createMembershipLifecycleSupportForClient(
+  client: MembershipLifecycleClient,
+  now: () => Date = () => new Date()
+): MembershipLifecycleSupport {
+  return createMembershipLifecycleSupport({
+    membershipRepository: createMembershipRepository(client),
+    findOrganizationById: (organizationId) =>
+      client.organization.findUnique({
+        where: { id: organizationId },
+        select: organizationSelect,
+      }),
+    findProfileById: (profileId) =>
+      client.profile.findUnique({
+        where: { id: profileId },
+        select: { id: true },
+      }),
+    findRoleById: (roleId) => client.role.findUnique({ where: { id: roleId } }),
+    now,
+  })
+}
 
 export const membershipLifecycleSupport = createMembershipLifecycleSupport({
   membershipRepository: createMembershipRepository(prisma),

@@ -141,6 +141,32 @@ async function createMembershipForTest(
   })
 }
 
+async function createLifecycleTestServices() {
+  const [
+    { createChangeMembershipRoleService },
+    { membershipLifecycleSupport },
+    { createRemoveMembershipService },
+    { createRestoreMembershipService },
+    { createSuspendMembershipService },
+  ] = await Promise.all([
+    import('@/core/modules/memberships/services/change-membership-role'),
+    import('@/core/modules/memberships/services/membership-lifecycle-support'),
+    import('@/core/modules/memberships/services/remove-membership'),
+    import('@/core/modules/memberships/services/restore-membership'),
+    import('@/core/modules/memberships/services/suspend-membership'),
+  ])
+
+  return {
+    changeMembershipRole:
+      createChangeMembershipRoleService(membershipLifecycleSupport),
+    removeMembership: createRemoveMembershipService(membershipLifecycleSupport),
+    restoreMembership:
+      createRestoreMembershipService(membershipLifecycleSupport),
+    suspendMembership:
+      createSuspendMembershipService(membershipLifecycleSupport),
+  }
+}
+
 describe('Membership lifecycle services (M-033 → M-038)', () => {
   beforeAll(async () => {
     assertOrganizationsTestDatabase()
@@ -231,8 +257,7 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('suspends ACTIVE Memberships while preserving Role assignment', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { suspendMembership } =
-      await import('@/core/modules/memberships/services/suspend-membership')
+    const { suspendMembership } = await createLifecycleTestServices()
 
     const suspended = await suspendMembership(created.id)
 
@@ -250,10 +275,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('protects OWNER Memberships from direct suspension and removal', async () => {
     const context = await createTestContext()
     const { prisma } = await import('@/lib/prisma')
-    const { suspendMembership } =
-      await import('@/core/modules/memberships/services/suspend-membership')
-    const { removeMembership } =
-      await import('@/core/modules/memberships/services/remove-membership')
+    const { removeMembership, suspendMembership } =
+      await createLifecycleTestServices()
     const ownerMembership = await prisma.organizationMembership.create({
       data: {
         organizationId: context.organizationId,
@@ -276,10 +299,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
     const { prisma } = await import('@/lib/prisma')
-    const { suspendMembership } =
-      await import('@/core/modules/memberships/services/suspend-membership')
-    const { restoreMembership } =
-      await import('@/core/modules/memberships/services/restore-membership')
+    const { restoreMembership, suspendMembership } =
+      await createLifecycleTestServices()
 
     await suspendMembership(created.id)
     await prisma.organization.update({
@@ -310,10 +331,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
     const suspendedContext = await createTestContext()
     const suspended = await createMembershipForTest(suspendedContext)
     const { prisma } = await import('@/lib/prisma')
-    const { suspendMembership } =
-      await import('@/core/modules/memberships/services/suspend-membership')
-    const { removeMembership } =
-      await import('@/core/modules/memberships/services/remove-membership')
+    const { removeMembership, suspendMembership } =
+      await createLifecycleTestServices()
 
     await suspendMembership(suspended.id)
 
@@ -333,8 +352,7 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('restores a REMOVED Membership with an explicit validated Role', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { removeMembership } =
-      await import('@/core/modules/memberships/services/remove-membership')
+    const { removeMembership } = await createLifecycleTestServices()
     const { restoreRemovedMembership } =
       await import('@/core/modules/memberships/services/restore-removed-membership')
 
@@ -363,10 +381,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('changes Role only for ACTIVE non-OWNER Memberships', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { changeMembershipRole } =
-      await import('@/core/modules/memberships/services/change-membership-role')
-    const { suspendMembership } =
-      await import('@/core/modules/memberships/services/suspend-membership')
+    const { changeMembershipRole, suspendMembership } =
+      await createLifecycleTestServices()
 
     await expectMembershipError(
       changeMembershipRole({
@@ -395,12 +411,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('keeps lifecycle timestamps consistent through suspend, restore, remove and rejoin', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { suspendMembership } =
-      await import('@/core/modules/memberships/services/suspend-membership')
-    const { restoreMembership } =
-      await import('@/core/modules/memberships/services/restore-membership')
-    const { removeMembership } =
-      await import('@/core/modules/memberships/services/remove-membership')
+    const { removeMembership, restoreMembership, suspendMembership } =
+      await createLifecycleTestServices()
     const { restoreRemovedMembership } =
       await import('@/core/modules/memberships/services/restore-removed-membership')
 
@@ -445,10 +457,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
   it('rejects lifecycle operations from incompatible states', async () => {
     const context = await createTestContext()
     const created = await createMembershipForTest(context)
-    const { restoreMembership } =
-      await import('@/core/modules/memberships/services/restore-membership')
-    const { removeMembership } =
-      await import('@/core/modules/memberships/services/remove-membership')
+    const { removeMembership, restoreMembership } =
+      await createLifecycleTestServices()
     const { restoreRemovedMembership } =
       await import('@/core/modules/memberships/services/restore-removed-membership')
 
