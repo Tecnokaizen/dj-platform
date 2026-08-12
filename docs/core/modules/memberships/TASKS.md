@@ -2746,7 +2746,7 @@ never invoked when validation fails.
 
 ---
 
-## M-087 — BLOCKED UNTIL FOUNDATIONS EXIST
+## M-087 — BLOCKED PENDING RLS POLICY CONTRACT
 
 ### Membership-Based Tenant RLS
 
@@ -2761,6 +2761,34 @@ model.
 Do not create temporary membership tables.
 
 M-087 is the first task that implements tenant policies; it is not part of Phase 11.
+
+### Stage 2 Audit — 2026-08-12
+
+The Identity, Organizations, Roles and Memberships persistence foundations now
+exist and confirm the canonical predicate:
+
+```text
+auth.uid() = Profile.id
++
+ACTIVE OrganizationMembership for the target Organization
+```
+
+Implementation remains blocked because the approved contract does not yet
+define, for each of `organizations`, `organization_memberships` and
+`organization_invitations`:
+
+- which operations are available to `authenticated`;
+- whether reads expose only the caller's Membership or tenant-wide rows;
+- how Invitation columns such as `token_hash` remain inaccessible (RLS filters
+  rows, not columns);
+- whether Organization lifecycle participates in each policy;
+- the exact grants and reusable helper ownership.
+
+The current PostgreSQL test container is not a Supabase runtime and has no
+`anon`, `authenticated`, `auth.uid()` or PostgREST behavior, so it cannot prove
+these policies. Do not add permissive policies or claim RLS validation until a
+disposable Supabase-compatible test path and the table/operation contract are
+approved.
 
 ---
 
