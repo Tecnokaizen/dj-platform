@@ -3,7 +3,7 @@ title: Memberships Specification
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-11
+updated: 2026-08-12
 related:
   - DATA_MODEL.md
   - FLOWS.md
@@ -982,12 +982,14 @@ Invitations must expire.
 A PENDING invitation with:
 
 ```text
-expiresAt < now
+expiresAt <= now
 ```
 
 must not be accepted.
 
-Whether expiration status is updated eagerly or derived/lazily will be defined during implementation.
+Acceptance always checks the timestamp directly. Lifecycle services may also
+persist `PENDING → EXPIRED` lazily when an expired invitation is observed or
+when reinvitation replaces it; security does not depend on a scheduled job.
 
 ---
 
@@ -1109,7 +1111,7 @@ The restore requires an explicit `targetRoleId`; invitation acceptance supplies 
 
 # Pending Invitation Uniqueness
 
-The platform should avoid multiple simultaneously usable invitations for the same:
+The platform prevents multiple PENDING invitations for the same:
 
 ```text
 Organization
@@ -1124,7 +1126,9 @@ At most one effective PENDING invitation
 per Organization + recipient email
 ```
 
-The exact database enforcement strategy will be defined in PRISMA.md.
+PostgreSQL enforces this with the partial unique index
+`organization_invitations_pending_email_unique` over `organization_id` and
+`normalized_email` where `status = 'PENDING'`.
 
 ---
 
@@ -1172,15 +1176,15 @@ Revocation does not affect an already established Membership.
 
 Resending an invitation is not necessarily equivalent to creating another invitation record.
 
-Preferred initial principle:
+Implemented behavior:
 
 ```text
-reuse / rotate the current pending invitation safely
+non-expired PENDING
+→ atomically rotate tokenHash and preserve expiresAt
+
+EXPIRED or expiresAt <= now
+→ close the stale invitation and create a new 72-hour invitation
 ```
-
-or explicitly revoke and issue a new one.
-
-Exact behavior belongs to FLOWS.md.
 
 Avoid uncontrolled duplicate invitations.
 

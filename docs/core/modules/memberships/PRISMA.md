@@ -3,7 +3,7 @@ title: Memberships Prisma Implementation
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-11
+updated: 2026-08-12
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -2323,7 +2323,9 @@ affected row count = 1
 
 inside the transaction.
 
-Exact Prisma code should be validated against the active client API during implementation.
+The repository implements this with `updateManyAndReturn`, predicates on `id`,
+`status`, `expiresAt` and the previously observed `updatedAt`, and accepts the
+transition only when exactly one row is returned.
 
 ---
 
@@ -3405,7 +3407,7 @@ and may be resent.
 
 # Invitation Resend Persistence
 
-Recommended resend behavior:
+Implemented resend persistence for a non-expired PENDING invitation:
 
 ```text
 Generate new raw token
@@ -3414,7 +3416,7 @@ Hash
 
 Update tokenHash
 
-Optionally update expiresAt
+Preserve expiresAt
 
 Commit
 
@@ -3422,6 +3424,10 @@ Send new notification
 ```
 
 The previous raw token becomes invalid immediately after the update commits.
+
+An invitation already marked EXPIRED, or with `expiresAt <= now`, is not
+rotated. The reinvitation transaction closes any stale PENDING row and creates
+a new invitation with a fresh 72-hour lifetime.
 
 ---
 
@@ -4020,7 +4026,7 @@ Verify unrelated tenant Members cannot enumerate Invitations.
 
 # Source Structure
 
-Recommended:
+Implemented root:
 
 ```text
 src/core/modules/memberships/
@@ -4039,12 +4045,15 @@ src/core/modules/memberships/
 │   └── resend-invitation.ts
 ├── schemas/
 ├── types/
-└── security/
+├── security/
+├── errors/
+├── mappers/
+├── tests/
+└── utils/
 ```
 
-Only create directories required by actual implementation.
-
-Do not create speculative empty folders.
+Every listed directory has an implemented consumer. There is no alternate
+Memberships module, speculative empty directory or root `src/types`.
 
 ---
 

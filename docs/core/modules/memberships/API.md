@@ -3,7 +3,7 @@ title: Memberships API
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-11
+updated: 2026-08-12
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -1636,7 +1636,8 @@ No Membership mutation occurs.
 
 Reissues delivery for an existing valid invitation.
 
-Preferred initial implementation rotates the invitation token.
+The implemented behavior rotates the invitation token for a valid PENDING
+invitation.
 
 ---
 
@@ -1691,7 +1692,7 @@ Hash new token
 
 Replace tokenHash
 
-Optionally update expiresAt according to approved policy
+Preserve expiresAt
 
 Persist
 
@@ -1699,6 +1700,10 @@ Deliver new invitation
 ```
 
 Old token becomes invalid.
+
+If the invitation is already `EXPIRED` or `expiresAt <= now`, the service uses
+the reinvitation path and returns a new invitation with a fresh 72-hour
+lifetime instead of rotating the stale row.
 
 ---
 
@@ -2596,6 +2601,12 @@ Permissions will consume Membership + Role context for authorization.
 ## Identity
 
 Memberships consumes authenticated Profile identity.
+
+For invitation creation, Memberships consumes Identity's narrow,
+transaction-compatible `normalized Auth email → profileId` lookup backed by
+the derived `Profile.authEmailNormalized` projection. Supabase Auth remains
+canonical, and neither the projection nor `tokenHash` is exposed by Memberships
+DTOs.
 
 ---
 

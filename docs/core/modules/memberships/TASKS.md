@@ -3,7 +3,7 @@ title: Memberships Tasks
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-11
+updated: 2026-08-12
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -2326,6 +2326,14 @@ pending invitation uniqueness
 Permissions boundary
 ```
 
+### Phase 13 Validation — 2026-08-12
+
+Validated against the Prisma schema, migrations and implemented Memberships
+services. The six documents agree on both persisted entities, their states,
+one Role per Membership, Invitation separation, OWNER protection, SHA-256
+token hashing, the partial PENDING-email uniqueness index and the deferred
+Permissions boundary.
+
 ---
 
 ## M-079
@@ -2355,6 +2363,15 @@ Permissions
 ### Acceptance Criteria
 
 No duplicated Core persistence exists.
+
+### Phase 13 Validation — 2026-08-12
+
+The shared Prisma schema confirms one `Profile`, `Organization`, `Role`,
+`OrganizationMembership` and `OrganizationInvitation` persistence model under
+their documented owners. Permissions retains ownership of the future
+`Permission` capability but has no persistence model yet. Cross-owner inverse
+relations do not transfer ownership, and no parallel Core persistence model
+exists.
 
 ---
 
@@ -2390,6 +2407,17 @@ Only create what implementation actually needs.
 - No alternate Membership module.
 - No new root `src/types`.
 - Structure follows architecture documentation.
+
+### Phase 13 Validation — 2026-08-12
+
+Confirmed one implementation root at `src/core/modules/memberships/`. Its
+`repositories`, `services`, `schemas`, `types`, `security`, `errors`, `mappers`,
+`tests` and `utils` directories are non-empty and have current consumers. No
+alternate Memberships module or root `src/types` exists.
+
+M-077 remains intentionally deferred until M-087 provides the approved
+Membership-based tenant RLS/access integration; documentation validation does
+not claim that tenant-isolation milestone.
 
 ---
 

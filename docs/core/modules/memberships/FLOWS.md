@@ -3,7 +3,7 @@ title: Memberships Flows
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-11
+updated: 2026-08-12
 related:
   - SPEC.md
   - DATA_MODEL.md
@@ -918,6 +918,11 @@ Request Notification Delivery
 Request Audit
 ```
 
+The recipient Profile lookup uses Identity's derived normalized Auth-email
+projection. That lookup, the recipient Membership check, actor Membership
+revalidation and duplicate-PENDING handling execute through dependencies bound
+to the same database transaction. No Supabase network request runs inside it.
+
 ---
 
 # Invitation Creation Output
@@ -1087,7 +1092,7 @@ Security does not depend on the persistence update completing first.
 
 Initial resend policy should avoid duplicate PENDING invitations.
 
-Preferred conceptual flow:
+Implemented flow for a non-expired PENDING invitation:
 
 ```text
 Resolve Existing PENDING Invitation
@@ -1100,7 +1105,7 @@ Hash New Token
         ↓
 Update tokenHash
         ↓
-Optionally Extend expiresAt according to policy
+Preserve expiresAt
         ↓
 Commit
         ↓
@@ -1108,6 +1113,10 @@ Send New Invitation
 ```
 
 Old token becomes invalid because its hash is replaced.
+
+If the row is already `EXPIRED` or `expiresAt <= now`, resend follows the
+reinvitation flow instead: close any stale PENDING row and create a new
+invitation with a fresh 72-hour lifetime.
 
 ---
 
@@ -1297,9 +1306,8 @@ Do Not Change Role Silently
 Return ALREADY_MEMBER
 ```
 
-Invitation handling may remain PENDING or be closed according to future policy, but it must not mutate the existing Membership unexpectedly.
-
-Initial safest behavior is to fail explicitly.
+The implemented behavior fails explicitly with `ALREADY_MEMBER`, leaves the
+invitation PENDING, and does not mutate the existing Membership or its Role.
 
 ---
 

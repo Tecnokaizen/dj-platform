@@ -3,7 +3,7 @@ title: Memberships Data Model
 version: 1.0.0
 status: Draft
 owner: Platform Core
-updated: 2026-08-11
+updated: 2026-08-12
 related:
   - SPEC.md
   - FLOWS.md
@@ -796,14 +796,12 @@ Organization deletion is not normal tenancy behavior.
 
 Memberships should not disappear through an accidental Organization cascade.
 
-Preferred initial principle:
+Implemented referential action:
 
 ```text
 Organization deletion
-→ restricted while Memberships exist
+→ onDelete: Restrict while Memberships exist
 ```
-
-Final referential actions belong in PRISMA.md.
 
 ---
 
@@ -815,11 +813,11 @@ Automatic destructive cascade from Profile deletion should not be introduced cas
 
 Privacy/deletion behavior requires an explicit retention policy.
 
-Initial principle:
+Implemented referential action:
 
 ```text
 Profile deletion
-→ do not silently cascade Membership history
+→ onDelete: Restrict while Memberships or accepted Invitations reference it
 ```
 
 Exact handling belongs to the identity/privacy architecture.
@@ -830,11 +828,11 @@ Exact handling belongs to the identity/privacy architecture.
 
 A Role referenced by Memberships must not be deleted casually.
 
-Preferred principle:
+Implemented referential action:
 
 ```text
 Role deletion
-→ restricted while referenced
+→ onDelete: Restrict while referenced
 ```
 
 Canonical system Roles are durable reference data.
@@ -1063,15 +1061,15 @@ Two invitations must not resolve from the same token.
 
 Required timestamp representing invitation expiration.
 
-Example policy:
+Implemented policy:
 
 ```text
-createdAt + configured invitation lifetime
+createdAt + 72 hours
 ```
 
-The exact lifetime belongs to configuration/business policy.
-
-It should not be hard-coded inconsistently across services.
+The lifetime is centralized by Memberships lifecycle support. Rotating a valid
+PENDING invitation preserves its original `expiresAt`; reinviting after expiry
+creates a new invitation with a fresh 72-hour lifetime.
 
 ---
 
@@ -1611,9 +1609,13 @@ Mismatch denies acceptance.
 
 Memberships should not independently invent identity semantics.
 
-The authoritative email used for recipient matching must be resolved through the approved Identity/Supabase integration.
+Supabase Auth remains authoritative. Identity maintains the nullable,
+server-only `Profile.authEmailNormalized` projection and exposes the narrow,
+transaction-compatible lookup `normalized Auth email → profileId`.
 
-Exact access method belongs to implementation.
+Memberships uses that lookup only to detect an existing tenant relationship
+during invitation creation. The projection is not an invitation field, public
+DTO, form value or second canonical identity.
 
 ---
 
@@ -1684,7 +1686,7 @@ Only the one-way `tokenHash` is persisted; plaintext tokens are never stored.
 
 # Invitation Token Rotation
 
-If resend behavior rotates the token:
+For a non-expired PENDING invitation, resend rotates the token:
 
 ```text
 Old raw token
@@ -1700,9 +1702,9 @@ The stored:
 tokenHash
 ```
 
-must change atomically.
-
-Exact resend behavior belongs in FLOWS.md.
+must change atomically while `expiresAt` remains unchanged. If the invitation
+is already EXPIRED or its timestamp has elapsed, resend follows reinvitation:
+the stale row is closed and a new 72-hour PENDING invitation is created.
 
 ---
 
@@ -2584,9 +2586,9 @@ These physical relations do not transfer architectural ownership.
 
 ---
 
-# Future Inverse Relations
+# Physical Inverse Relations
 
-Prisma may require inverse fields on:
+The shared Prisma schema contains required inverse fields on:
 
 ```text
 Profile
@@ -2596,7 +2598,7 @@ Organization
 Role
 ```
 
-when Memberships is added.
+for Memberships relations.
 
 That is acceptable.
 
