@@ -2682,7 +2682,7 @@ slug conflict and concurrent duplicate onboarding.
 
 ---
 
-## M-085 — BLOCKED UNTIL FOUNDATIONS EXIST
+## M-085
 
 ### List User Organizations
 
@@ -2700,9 +2700,17 @@ Memberships owns belonging.
 
 Organizations owns Organization data.
 
+### Stage 2 Implementation — 2026-08-12
+
+Implemented as an Organizations-owned orchestration service. It resolves the
+authenticated Profile server-side, obtains only that Profile's `ACTIVE`
+Membership references through Memberships, and loads Organization records
+through an Organizations-owned batch lookup. Empty Membership sets return an
+empty list and no Organization relation is loaded through Memberships.
+
 ---
 
-## M-086 — BLOCKED UNTIL FOUNDATIONS EXIST
+## M-086
 
 ### Active Organization Switching
 
@@ -2715,6 +2723,26 @@ ACTIVE Membership
 before switching tenant context.
 
 Memberships does not necessarily own context persistence.
+
+### Stage 2 Implementation — 2026-08-12
+
+Implemented in two explicit boundaries:
+
+```text
+resolveOrganizationContext
+→ validates authenticated Profile + ACTIVE Membership + ACTIVE Organization
+→ returns server-derived Profile, Organization, Membership and Role ids
+
+switchActiveOrganization
+→ invokes the trusted resolver
+→ delegates persistence to a required injected context writer
+```
+
+The context persistence mechanism remains an application-composition decision,
+as specified by the Organizations API. Core therefore provides no implicit
+cookie, session or global mutable context. Tests verify tenant isolation by
+Profile, rejected Membership and Organization states, and that the writer is
+never invoked when validation fails.
 
 ---
 
