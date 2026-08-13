@@ -3,7 +3,7 @@ title: Deployment Operations
 version: 2.0.0
 status: Living Document
 owner: Operations
-updated: 2026-08-09
+updated: 2026-08-13
 related:
   - ../architecture/DEPLOYMENT.md
   - ../architecture/SECURITY.md
@@ -15,6 +15,64 @@ related:
 ---
 
 # Deployment Operations
+
+## Current authorized milestone
+
+Only deployment-readiness Phase A is authorized. It may validate containers,
+database bootstrap, migration order, CI, health/readiness and recovery against
+disposable infrastructure. It must not provision Coolify staging or production.
+
+The operational release sequence is:
+
+1. idempotent cluster-role bootstrap;
+2. `prisma migrate deploy` with the migration role;
+3. pinned Supabase CLI migration push with the migration role;
+4. canonical idempotent seed;
+5. database validation;
+6. web deployment using only `app_runtime` credentials;
+7. readiness verification.
+
+The web service never receives owner/migration credentials or migration tools.
+See ADR-010 for the complete privilege and topology contract.
+
+Repository entry points:
+
+- `scripts/deploy/bootstrap-postgres-roles.sh` provisions cluster roles through
+  an administrator connection and validates their attributes;
+- `scripts/deploy/migrate-release.sh` is the single release migration runner;
+- `scripts/deploy/validate-database.ts` verifies both migration ledgers and the
+  canonical Role/Permission seed.
+
+Passwords are supplied only through the deployment secret environment. The
+bootstrap does not embed credentials in SQL, source or images. In the official
+self-hosted stack, `POSTGRES_ADMIN_URL` uses the `supabase_admin` login because
+granting that role's membership requires a superuser. The migration role may
+inherit the official Supabase `supabase_admin` and `supabase_auth_admin` roles
+when they exist because repository migrations manage Auth constraints/triggers;
+`app_runtime` is explicitly prevented from inheriting or assuming migration
+privileges.
+
+The pinned Supabase topology is `self-hosted/v0.8.0` at commit
+`241bb11c0627f2981746d37033f57dbfa81d29b0`. It is materialized from the
+official repository by `scripts/deploy/fetch-supabase-release.sh`; the full
+official `docker/` topology is proven before optional services are evaluated.
+
+The repository Dockerfile exposes separate `runner` and `migrator` targets.
+The runner uses Node 22.23.2, Next standalone output, UID 1001, an ephemeral
+filesystem and `node server.js`. It contains no Prisma CLI, Supabase CLI or
+migration credentials. `docker-compose.staging.yml` is a staging topology
+template only; it does not establish a deployed staging environment.
+
+The application exposes `/api/health` for process liveness and `/api/ready`
+for configuration, PostgreSQL, Auth and PostgREST reachability. Both routes are
+excluded from the session proxy, return no dependency details and disable HTTP
+caching. A failed dependency returns only `503 {"status":"not_ready"}`.
+
+GitHub Actions runs the deployment-readiness gate on Pull Requests and `main`.
+It materializes the pinned official Supabase release, migrates a fresh database
+twice, verifies `app_runtime`, runs the complete Vitest suite without hardcoded
+counts, retains the normal Turbopack build, builds both Docker targets and
+smoke-tests a non-root runner against Auth, REST and PostgreSQL.
 
 ## Purpose
 

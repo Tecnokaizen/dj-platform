@@ -3,22 +3,13 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { getPublicEnvironment } from '@/config/environment'
 import {
   AUTH_PUBLIC_ERROR_CODES,
   AUTH_PUBLIC_MESSAGE_CODES,
 } from '@/core/identity/auth/errors/auth-public-error'
 import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 import { createClient } from '@/lib/supabase/server'
-
-function getTrustedAppOrigin(): string {
-  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim()
-
-  if (configured) {
-    return configured.replace(/\/$/, '')
-  }
-
-  return 'http://localhost:3000'
-}
 
 export async function register(formData: FormData) {
   const displayName = String(formData.get('displayName') ?? '').trim()
@@ -44,7 +35,7 @@ export async function register(formData: FormData) {
     redirect(`/register?error=${AUTH_PUBLIC_ERROR_CODES.PASSWORD_MISMATCH}`)
   }
 
-  const origin = getTrustedAppOrigin()
+  const origin = getPublicEnvironment().NEXT_PUBLIC_APP_URL
   const nextPath = getSafeInternalPath('/dashboard')
   const supabase = await createClient()
 

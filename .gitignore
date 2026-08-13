@@ -9,6 +9,7 @@ next-env.d.ts
 tsconfig.tsbuildinfo
 .DS_Store
 *.log
+infra/supabase/vendor/
 
 # Prisma
 prisma/dev.db
