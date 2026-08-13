@@ -1,9 +1,9 @@
 ---
 title: Backup Operations
-version: 1.0.0
+version: 1.1.0
 status: Living Document
 owner: Operations
-updated: 2026-08-08
+updated: 2026-08-13
 related:
   - DEPLOYMENT.md
 ---
@@ -40,9 +40,18 @@ Backups include:
 
 # Backup Frequency
 
-Frequency depends on business requirements.
+The approved staging baseline creates a daily logical PostgreSQL backup.
 
-Policies should be documented.
+Targets:
+
+- RPO: no more than 24 hours;
+- RTO: no more than 4 hours;
+- retention: seven daily and four weekly restore points;
+- destination: external S3-compatible storage outside the primary VPS;
+- encryption: client-side before the backup leaves the runtime boundary.
+
+This policy becomes operational only after Phase B provisioning. Phase A must
+prove backup and isolated restore with disposable infrastructure.
 
 ---
 

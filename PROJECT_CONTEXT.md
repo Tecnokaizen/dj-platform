@@ -51,6 +51,11 @@ DJ Platform remains the current validation consumer.
 
 Production readiness not established.
 
+Deployment-readiness Phase A is authorized by ADR-010. It covers reproducible
+runtime/migrator images, official Supabase topology, controlled migrations,
+health/readiness, CI and backup/restore tooling. Real staging provisioning
+(Phase B) and Production remain unauthorized.
+
 ---
 
 # Product Strategy
@@ -929,18 +934,18 @@ Documentation must not be followed blindly when repository evidence proves it st
 
 Current post-Foundation priorities:
 
-1. respecify Milestone 2 before authorization;
-2. plan deployment and rollback validation;
-3. verify backups and restore procedures;
-4. establish monitoring, runbooks and Product E2E coverage;
-5. authorize the next bounded Core or Product milestone explicitly.
+1. complete ADR-010 deployment-readiness Phase A and review its Draft PR;
+2. keep real staging provisioning blocked pending explicit Phase B approval;
+3. respecify Milestone 2 before authorization;
+4. retain Product E2E and production operations as explicit future gates.
 
 ---
 
 # Foundation ADRs
 
 ADR-001 through ADR-008 establish the original Foundation baseline. ADR-009
-records ownership transfer and database enforcement. Future ADRs should be
+records ownership transfer and database enforcement. ADR-010 defines the
+deployment runtime and staging-readiness contract. Future ADRs should be
 created only when real decisions require them.
 
 ---

@@ -3,7 +3,7 @@ title: Deployment Operations
 version: 2.0.0
 status: Living Document
 owner: Operations
-updated: 2026-08-09
+updated: 2026-08-13
 related:
   - ../architecture/DEPLOYMENT.md
   - ../architecture/SECURITY.md
@@ -15,6 +15,25 @@ related:
 ---
 
 # Deployment Operations
+
+## Current authorized milestone
+
+Only deployment-readiness Phase A is authorized. It may validate containers,
+database bootstrap, migration order, CI, health/readiness and recovery against
+disposable infrastructure. It must not provision Coolify staging or production.
+
+The operational release sequence is:
+
+1. idempotent cluster-role bootstrap;
+2. `prisma migrate deploy` with the migration role;
+3. pinned Supabase CLI migration push with the migration role;
+4. canonical idempotent seed;
+5. database validation;
+6. web deployment using only `app_runtime` credentials;
+7. readiness verification.
+
+The web service never receives owner/migration credentials or migration tools.
+See ADR-010 for the complete privilege and topology contract.
 
 ## Purpose
 
