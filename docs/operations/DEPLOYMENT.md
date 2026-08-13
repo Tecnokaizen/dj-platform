@@ -35,6 +35,20 @@ The operational release sequence is:
 The web service never receives owner/migration credentials or migration tools.
 See ADR-010 for the complete privilege and topology contract.
 
+Repository entry points:
+
+- `scripts/deploy/bootstrap-postgres-roles.sh` provisions cluster roles through
+  an administrator connection and validates their attributes;
+- `scripts/deploy/migrate-release.sh` is the single release migration runner;
+- `scripts/deploy/validate-database.ts` verifies both migration ledgers and the
+  canonical Role/Permission seed.
+
+Passwords are supplied only through the deployment secret environment. The
+bootstrap does not embed credentials in SQL, source or images. The migration
+role may inherit the official Supabase `supabase_admin` role when it exists;
+`app_runtime` is explicitly prevented from inheriting or assuming migration
+privileges.
+
 ## Purpose
 
 This document defines operational standards for deploying Products built on the platform.
