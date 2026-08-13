@@ -53,7 +53,7 @@ async function ensureHardenedFunctions(client: pg.Client) {
   )
 
   const row = status.rows[0]
-  if (row?.prosecdef && row.config.includes('search_path=')) {
+  if (row?.prosecdef && (row.config ?? '').includes('search_path=')) {
     return
   }
 
