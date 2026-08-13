@@ -64,75 +64,105 @@ Never expose production databases to local development.
 
 ### L003 — Cursor workflow
 
-Cursor must never start coding immediately.
+Cursor should not begin significant implementation without understanding the task and relevant context.
 
-Always:
+Normal workflow:
 
 1. Read project context.
-2. Read task.
-3. Produce implementation plan.
-4. Wait for approval.
-5. Implement.
-6. Run quality checks.
+2. Read the task and acceptance criteria.
+3. Inspect relevant documentation and source.
+4. Identify ownership and architectural boundaries.
+5. Produce a plan proportional to the task.
+6. Check implementation readiness.
+7. Implement approved scope.
+8. Run relevant validation.
+
+Do not request approval again when the task and required decisions are already approved.
+
+Stop only when a real architectural, business or safety decision remains unresolved.
 
 ---
 
-### L004 — Architecture decisions belong to ChatGPT
+### L004 — Architecture and implementation roles
 
-Cursor implements.
+Cursor normally operates as an implementation agent.
 
-ChatGPT defines architecture.
+Implementation agents implement approved Architecture and must not silently redefine it.
+
+Architecture may be analyzed or proposed by an AI agent only when that agent is explicitly operating in an Architecture role.
+
+Role boundaries must remain explicit.
 
 Do not redesign architecture while implementing tasks.
 
 ---
 
-### L005 — Repository Pattern
+### L005 — Prisma and persistence boundaries
 
-Only repositories may access Prisma.
+Prisma access must respect capability ownership and server-side boundaries.
 
-No direct Prisma usage inside:
+Do not introduce a Repository Pattern merely because persistence exists.
 
-- Components
-- Actions
-- Hooks
-- Services
+Repository abstractions may be used when they provide demonstrated value and match the owning capability.
 
-unless explicitly approved.
+Prisma must not be accessed directly from browser-side UI code.
+
+Server-side Actions, services or other capability code may coordinate persistence according to current repository conventions.
+
+Avoid arbitrary database access that bypasses:
+
+- capability ownership
+- tenant boundaries
+- authorization
+- transaction requirements
+
+Do not bypass Prisma casually.
+
+Raw SQL requires a demonstrated need and appropriate review.
 
 ---
 
 ### L006 — Environment variables
 
-Never use:
+Environment variables must be handled deliberately.
 
-process.env
+Before introducing or using an environment abstraction:
 
-outside:
+- inspect the current repository implementation
+- distinguish public and private variables
+- never expose secrets to client bundles
+- avoid scattering environment access unnecessarily
+- validate required configuration at an appropriate boundary
 
-src/lib/env
+Do not assume:
 
-except unavoidable configuration files.
+- `src/lib/env` exists
+- Zod is installed
+- a specific validation library has been approved
 
-Always use:
-
-env
-
-validated with Zod.
+Follow the current source and package configuration.
 
 ---
 
 ### L007 — Quality gates
 
-Every completed task must finish with:
-
-npm run lint
+Current baseline validation is:
 
 npm run typecheck
 
-npm run build
+npm run lint
 
-before commit.
+Additional validation depends on the task and may include:
+
+- npm run build
+- automated tests
+- migrations
+- runtime verification
+- authentication or Product flow checks
+
+Run only relevant available checks.
+
+Never claim validation that was not executed.
 
 ---
 

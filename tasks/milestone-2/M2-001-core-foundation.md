@@ -1,13 +1,24 @@
 ---
 id: M2-001
 title: Core Foundation
-status: Ready
+status: Blocked
 priority: Critical
 ---
 
 # Objective
 
 Implement the reusable server-side foundation required by all future modules.
+
+# Blocker — Respecification Required
+
+This task predates the closed Platform Core Foundation and is no longer safe to
+execute. Several listed paths already exist, several responsibilities belong to
+implemented capabilities, and the proposed global repository/error/validation
+rules conflict with accepted ADRs and current source ownership.
+
+Do not implement this task until Architecture replaces its scope, dependencies,
+acceptance criteria and route inventory. Milestone 2 is not authorized by the
+Foundation closure.
 
 # Required reading
 

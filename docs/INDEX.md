@@ -1,144 +1,580 @@
+---
+title: Documentation Index
+version: 2.0.0
+status: Living Document
+updated: 2026-08-11
+---
+
 # Documentation Index
 
-This file provides a complete map of the DJ Platform knowledge base.
+This document is the navigation entry point for the documentation contained in the `dj-platform` repository, whose primary project is Platform Core.
+
+The repository documents:
+
+- Platform Core as the reusable, business-agnostic SaaS foundation and current implementation focus;
+- Product composition;
+- Business Domains;
+- DJ Platform as the first/reference Product and current validation consumer;
+- DJ as the current reference Business Domain;
+- Architecture;
+- Engineering;
+- Backend and Frontend standards;
+- Operations;
+- architectural decisions;
+- formal reviews.
+
+Documentation is organized primarily by responsibility and ownership rather than by technology.
 
 ---
 
-# Foundation
+# Repository Context
 
-| Document            | Purpose              | Status |
-| ------------------- | -------------------- | ------ |
-| VISION.md           | Product vision       | ✅      |
-| PRD.md              | Product requirements | ✅      |
-| ROADMAP.md          | Product roadmap      | ⏳      |
-| GLOSSARY.md         | Shared terminology   | ⏳      |
-| DEVELOPMENT_PLAN.md | Development strategy | ⏳      |
+Before significant work, start with:
+
+    PROJECT_CONTEXT.md
+    AGENTS.md
+
+Then use this index to locate the documentation relevant to the task.
+
+Do not load every document for every change.
+
+Context depth should be proportional to task risk.
+
+---
+
+# Business
+
+Location:
+
+    docs/business/
+
+Purpose:
+
+Defines why Products exist, which problems they solve and how the broader platform strategy evolves.
+
+Includes:
+
+- `README.md`
+- `VISION.md`
+- `PLATFORM_STRATEGY.md`
+- `PRODUCTS.md`
+- `METHODOLOGY.md`
+- `DISCOVERY_FRAMEWORK.md`
+- `ROADMAP.md`
+- `MONETIZATION.md`
+- `GO_TO_MARKET.md`
+
+Business documentation defines value and strategy.
+
+It does not define source-code ownership.
 
 ---
 
 # Architecture
 
-| Document        | Purpose                 | Status |
-| --------------- | ----------------------- | ------ |
-| ARCHITECTURE.md | System architecture     | ⏳      |
-| TECH_STACK.md   | Technologies            | ⏳      |
-| DATA_MODEL.md   | Global data model       | ⏳      |
-| DATABASE.md     | Database design         | ⏳      |
-| API.md          | API conventions         | ⏳      |
-| AUTH.md         | Authentication          | ⏳      |
-| DEPLOYMENT.md   | Infrastructure          | ⏳      |
-| DECISIONS.md    | Architectural decisions | ⏳      |
+Location:
+
+    docs/architecture/
+
+Purpose:
+
+Defines system boundaries, ownership, dependency direction, identity, tenancy, persistence conventions, infrastructure direction and major architectural constraints.
+
+Includes:
+
+- `README.md`
+- `ARCHITECTURE.md`
+- `CORE.md`
+- `PLATFORM_CORE_SPEC.md`
+- `DOMAINS.md`
+- `IDENTITY.md`
+- `TENANCY.md`
+- `DATA.md`
+- `API.md`
+- `CACHE.md`
+- `SECURITY.md`
+- `DEPLOYMENT.md`
+- `TECH_STACK.md`
+- `PRISMA_IMPLEMENTATION.md`
+- `PROJECT_STRUCTURE.md`
+- `SOURCE_STRUCTURE.md`
+- `CONVENTIONS.md`
+- `DECISIONS.md`
+
+Architecture defines boundaries.
+
+Engineering implements those boundaries.
 
 ---
 
-# Domain
+# Platform Core
 
-| Document    | Purpose           | Status |
-| ----------- | ----------------- | ------ |
-| DJ.md       | DJ entity         | ⏳      |
-| GENRE.md    | Genre entity      | ⏳      |
-| FESTIVAL.md | Festival entity   | ⏳      |
-| TRACK.md    | Track entity      | ⏳      |
-| RANKING.md  | Ranking entity    | ⏳      |
-| CONTENT.md  | Editorial content | ⏳      |
+Location:
+
+    docs/core/
+
+Purpose:
+
+Defines reusable SaaS capabilities whose semantics are independent from a specific business vertical.
+
+Current Foundation sequence:
+
+    Identity
+        ↓
+    Organizations
+        ↓
+    Roles
+        ↓
+    Memberships
+        ↓
+    Tenancy Integration
+        ↓
+    Permissions
+
+Identity already has source implementation.
+
+Current specified Core modules:
+
+- Organizations
+- Roles
+- Memberships
+- Permissions
+
+Each specified module may contain:
+
+- `SPEC.md`
+- `DATA_MODEL.md`
+- `FLOWS.md`
+- `API.md`
+- `PRISMA.md`
+- `TASKS.md`
+
+Core specifications do not prove implementation.
+
+Future capabilities must not be promoted into Platform Core merely because they could theoretically be reused.
 
 ---
 
-# Frontend
+# Business Domains
 
-| Document         | Purpose           | Status |
-| ---------------- | ----------------- | ------ |
-| DESIGN_SYSTEM.md | UI system         | ⏳      |
-| COMPONENTS.md    | Shared components | ⏳      |
-| PAGES.md         | Public pages      | ⏳      |
-| ADMIN.md         | Admin interface   | ⏳      |
+Location:
+
+    docs/domains/
+
+Purpose:
+
+Defines business-specific semantics.
+
+Current reference Domain:
+
+- DJ
+
+The DJ Domain may describe concepts such as:
+
+- artists and DJs;
+- genres;
+- festivals;
+- tracks;
+- labels;
+- sessions;
+- playlists;
+- rankings;
+- editorial content;
+- domain relationships;
+- AI-assisted domain workflows.
+
+Strategic Domain scope may be broader than current implementation.
+
+Product and Domain are not synonyms.
+
+Do not classify future Products automatically as Domains.
+
+---
+
+# Product Composition
+
+Products are customer-facing compositions that consume Platform Core and one or more Business Domains. Platform Core remains reusable and business-agnostic; Domains own vertical-specific semantics and do not own Core capabilities.
+
+DJ Platform is the first/reference Product and current validation consumer.
+
+Conceptually:
+
+    Reference Product: DJ Platform
+        ↓
+    App Composition
+        +
+    Platform Core
+        +
+    Reference Business Domain: DJ
+        +
+    Shared Technical Capabilities
+        +
+    Infrastructure
+
+A Product may compose one or more Domains plus Platform Core capabilities.
+
+Product composition does not transfer ownership of Core or Domain semantics into `src/app`.
+
+---
+
+# Engineering
+
+Location:
+
+    docs/engineering/
+
+Purpose:
+
+Defines implementation standards for human developers and AI agents.
+
+Includes:
+
+- `README.md`
+- `AI_DEVELOPMENT_GUIDE.md`
+
+Engineering documentation governs how approved Architecture is implemented.
+
+It does not silently redefine Architecture.
 
 ---
 
 # Backend
 
-| Document      | Purpose             | Status |
-| ------------- | ------------------- | ------ |
-| SERVICES.md   | Service layer       | ⏳      |
-| VALIDATION.md | Validation strategy | ⏳      |
-| IMPORTERS.md  | Data import system  | ⏳      |
-| AI.md         | AI integrations     | ⏳      |
+Location:
+
+    docs/backend/
+
+Purpose:
+
+Defines backend engineering standards and implementation guidance.
+
+Areas include:
+
+- API
+- Database
+- Integrations
+- Jobs
+- Queue
+- SEO
+- Storage
+- Webhooks
+
+Backend standards may document patterns for capabilities that are not yet implemented.
+
+Documentation presence does not imply runtime infrastructure exists.
 
 ---
 
-# SEO
+# Frontend
 
-| Document            | Purpose          | Status |
-| ------------------- | ---------------- | ------ |
-| SEO_STRATEGY.md     | SEO architecture | ⏳      |
-| URLS.md             | URL conventions  | ⏳      |
-| SCHEMA.md           | Structured data  | ⏳      |
-| INTERNAL_LINKING.md | Internal links   | ⏳      |
+Location:
+
+    docs/frontend/
+
+Purpose:
+
+Defines frontend engineering and Product presentation standards.
+
+Includes:
+
+- `README.md`
+- `ACCESSIBILITY.md`
+- `COMPONENTS.md`
+- `DESIGN_SYSTEM.md`
+- `FORMS.md`
+- `NAVIGATION.md`
+- `ROUTING.md`
+- `THEMES.md`
+
+Frontend technical reuse does not automatically belong to Platform Core.
+
+Typical ownership remains:
+
+    App
+    → Product composition
+
+    Core
+    → UI for Core capabilities
+
+    Domain
+    → business-specific UI
+
+    Shared
+    → business-agnostic UI primitives
 
 ---
 
 # Operations
 
-| Document       | Purpose                | Status |
-| -------------- | ---------------------- | ------ |
-| DEPLOYMENT.md  | Deployment process     | ⏳      |
-| SECURITY.md    | Security policies      | ⏳      |
-| MONITORING.md  | Monitoring             | ⏳      |
-| BACKUPS.md     | Backup strategy        | ⏳      |
-| MAINTENANCE.md | Maintenance procedures | ⏳      |
+Location:
+
+    docs/operations/
+
+Purpose:
+
+Defines operational standards for deployed Products and infrastructure.
+
+Includes:
+
+- `README.md`
+- `DEPLOYMENT.md`
+- `MONITORING.md`
+- `BACKUPS.md`
+- `RUNBOOKS.md`
+- `MAINTENANCE.md`
+- `INCIDENT_RESPONSE.md`
+
+Operations documentation does not prove that Production, monitoring, backups or other operational capabilities are currently verified.
+
+Runtime status requires evidence.
 
 ---
 
-# ADR
+# Architecture Decision Records
 
-Architecture Decision Records.
+Location:
 
-| Document                   | Purpose                  |
-| -------------------------- | ------------------------ |
-| 0001-project-foundation.md | Project initialization   |
-| 0002-tech-stack.md         | Technology selection     |
-| 0003-database.md           | Database decisions       |
-| 0004-authentication.md     | Authentication decisions |
-| 0005-deployment.md         | Infrastructure decisions |
+    docs/adr/
+
+Purpose:
+
+Records significant architectural decisions and their rationale.
+
+ADR lifecycle:
+
+    Proposed
+    → Accepted
+    → Superseded
+
+Not every implementation detail requires an ADR.
+
+Foundational architectural decisions already established may be backfilled where useful.
+
+Current backfill candidates include:
+
+- Platform Core and Domain Boundary
+- Identity Source of Truth
+- Internal Identifier Strategy
+- Tenancy and Organization Model
+- Roles, Memberships and Ownership Model
+- Authorization and Permission Model
+- Prisma and Data Access Conventions
+- Deployment and Infrastructure Strategy
 
 ---
 
-# Legend
+# Reviews
 
-| Symbol | Meaning     |
-| ------ | ----------- |
-| ✅      | Completed   |
-| 🚧      | In Progress |
-| ⏳      | Planned     |
-| ❌      | Deprecated  |
+Location:
+
+    docs/reviews/
+
+Purpose:
+
+Provides formal evidence-based assessments of architecture and implementation readiness.
+
+Review lifecycle:
+
+    Observation
+    → Analysis
+    → Findings
+    → Recommendations
+    → Approved Actions
+    → Verification
+
+Current review framework exists.
+
+Formal versioned reviews remain pending.
+
+Planned initial reviews include:
+
+- Architecture Review
+- Cursor / AI Agent Readiness Review
 
 ---
 
-# Maintenance
+# Platform Maturity
 
-Whenever a new document is created:
+Document:
 
-1. Add it to this index.
-2. Link related documents.
-3. Update its status.
-4. Verify that no duplicated documentation exists.
+    docs/PLATFORM_MATURITY.md
 
-This file should always reflect the current state of the project documentation.
+Purpose:
 
-## Architecture
+Describes current platform maturity using evidence rather than arbitrary completion percentages.
 
-| Document            | Purpose                            | Status |
-| ------------------- | ---------------------------------- | ------ |
-| README.md           | Architecture reading guide         | ✅      |
-| ARCHITECTURE.md     | System architecture blueprint      | ✅      |
-| TECH_STACK.md       | Technology boundaries              | ✅      |
-| FOLDER_STRUCTURE.md | Repository and module structure    | ✅      |
-| DATABASE.md         | PostgreSQL and Prisma architecture | ✅      |
-| DATA_MODEL.md       | Domain entities and relationships  | ✅      |
-| API.md              | Server Actions and HTTP contracts  | ✅      |
-| AUTH.md             | Authentication and authorization   | ✅      |
-| AI.md               | AI provider and editorial workflow | ✅      |
-| CACHE.md            | Caching and invalidation           | ✅      |
-| SECURITY.md         | Security architecture              | ✅      |
-| DEPLOYMENT.md       | Docker and Coolify deployment      | ✅      |
+Documentation completion must not be confused with:
 
+- implementation completion;
+- runtime validation;
+- operational readiness;
+- Production readiness.
+
+---
+
+# Documentation Ownership Model
+
+Use the following mental model:
+
+    Business
+    → Why
+
+    Architecture
+    → Ownership and boundaries
+
+    Core
+    → Reusable SaaS capability semantics
+
+    Domains
+    → Business-specific semantics
+
+    Engineering
+    → Implementation standards
+
+    Backend / Frontend
+    → Technical implementation guidance
+
+    Operations
+    → Runtime operations
+
+    ADRs
+    → Architectural decision history
+
+    Reviews
+    → Evidence-based readiness
+
+---
+
+# Product vs Domain Rule
+
+Never use:
+
+    Product
+    = Domain
+
+DJ Platform is a Product.
+
+DJ is the current Business Domain.
+
+Future Products may reuse Platform Core and introduce their own Domain semantics where justified.
+
+---
+
+# Core Promotion Rule
+
+Never use:
+
+    Could another Product use this?
+    → Platform Core
+
+Potential reuse is insufficient.
+
+Core promotion requires demonstrated architectural justification and business-agnostic semantics.
+
+---
+
+# Current Documentation State
+
+Consolidated:
+
+- Architecture
+- Business
+- Engineering
+- Backend
+- Frontend
+- Operations
+
+Core Foundation specifications complete:
+
+- Organizations
+- Roles
+- Memberships
+- Permissions
+
+Repository-level context consolidation:
+
+In progress.
+
+ADR foundational backfill:
+
+Pending.
+
+Formal reviews:
+
+Pending.
+
+Production readiness:
+
+Not established.
+
+---
+
+# Reading Strategy
+
+For significant implementation work:
+
+1. `PROJECT_CONTEXT.md`
+2. `AGENTS.md`
+3. relevant Architecture documentation
+4. relevant Core or Domain specification
+5. relevant Engineering documentation
+6. relevant Backend or Frontend guidance
+7. current source affected by the task
+
+For operational work also read:
+
+8. relevant Operations documentation
+
+For architectural decisions also inspect:
+
+9. relevant ADRs and decision registry
+
+Do not read documentation mechanically.
+
+Read what is necessary to make the task safe and unambiguous.
+
+---
+
+# Implementation Readiness
+
+Before implementation ask:
+
+    Can the implementation agent execute the approved work
+    without making architectural decisions?
+
+If yes:
+
+    Implement
+    → Validate
+    → Review
+
+If no:
+
+    STOP
+    → Resolve the architectural or business decision
+    → Update documentation where required
+    → Resume
+
+---
+
+# Final Principle
+
+This repository's primary project is Platform Core: reusable, business-agnostic SaaS capabilities.
+
+DJ Platform is the first/reference Product and current validation consumer.
+
+DJ is the current reference Business Domain. Domains own vertical-specific semantics and do not own Core capabilities.
+
+Architecture defines ownership and boundaries.
+
+Engineering defines implementation standards.
+
+Operations manages deployed systems.
+
+ADRs preserve architectural decisions.
+
+Reviews establish readiness through evidence.
+
+Documentation describes intent and current understanding.
+
+Repository and runtime evidence determine actual implementation state.

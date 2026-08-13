@@ -1,0 +1,151 @@
+import 'server-only'
+
+import {
+  PROFILE_ERROR_CODES,
+  ProfileError,
+} from '@/core/identity/profile/errors/profile-error'
+import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
+import {
+  MEMBERSHIP_ERROR_CODES,
+  MembershipError,
+} from '@/core/modules/memberships/errors/membership-error'
+import { createMembershipRepository } from '@/core/modules/memberships/repositories/membership-repository'
+import {
+  ORGANIZATION_ERROR_CODES,
+  OrganizationError,
+} from '@/core/modules/organizations/errors/organization-error'
+import { organizationIdSchema } from '@/core/modules/organizations/schemas/organization-id'
+import { findOrganizationById } from '@/core/modules/organizations/services/find-organization-by-id'
+import type { Organization } from '@/core/modules/organizations/types/organization'
+import type { OrganizationContext } from '@/core/modules/organizations/types/organization-context'
+import type { OrganizationStatus } from '@/core/modules/organizations/types/organization-status'
+import { requiredSystemRoleKeySchema } from '@/core/modules/roles/schemas/required-system-role-key'
+import { findRoleById } from '@/core/modules/roles/services/find-role-by-id'
+import type { Role } from '@/generated/prisma/client'
+import { prisma } from '@/lib/prisma'
+
+const DEFAULT_ALLOWED_ORGANIZATION_STATUSES = ['ACTIVE'] as const satisfies readonly OrganizationStatus[]
+
+type ActiveMembershipContext = {
+  id: string
+  organizationId: string
+  profileId: string
+  roleId: string
+}
+
+export type ResolveOrganizationContextDependencies = {
+  getCurrentProfileId: () => Promise<string | null>
+  findOrganizationById: (
+    organizationId: string
+  ) => Promise<Organization | null>
+  findActiveMembership: (
+    organizationId: string,
+    profileId: string
+  ) => Promise<ActiveMembershipContext | null>
+  findRoleById: (roleId: string) => Promise<Role | null>
+  /**
+   * Server-controlled Organization statuses accepted for this resolution.
+   * Defaults to ACTIVE only. Never accept this list from browser input.
+   */
+  allowedOrganizationStatuses?: readonly OrganizationStatus[]
+}
+
+export function createResolveOrganizationContextService(
+  dependencies: ResolveOrganizationContextDependencies
+) {
+  const allowedOrganizationStatuses =
+    dependencies.allowedOrganizationStatuses ??
+    DEFAULT_ALLOWED_ORGANIZATION_STATUSES
+
+  return async function resolveOrganizationContext(
+    organizationId: string
+  ): Promise<OrganizationContext> {
+    const parsedOrganizationId = organizationIdSchema.parse(organizationId)
+    const profileId = await dependencies.getCurrentProfileId()
+
+    if (!profileId) {
+      throw new ProfileError(PROFILE_ERROR_CODES.NOT_FOUND)
+    }
+
+    const membership = await dependencies.findActiveMembership(
+      parsedOrganizationId,
+      profileId
+    )
+
+    if (!membership) {
+      throw new MembershipError(MEMBERSHIP_ERROR_CODES.NOT_ACTIVE)
+    }
+
+    const organization =
+      await dependencies.findOrganizationById(parsedOrganizationId)
+
+    if (!organization) {
+      throw new OrganizationError(ORGANIZATION_ERROR_CODES.NOT_FOUND)
+    }
+
+    if (!allowedOrganizationStatuses.includes(organization.status)) {
+      throw new OrganizationError(ORGANIZATION_ERROR_CODES.INVALID_STATE)
+    }
+
+    const role = await dependencies.findRoleById(membership.roleId)
+
+    if (!role) {
+      throw new MembershipError(MEMBERSHIP_ERROR_CODES.ROLE_INVALID)
+    }
+
+    const roleKey = requiredSystemRoleKeySchema.parse(role.key)
+
+    return {
+      profileId,
+      organizationId: organization.id,
+      membershipId: membership.id,
+      roleId: membership.roleId,
+      roleKey,
+    }
+  }
+}
+
+export type SwitchActiveOrganizationDependencies = {
+  resolveOrganizationContext: (
+    organizationId: string
+  ) => Promise<OrganizationContext>
+  setActiveOrganizationContext: (
+    context: OrganizationContext
+  ) => Promise<void>
+}
+
+export function createSwitchActiveOrganizationService(
+  dependencies: SwitchActiveOrganizationDependencies
+) {
+  return async function switchActiveOrganization(
+    organizationId: string
+  ): Promise<OrganizationContext> {
+    const context =
+      await dependencies.resolveOrganizationContext(organizationId)
+
+    await dependencies.setActiveOrganizationContext(context)
+
+    return context
+  }
+}
+
+const membershipRepository = createMembershipRepository(prisma)
+
+export const resolveOrganizationContextDependencies: ResolveOrganizationContextDependencies = {
+  getCurrentProfileId: async () => {
+    const session = await getCurrentProfile()
+    return session?.profile?.id ?? null
+  },
+  findOrganizationById,
+  findRoleById,
+  findActiveMembership: (organizationId, profileId) =>
+    membershipRepository.findActiveByOrganizationAndProfile(
+      organizationId,
+      profileId
+    ),
+}
+
+export const resolveOrganizationContext =
+  createResolveOrganizationContextService(
+    resolveOrganizationContextDependencies
+  )

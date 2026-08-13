@@ -26,45 +26,33 @@ export type AggregateLabel = {
 
 export type LabelMinAggregateOutputType = {
   id: string | null
-  countryId: string | null
-  slug: string | null
   name: string | null
   normalizedName: string | null
-  description: string | null
-  officialUrl: string | null
-  editorialStatus: $Enums.EditorialStatus | null
-  publishedAt: Date | null
-  deletedAt: Date | null
+  slug: string | null
+  countryCode: string | null
+  websiteUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type LabelMaxAggregateOutputType = {
   id: string | null
-  countryId: string | null
-  slug: string | null
   name: string | null
   normalizedName: string | null
-  description: string | null
-  officialUrl: string | null
-  editorialStatus: $Enums.EditorialStatus | null
-  publishedAt: Date | null
-  deletedAt: Date | null
+  slug: string | null
+  countryCode: string | null
+  websiteUrl: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type LabelCountAggregateOutputType = {
   id: number
-  countryId: number
-  slug: number
   name: number
   normalizedName: number
-  description: number
-  officialUrl: number
-  editorialStatus: number
-  publishedAt: number
-  deletedAt: number
+  slug: number
+  countryCode: number
+  websiteUrl: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -73,45 +61,33 @@ export type LabelCountAggregateOutputType = {
 
 export type LabelMinAggregateInputType = {
   id?: true
-  countryId?: true
-  slug?: true
   name?: true
   normalizedName?: true
-  description?: true
-  officialUrl?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
+  slug?: true
+  countryCode?: true
+  websiteUrl?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type LabelMaxAggregateInputType = {
   id?: true
-  countryId?: true
-  slug?: true
   name?: true
   normalizedName?: true
-  description?: true
-  officialUrl?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
+  slug?: true
+  countryCode?: true
+  websiteUrl?: true
   createdAt?: true
   updatedAt?: true
 }
 
 export type LabelCountAggregateInputType = {
   id?: true
-  countryId?: true
-  slug?: true
   name?: true
   normalizedName?: true
-  description?: true
-  officialUrl?: true
-  editorialStatus?: true
-  publishedAt?: true
-  deletedAt?: true
+  slug?: true
+  countryCode?: true
+  websiteUrl?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -191,15 +167,11 @@ export type LabelGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type LabelGroupByOutputType = {
   id: string
-  countryId: string | null
-  slug: string
   name: string
   normalizedName: string
-  description: string | null
-  officialUrl: string | null
-  editorialStatus: $Enums.EditorialStatus
-  publishedAt: Date | null
-  deletedAt: Date | null
+  slug: string
+  countryCode: string | null
+  websiteUrl: string | null
   createdAt: Date
   updatedAt: Date
   _count: LabelCountAggregateOutputType | null
@@ -226,37 +198,27 @@ export type LabelWhereInput = {
   AND?: Prisma.LabelWhereInput | Prisma.LabelWhereInput[]
   OR?: Prisma.LabelWhereInput[]
   NOT?: Prisma.LabelWhereInput | Prisma.LabelWhereInput[]
-  id?: Prisma.StringFilter<"Label"> | string
-  countryId?: Prisma.StringNullableFilter<"Label"> | string | null
-  slug?: Prisma.StringFilter<"Label"> | string
+  id?: Prisma.UuidFilter<"Label"> | string
   name?: Prisma.StringFilter<"Label"> | string
   normalizedName?: Prisma.StringFilter<"Label"> | string
-  description?: Prisma.StringNullableFilter<"Label"> | string | null
-  officialUrl?: Prisma.StringNullableFilter<"Label"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Label"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Label"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Label"> | Date | string | null
+  slug?: Prisma.StringFilter<"Label"> | string
+  countryCode?: Prisma.StringNullableFilter<"Label"> | string | null
+  websiteUrl?: Prisma.StringNullableFilter<"Label"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Label"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Label"> | Date | string
-  country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
-  djs?: Prisma.DjLabelListRelationFilter
+  releases?: Prisma.ReleaseListRelationFilter
 }
 
 export type LabelOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  countryId?: Prisma.SortOrderInput | Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
-  officialUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  country?: Prisma.CountryOrderByWithRelationInput
-  djs?: Prisma.DjLabelOrderByRelationAggregateInput
+  releases?: Prisma.ReleaseOrderByRelationAggregateInput
 }
 
 export type LabelWhereUniqueInput = Prisma.AtLeast<{
@@ -265,31 +227,22 @@ export type LabelWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.LabelWhereInput | Prisma.LabelWhereInput[]
   OR?: Prisma.LabelWhereInput[]
   NOT?: Prisma.LabelWhereInput | Prisma.LabelWhereInput[]
-  countryId?: Prisma.StringNullableFilter<"Label"> | string | null
   name?: Prisma.StringFilter<"Label"> | string
   normalizedName?: Prisma.StringFilter<"Label"> | string
-  description?: Prisma.StringNullableFilter<"Label"> | string | null
-  officialUrl?: Prisma.StringNullableFilter<"Label"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Label"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Label"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Label"> | Date | string | null
+  countryCode?: Prisma.StringNullableFilter<"Label"> | string | null
+  websiteUrl?: Prisma.StringNullableFilter<"Label"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Label"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Label"> | Date | string
-  country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
-  djs?: Prisma.DjLabelListRelationFilter
+  releases?: Prisma.ReleaseListRelationFilter
 }, "id" | "slug">
 
 export type LabelOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  countryId?: Prisma.SortOrderInput | Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
-  description?: Prisma.SortOrderInput | Prisma.SortOrder
-  officialUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.LabelCountOrderByAggregateInput
@@ -301,448 +254,207 @@ export type LabelScalarWhereWithAggregatesInput = {
   AND?: Prisma.LabelScalarWhereWithAggregatesInput | Prisma.LabelScalarWhereWithAggregatesInput[]
   OR?: Prisma.LabelScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LabelScalarWhereWithAggregatesInput | Prisma.LabelScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Label"> | string
-  countryId?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
-  slug?: Prisma.StringWithAggregatesFilter<"Label"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Label"> | string
   name?: Prisma.StringWithAggregatesFilter<"Label"> | string
   normalizedName?: Prisma.StringWithAggregatesFilter<"Label"> | string
-  description?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
-  officialUrl?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusWithAggregatesFilter<"Label"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Label"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Label"> | Date | string | null
+  slug?: Prisma.StringWithAggregatesFilter<"Label"> | string
+  countryCode?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
+  websiteUrl?: Prisma.StringNullableWithAggregatesFilter<"Label"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Label"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Label"> | Date | string
 }
 
 export type LabelCreateInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  slug: string
+  countryCode?: string | null
+  websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  country?: Prisma.CountryCreateNestedOneWithoutLabelsInput
-  djs?: Prisma.DjLabelCreateNestedManyWithoutLabelInput
+  releases?: Prisma.ReleaseCreateNestedManyWithoutLabelInput
 }
 
 export type LabelUncheckedCreateInput = {
   id?: string
-  countryId?: string | null
-  slug: string
   name: string
   normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  slug: string
+  countryCode?: string | null
+  websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  djs?: Prisma.DjLabelUncheckedCreateNestedManyWithoutLabelInput
+  releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutLabelInput
 }
 
 export type LabelUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  country?: Prisma.CountryUpdateOneWithoutLabelsNestedInput
-  djs?: Prisma.DjLabelUpdateManyWithoutLabelNestedInput
+  releases?: Prisma.ReleaseUpdateManyWithoutLabelNestedInput
 }
 
 export type LabelUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  djs?: Prisma.DjLabelUncheckedUpdateManyWithoutLabelNestedInput
+  releases?: Prisma.ReleaseUncheckedUpdateManyWithoutLabelNestedInput
 }
 
 export type LabelCreateManyInput = {
   id?: string
-  countryId?: string | null
-  slug: string
   name: string
   normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  slug: string
+  countryCode?: string | null
+  websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type LabelUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LabelUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type LabelListRelationFilter = {
-  every?: Prisma.LabelWhereInput
-  some?: Prisma.LabelWhereInput
-  none?: Prisma.LabelWhereInput
-}
-
-export type LabelOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
-}
-
 export type LabelCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  countryId?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
-  description?: Prisma.SortOrder
-  officialUrl?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrder
+  websiteUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type LabelMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  countryId?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
-  description?: Prisma.SortOrder
-  officialUrl?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrder
+  websiteUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type LabelMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  countryId?: Prisma.SortOrder
-  slug?: Prisma.SortOrder
   name?: Prisma.SortOrder
   normalizedName?: Prisma.SortOrder
-  description?: Prisma.SortOrder
-  officialUrl?: Prisma.SortOrder
-  editorialStatus?: Prisma.SortOrder
-  publishedAt?: Prisma.SortOrder
-  deletedAt?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  countryCode?: Prisma.SortOrder
+  websiteUrl?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
-export type LabelScalarRelationFilter = {
-  is?: Prisma.LabelWhereInput
-  isNot?: Prisma.LabelWhereInput
+export type LabelNullableScalarRelationFilter = {
+  is?: Prisma.LabelWhereInput | null
+  isNot?: Prisma.LabelWhereInput | null
 }
 
-export type LabelCreateNestedManyWithoutCountryInput = {
-  create?: Prisma.XOR<Prisma.LabelCreateWithoutCountryInput, Prisma.LabelUncheckedCreateWithoutCountryInput> | Prisma.LabelCreateWithoutCountryInput[] | Prisma.LabelUncheckedCreateWithoutCountryInput[]
-  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutCountryInput | Prisma.LabelCreateOrConnectWithoutCountryInput[]
-  createMany?: Prisma.LabelCreateManyCountryInputEnvelope
-  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-}
-
-export type LabelUncheckedCreateNestedManyWithoutCountryInput = {
-  create?: Prisma.XOR<Prisma.LabelCreateWithoutCountryInput, Prisma.LabelUncheckedCreateWithoutCountryInput> | Prisma.LabelCreateWithoutCountryInput[] | Prisma.LabelUncheckedCreateWithoutCountryInput[]
-  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutCountryInput | Prisma.LabelCreateOrConnectWithoutCountryInput[]
-  createMany?: Prisma.LabelCreateManyCountryInputEnvelope
-  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-}
-
-export type LabelUpdateManyWithoutCountryNestedInput = {
-  create?: Prisma.XOR<Prisma.LabelCreateWithoutCountryInput, Prisma.LabelUncheckedCreateWithoutCountryInput> | Prisma.LabelCreateWithoutCountryInput[] | Prisma.LabelUncheckedCreateWithoutCountryInput[]
-  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutCountryInput | Prisma.LabelCreateOrConnectWithoutCountryInput[]
-  upsert?: Prisma.LabelUpsertWithWhereUniqueWithoutCountryInput | Prisma.LabelUpsertWithWhereUniqueWithoutCountryInput[]
-  createMany?: Prisma.LabelCreateManyCountryInputEnvelope
-  set?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  disconnect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  delete?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  update?: Prisma.LabelUpdateWithWhereUniqueWithoutCountryInput | Prisma.LabelUpdateWithWhereUniqueWithoutCountryInput[]
-  updateMany?: Prisma.LabelUpdateManyWithWhereWithoutCountryInput | Prisma.LabelUpdateManyWithWhereWithoutCountryInput[]
-  deleteMany?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
-}
-
-export type LabelUncheckedUpdateManyWithoutCountryNestedInput = {
-  create?: Prisma.XOR<Prisma.LabelCreateWithoutCountryInput, Prisma.LabelUncheckedCreateWithoutCountryInput> | Prisma.LabelCreateWithoutCountryInput[] | Prisma.LabelUncheckedCreateWithoutCountryInput[]
-  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutCountryInput | Prisma.LabelCreateOrConnectWithoutCountryInput[]
-  upsert?: Prisma.LabelUpsertWithWhereUniqueWithoutCountryInput | Prisma.LabelUpsertWithWhereUniqueWithoutCountryInput[]
-  createMany?: Prisma.LabelCreateManyCountryInputEnvelope
-  set?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  disconnect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  delete?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  connect?: Prisma.LabelWhereUniqueInput | Prisma.LabelWhereUniqueInput[]
-  update?: Prisma.LabelUpdateWithWhereUniqueWithoutCountryInput | Prisma.LabelUpdateWithWhereUniqueWithoutCountryInput[]
-  updateMany?: Prisma.LabelUpdateManyWithWhereWithoutCountryInput | Prisma.LabelUpdateManyWithWhereWithoutCountryInput[]
-  deleteMany?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
-}
-
-export type LabelCreateNestedOneWithoutDjsInput = {
-  create?: Prisma.XOR<Prisma.LabelCreateWithoutDjsInput, Prisma.LabelUncheckedCreateWithoutDjsInput>
-  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutDjsInput
+export type LabelCreateNestedOneWithoutReleasesInput = {
+  create?: Prisma.XOR<Prisma.LabelCreateWithoutReleasesInput, Prisma.LabelUncheckedCreateWithoutReleasesInput>
+  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutReleasesInput
   connect?: Prisma.LabelWhereUniqueInput
 }
 
-export type LabelUpdateOneRequiredWithoutDjsNestedInput = {
-  create?: Prisma.XOR<Prisma.LabelCreateWithoutDjsInput, Prisma.LabelUncheckedCreateWithoutDjsInput>
-  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutDjsInput
-  upsert?: Prisma.LabelUpsertWithoutDjsInput
+export type LabelUpdateOneWithoutReleasesNestedInput = {
+  create?: Prisma.XOR<Prisma.LabelCreateWithoutReleasesInput, Prisma.LabelUncheckedCreateWithoutReleasesInput>
+  connectOrCreate?: Prisma.LabelCreateOrConnectWithoutReleasesInput
+  upsert?: Prisma.LabelUpsertWithoutReleasesInput
+  disconnect?: Prisma.LabelWhereInput | boolean
+  delete?: Prisma.LabelWhereInput | boolean
   connect?: Prisma.LabelWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.LabelUpdateToOneWithWhereWithoutDjsInput, Prisma.LabelUpdateWithoutDjsInput>, Prisma.LabelUncheckedUpdateWithoutDjsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LabelUpdateToOneWithWhereWithoutReleasesInput, Prisma.LabelUpdateWithoutReleasesInput>, Prisma.LabelUncheckedUpdateWithoutReleasesInput>
 }
 
-export type LabelCreateWithoutCountryInput = {
+export type LabelCreateWithoutReleasesInput = {
   id?: string
-  slug: string
   name: string
   normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  djs?: Prisma.DjLabelCreateNestedManyWithoutLabelInput
-}
-
-export type LabelUncheckedCreateWithoutCountryInput = {
-  id?: string
   slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  djs?: Prisma.DjLabelUncheckedCreateNestedManyWithoutLabelInput
-}
-
-export type LabelCreateOrConnectWithoutCountryInput = {
-  where: Prisma.LabelWhereUniqueInput
-  create: Prisma.XOR<Prisma.LabelCreateWithoutCountryInput, Prisma.LabelUncheckedCreateWithoutCountryInput>
-}
-
-export type LabelCreateManyCountryInputEnvelope = {
-  data: Prisma.LabelCreateManyCountryInput | Prisma.LabelCreateManyCountryInput[]
-  skipDuplicates?: boolean
-}
-
-export type LabelUpsertWithWhereUniqueWithoutCountryInput = {
-  where: Prisma.LabelWhereUniqueInput
-  update: Prisma.XOR<Prisma.LabelUpdateWithoutCountryInput, Prisma.LabelUncheckedUpdateWithoutCountryInput>
-  create: Prisma.XOR<Prisma.LabelCreateWithoutCountryInput, Prisma.LabelUncheckedCreateWithoutCountryInput>
-}
-
-export type LabelUpdateWithWhereUniqueWithoutCountryInput = {
-  where: Prisma.LabelWhereUniqueInput
-  data: Prisma.XOR<Prisma.LabelUpdateWithoutCountryInput, Prisma.LabelUncheckedUpdateWithoutCountryInput>
-}
-
-export type LabelUpdateManyWithWhereWithoutCountryInput = {
-  where: Prisma.LabelScalarWhereInput
-  data: Prisma.XOR<Prisma.LabelUpdateManyMutationInput, Prisma.LabelUncheckedUpdateManyWithoutCountryInput>
-}
-
-export type LabelScalarWhereInput = {
-  AND?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
-  OR?: Prisma.LabelScalarWhereInput[]
-  NOT?: Prisma.LabelScalarWhereInput | Prisma.LabelScalarWhereInput[]
-  id?: Prisma.StringFilter<"Label"> | string
-  countryId?: Prisma.StringNullableFilter<"Label"> | string | null
-  slug?: Prisma.StringFilter<"Label"> | string
-  name?: Prisma.StringFilter<"Label"> | string
-  normalizedName?: Prisma.StringFilter<"Label"> | string
-  description?: Prisma.StringNullableFilter<"Label"> | string | null
-  officialUrl?: Prisma.StringNullableFilter<"Label"> | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFilter<"Label"> | $Enums.EditorialStatus
-  publishedAt?: Prisma.DateTimeNullableFilter<"Label"> | Date | string | null
-  deletedAt?: Prisma.DateTimeNullableFilter<"Label"> | Date | string | null
-  createdAt?: Prisma.DateTimeFilter<"Label"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Label"> | Date | string
-}
-
-export type LabelCreateWithoutDjsInput = {
-  id?: string
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  country?: Prisma.CountryCreateNestedOneWithoutLabelsInput
-}
-
-export type LabelUncheckedCreateWithoutDjsInput = {
-  id?: string
-  countryId?: string | null
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
+  countryCode?: string | null
+  websiteUrl?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type LabelCreateOrConnectWithoutDjsInput = {
-  where: Prisma.LabelWhereUniqueInput
-  create: Prisma.XOR<Prisma.LabelCreateWithoutDjsInput, Prisma.LabelUncheckedCreateWithoutDjsInput>
+export type LabelUncheckedCreateWithoutReleasesInput = {
+  id?: string
+  name: string
+  normalizedName: string
+  slug: string
+  countryCode?: string | null
+  websiteUrl?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
-export type LabelUpsertWithoutDjsInput = {
-  update: Prisma.XOR<Prisma.LabelUpdateWithoutDjsInput, Prisma.LabelUncheckedUpdateWithoutDjsInput>
-  create: Prisma.XOR<Prisma.LabelCreateWithoutDjsInput, Prisma.LabelUncheckedCreateWithoutDjsInput>
+export type LabelCreateOrConnectWithoutReleasesInput = {
+  where: Prisma.LabelWhereUniqueInput
+  create: Prisma.XOR<Prisma.LabelCreateWithoutReleasesInput, Prisma.LabelUncheckedCreateWithoutReleasesInput>
+}
+
+export type LabelUpsertWithoutReleasesInput = {
+  update: Prisma.XOR<Prisma.LabelUpdateWithoutReleasesInput, Prisma.LabelUncheckedUpdateWithoutReleasesInput>
+  create: Prisma.XOR<Prisma.LabelCreateWithoutReleasesInput, Prisma.LabelUncheckedCreateWithoutReleasesInput>
   where?: Prisma.LabelWhereInput
 }
 
-export type LabelUpdateToOneWithWhereWithoutDjsInput = {
+export type LabelUpdateToOneWithWhereWithoutReleasesInput = {
   where?: Prisma.LabelWhereInput
-  data: Prisma.XOR<Prisma.LabelUpdateWithoutDjsInput, Prisma.LabelUncheckedUpdateWithoutDjsInput>
+  data: Prisma.XOR<Prisma.LabelUpdateWithoutReleasesInput, Prisma.LabelUncheckedUpdateWithoutReleasesInput>
 }
 
-export type LabelUpdateWithoutDjsInput = {
+export type LabelUpdateWithoutReleasesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  country?: Prisma.CountryUpdateOneWithoutLabelsNestedInput
-}
-
-export type LabelUncheckedUpdateWithoutDjsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type LabelCreateManyCountryInput = {
-  id?: string
-  slug: string
-  name: string
-  normalizedName: string
-  description?: string | null
-  officialUrl?: string | null
-  editorialStatus?: $Enums.EditorialStatus
-  publishedAt?: Date | string | null
-  deletedAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-}
-
-export type LabelUpdateWithoutCountryInput = {
+export type LabelUncheckedUpdateWithoutReleasesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  djs?: Prisma.DjLabelUpdateManyWithoutLabelNestedInput
-}
-
-export type LabelUncheckedUpdateWithoutCountryInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  djs?: Prisma.DjLabelUncheckedUpdateManyWithoutLabelNestedInput
-}
-
-export type LabelUncheckedUpdateManyWithoutCountryInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  normalizedName?: Prisma.StringFieldUpdateOperationsInput | string
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  officialUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  editorialStatus?: Prisma.EnumEditorialStatusFieldUpdateOperationsInput | $Enums.EditorialStatus
-  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -753,11 +465,11 @@ export type LabelUncheckedUpdateManyWithoutCountryInput = {
  */
 
 export type LabelCountOutputType = {
-  djs: number
+  releases: number
 }
 
 export type LabelCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  djs?: boolean | LabelCountOutputTypeCountDjsArgs
+  releases?: boolean | LabelCountOutputTypeCountReleasesArgs
 }
 
 /**
@@ -773,106 +485,77 @@ export type LabelCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * LabelCountOutputType without action
  */
-export type LabelCountOutputTypeCountDjsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DjLabelWhereInput
+export type LabelCountOutputTypeCountReleasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReleaseWhereInput
 }
 
 
 export type LabelSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  countryId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
-  description?: boolean
-  officialUrl?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  slug?: boolean
+  countryCode?: boolean
+  websiteUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  country?: boolean | Prisma.Label$countryArgs<ExtArgs>
-  djs?: boolean | Prisma.Label$djsArgs<ExtArgs>
+  releases?: boolean | Prisma.Label$releasesArgs<ExtArgs>
   _count?: boolean | Prisma.LabelCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["label"]>
 
 export type LabelSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  countryId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
-  description?: boolean
-  officialUrl?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  slug?: boolean
+  countryCode?: boolean
+  websiteUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  country?: boolean | Prisma.Label$countryArgs<ExtArgs>
 }, ExtArgs["result"]["label"]>
 
 export type LabelSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  countryId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
-  description?: boolean
-  officialUrl?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  slug?: boolean
+  countryCode?: boolean
+  websiteUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  country?: boolean | Prisma.Label$countryArgs<ExtArgs>
 }, ExtArgs["result"]["label"]>
 
 export type LabelSelectScalar = {
   id?: boolean
-  countryId?: boolean
-  slug?: boolean
   name?: boolean
   normalizedName?: boolean
-  description?: boolean
-  officialUrl?: boolean
-  editorialStatus?: boolean
-  publishedAt?: boolean
-  deletedAt?: boolean
+  slug?: boolean
+  countryCode?: boolean
+  websiteUrl?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type LabelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "countryId" | "slug" | "name" | "normalizedName" | "description" | "officialUrl" | "editorialStatus" | "publishedAt" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["label"]>
+export type LabelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "normalizedName" | "slug" | "countryCode" | "websiteUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["label"]>
 export type LabelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  country?: boolean | Prisma.Label$countryArgs<ExtArgs>
-  djs?: boolean | Prisma.Label$djsArgs<ExtArgs>
+  releases?: boolean | Prisma.Label$releasesArgs<ExtArgs>
   _count?: boolean | Prisma.LabelCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type LabelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  country?: boolean | Prisma.Label$countryArgs<ExtArgs>
-}
-export type LabelIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  country?: boolean | Prisma.Label$countryArgs<ExtArgs>
-}
+export type LabelIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type LabelIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $LabelPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Label"
   objects: {
-    country: Prisma.$CountryPayload<ExtArgs> | null
-    djs: Prisma.$DjLabelPayload<ExtArgs>[]
+    releases: Prisma.$ReleasePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    countryId: string | null
-    slug: string
     name: string
     normalizedName: string
-    description: string | null
-    officialUrl: string | null
-    editorialStatus: $Enums.EditorialStatus
-    publishedAt: Date | null
-    deletedAt: Date | null
+    slug: string
+    countryCode: string | null
+    websiteUrl: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["label"]>
@@ -1269,8 +952,7 @@ readonly fields: LabelFieldRefs;
  */
 export interface Prisma__LabelClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  country<T extends Prisma.Label$countryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Label$countryArgs<ExtArgs>>): Prisma.Prisma__CountryClient<runtime.Types.Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  djs<T extends Prisma.Label$djsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Label$djsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DjLabelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  releases<T extends Prisma.Label$releasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Label$releasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1301,15 +983,11 @@ export interface Prisma__LabelClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface LabelFieldRefs {
   readonly id: Prisma.FieldRef<"Label", 'String'>
-  readonly countryId: Prisma.FieldRef<"Label", 'String'>
-  readonly slug: Prisma.FieldRef<"Label", 'String'>
   readonly name: Prisma.FieldRef<"Label", 'String'>
   readonly normalizedName: Prisma.FieldRef<"Label", 'String'>
-  readonly description: Prisma.FieldRef<"Label", 'String'>
-  readonly officialUrl: Prisma.FieldRef<"Label", 'String'>
-  readonly editorialStatus: Prisma.FieldRef<"Label", 'EditorialStatus'>
-  readonly publishedAt: Prisma.FieldRef<"Label", 'DateTime'>
-  readonly deletedAt: Prisma.FieldRef<"Label", 'DateTime'>
+  readonly slug: Prisma.FieldRef<"Label", 'String'>
+  readonly countryCode: Prisma.FieldRef<"Label", 'String'>
+  readonly websiteUrl: Prisma.FieldRef<"Label", 'String'>
   readonly createdAt: Prisma.FieldRef<"Label", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Label", 'DateTime'>
 }
@@ -1566,10 +1244,6 @@ export type LabelCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    */
   data: Prisma.LabelCreateManyInput | Prisma.LabelCreateManyInput[]
   skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LabelIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1640,10 +1314,6 @@ export type LabelUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many Labels to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LabelIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1713,46 +1383,27 @@ export type LabelDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Label.country
+ * Label.releases
  */
-export type Label$countryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Label$releasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Country
+   * Select specific fields to fetch from the Release
    */
-  select?: Prisma.CountrySelect<ExtArgs> | null
+  select?: Prisma.ReleaseSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Country
+   * Omit specific fields from the Release
    */
-  omit?: Prisma.CountryOmit<ExtArgs> | null
+  omit?: Prisma.ReleaseOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.CountryInclude<ExtArgs> | null
-  where?: Prisma.CountryWhereInput
-}
-
-/**
- * Label.djs
- */
-export type Label$djsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the DjLabel
-   */
-  select?: Prisma.DjLabelSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the DjLabel
-   */
-  omit?: Prisma.DjLabelOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DjLabelInclude<ExtArgs> | null
-  where?: Prisma.DjLabelWhereInput
-  orderBy?: Prisma.DjLabelOrderByWithRelationInput | Prisma.DjLabelOrderByWithRelationInput[]
-  cursor?: Prisma.DjLabelWhereUniqueInput
+  include?: Prisma.ReleaseInclude<ExtArgs> | null
+  where?: Prisma.ReleaseWhereInput
+  orderBy?: Prisma.ReleaseOrderByWithRelationInput | Prisma.ReleaseOrderByWithRelationInput[]
+  cursor?: Prisma.ReleaseWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.DjLabelScalarFieldEnum | Prisma.DjLabelScalarFieldEnum[]
+  distinct?: Prisma.ReleaseScalarFieldEnum | Prisma.ReleaseScalarFieldEnum[]
 }
 
 /**

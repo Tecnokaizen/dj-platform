@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22 <23"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -19,22 +22,57 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:identity:auth-email-projection": "vitest run --config vitest.config.ts src/core/identity/profile/tests/profile-auth-email-projection.test.ts",
+    "test:identity:safe-internal-path": "vitest run --config vitest.config.ts src/core/identity/auth/tests/get-safe-internal-path.test.ts",
+    "test:identity:auth-public-error": "vitest run --config vitest.config.ts src/core/identity/auth/tests/auth-public-error.test.ts",
+    "test:organizations:persistence": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence.test.ts",
+    "test:organizations:lifecycle": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-lifecycle.test.ts",
+    "test:organizations:persistence-integrity": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence-integrity.test.ts",
+    "test:organizations:slug": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-slug.test.ts",
+    "test:organizations:app-integration": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-read-integration.test.ts src/core/modules/organizations/tests/organization-public-notice.test.ts",
+    "test:organizations:authorization": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-authorization.test.ts",
+    "test:organizations:recovery-authorization": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-recovery-authorization.test.ts",
+    "test:roles:persistence": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-persistence.test.ts",
+    "test:roles:lookup": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-lookup.test.ts",
+    "test:roles:catalog": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-catalog.test.ts",
+    "test:roles:seed": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-seed.test.ts",
+    "test:roles:required-resolution": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-required-resolution.test.ts",
+    "test:roles:protection": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-protection.test.ts",
+    "test:roles:hardcoded-uuid-audit": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-hardcoded-uuid-audit.test.ts",
+    "test:roles:boundary": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-boundary.test.ts",
+    "test:roles:catalog-client-grants": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/roles/tests/roles-catalog-client-grants.test.ts",
+    "test:memberships:reads": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-read-services.test.ts",
+    "test:memberships:persistence": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/membership-persistence.test.ts src/core/modules/memberships/tests/invitation-persistence.test.ts",
+    "test:memberships:lifecycle": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-lifecycle.test.ts",
+    "test:memberships:token-security": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-token-security.test.ts",
+    "test:memberships:invitation-lifecycle": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-lifecycle.test.ts",
+    "test:memberships:invitation-acceptance": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-acceptance.test.ts",
+    "test:memberships:owner-safety": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/owner-safety.test.ts",
+    "test:memberships:ownership-transfer": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/ownership-transfer.test.ts",
+    "test:memberships:owner-invariant-portability": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/owner-invariant-portability.test.ts",
+    "test:memberships:access-foundation": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-access-foundation.test.ts",
+    "test:memberships:phase12": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/*.test.ts",
+    "test:tenancy:onboarding": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-onboarding.test.ts",
+    "test:tenancy:context": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenancy-context.test.ts",
+    "test:tenancy:rls": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenant-rls.test.ts",
+    "test:permissions:foundation": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/permissions/tests/permissions-foundation.test.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@supabase/ssr": "^0.12.4",
-    "@supabase/supabase-js": "^2.109.0",
+    "@supabase/supabase-js": "^2.112.2",
     "dotenv": "^17.4.2",
     "next": "16.3.0",
     "pg": "^8.22.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/pg": "^8.20.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -45,6 +83,7 @@
     "prisma": "^7.9.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

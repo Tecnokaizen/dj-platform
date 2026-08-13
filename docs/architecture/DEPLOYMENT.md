@@ -1,127 +1,226 @@
 ---
 title: Deployment Architecture
-version: 1.0.0
-status: Draft
-owner: Architecture
-updated: 2026-08-04
+version: 2.0.0
+status: Living Document
+owner: Platform Architecture
+updated: 2026-08-09
 ---
 
 # Deployment Architecture
 
 ## Initial model
 
-DJ Platform is deployed as a containerized monolith managed by Coolify.
+The target deployment model is a containerized application managed through Coolify.
 
-Initial resources:
+The application remains a modular monolith.
+
+No microservices are required for the current architecture.
+
+Current development infrastructure includes Docker, Coolify, PostgreSQL and self-hosted Supabase infrastructure under active validation.
+
+The existence of an infrastructure service does not imply that every capability provided by that service is already adopted by the application.
+
+Conceptual application resources may include:
 
 ```text
-dj-platform-web
-dj-platform-postgres
+platform-web
+platform-postgres
+supabase infrastructure
 ```
 
-Optional later:
+Future resources may include, when justified:
 
 ```text
-dj-platform-redis
-dj-platform-worker
+platform-redis
+platform-worker
 object-storage
 ```
 
-No microservices for the MVP.
+These future resources must not be provisioned speculatively.
 
 ## Environments
 
+The architecture distinguishes three environment classes.
+
 ### Local
 
-Developer machine.
+Developer environment used for implementation and local validation.
 
 ### Staging
 
-Integration, migration rehearsal, acceptance testing and preview.
+Target pre-production environment for:
+
+- integration validation
+- migration rehearsal
+- acceptance testing
+- deployment verification
+- preview when appropriate
+
+Staging must not be described as operational until it has actually been provisioned and validated.
 
 ### Production
 
-Public stable environment.
+Target public stable environment.
 
-Staging and production never share:
+Production must not be described as operational or production-ready until all readiness requirements have been verified.
+
+When Staging and Production exist, they must not share:
 
 - database
-- secrets
-- storage bucket
-- auth secret
-- AI credentials where separate credentials are possible
+- application secrets
+- storage credentials or buckets
+- authentication secrets
+- provider credentials where separate credentials are possible
+
+Environment isolation is a deployment and security requirement.
 
 ## Git flow
 
 Recommended initial flow:
 
 ```text
+The project follows a feature branch workflow.
+
+Typical lifecycle:
+
+```text
+main
+  ↓
 feature/*
   ↓
-develop
-  ↓
-staging
+Pull Request
   ↓
 main
   ↓
-production
+CI/CD
+  ↓
+Deployment
+```
+
+Long-lived branches such as `develop` or `staging` are optional and depend on the project's deployment strategy.
+
+The deployment model should remain independent from the branching strategy.
 ```
 
 ## Docker requirements
 
-- multi-stage build
-- deterministic install
-- non-root runtime user
-- minimal final image
+Production-oriented application containers should provide:
+
+- deterministic dependency installation
+- reproducible builds
+- minimal runtime image
+- non-root runtime user where practical
 - no baked secrets
-- health endpoint
-- production runtime configuration
+- runtime configuration through environment or secret management
+- explicit health/readiness strategy
+- ephemeral application filesystem
+
+Multi-stage builds are preferred when they improve image size, security or reproducibility.
+
+These are deployment requirements, not claims that every item is already implemented.
 
 ## Deployment pipeline
 
+The deployment pipeline is release-aware rather than a fixed universal sequence.
+
+Current project quality gates available in `package.json` include:
+
 ```text
-Push
-  ↓
+install
+lint
+typecheck
+build
+```
+
+Formatting and Prisma validation may also be included in CI when appropriate.
+
+Automated tests become a deployment gate once an automated testing framework is implemented.
+
+Conceptually:
+
+```text
+Push / Pull Request
+        ↓
 CI
-  ├── install
-  ├── lint
-  ├── typecheck
-  ├── tests
-  └── build
-  ↓
-Container build
-  ↓
-Deploy
-  ↓
-Migration
-  ↓
-Health check
-  ↓
+        ├── install
+        ├── lint
+        ├── typecheck
+        ├── validation
+        └── build
+        ↓
+Release Planning
+        ↓
+Database Compatibility Review
+        ↓
+Migration / Deployment Strategy
+        ↓
+Application Deployment
+        ↓
+Health / Readiness Verification
+        ↓
 Traffic
 ```
 
+Database migration and application deployment order depends on migration compatibility.
+
+Do not assume that:
+
+```text
+Deploy
+→ Migration
+```
+
+or:
+
+```text
+Migration
+→ Deploy
+```
+
+is universally correct.
+
+Risky releases should use compatibility-aware techniques such as expand-and-contract when appropriate.
+
 ## Migrations
 
-Before production migration:
+Before a production database migration:
 
-- backup
-- staging rehearsal
-- destructive-change review
-- lock-duration review
-- rollback or forward-fix plan
+- create or verify a recoverable backup
+- rehearse significant migrations in an isolated environment
+- review destructive changes
+- review lock duration and operational impact
+- verify application/database compatibility
+- define rollback or forward-fix strategy
+
+Database rollback must not be assumed to be safe.
+
+Forward-fix may be safer when data transformations or destructive schema changes have already occurred.
+
+Prisma migration commands must be used according to the target environment and deployment strategy.
 
 ## Health checks
+
+Health and readiness endpoints are architectural targets, not current implementation claims.
+
+Recommended contracts may include:
 
 ```text
 /api/health
 /api/ready
 ```
 
-Health checks process availability.
+A health check should confirm that the application process is available.
 
-Readiness checks required configuration and database connectivity.
+A readiness check may additionally verify required configuration and critical dependencies such as database connectivity.
 
-Never return secrets.
+Health endpoints must:
+
+- avoid leaking secrets
+- avoid exposing sensitive infrastructure details
+- remain inexpensive to execute
+- distinguish process health from dependency readiness where useful
+
+The exact routes must be documented as implemented only after they exist in source.
 
 ## Rollback
 
@@ -135,65 +234,110 @@ A database change may make an old application version incompatible. Risky deploy
 
 ## Storage
 
-Editorial media uses S3-compatible object storage in production.
+The application container filesystem must be treated as ephemeral.
 
-Container filesystem is ephemeral and must not be the primary media store.
+Persistent binary assets must not rely exclusively on the application container filesystem.
+
+No application-level object storage integration is currently established.
+
+A future production storage capability may use:
+
+```text
+S3-compatible object storage
+```
+
+or another approved external persistent storage provider.
+
+Storage provider adoption must follow the Platform Core Storage architecture when that capability is implemented.
 
 ## Backups
 
-- automated
-- encrypted
-- off-server
-- retained
-- restore-tested
+Production backup architecture should provide:
+
+- automated backups
+- encryption where appropriate
+- storage outside the primary failure domain
+- retention policy
+- restore testing
+- documented recovery procedure
+
+A backup strategy is not considered validated until restoration has been tested.
+
+Exact backup procedures belong to operational documentation.
 
 ## Monitoring
 
-Minimum:
+Production observability should cover, as applicable:
 
 - uptime
 - HTTP error rate
 - latency
 - container health
-- database disk
+- database disk usage
 - database connections
 - backup status
 - deployment failures
 
+These are production requirements, not claims that a complete monitoring stack is currently implemented.
+
+Monitoring technology should be selected according to measurable operational requirements.
+
 ## Scaling order
 
-1. optimize queries
-2. use CDN
-3. add selective caching
-4. increase VPS resources
-5. introduce horizontal scaling when justified
+Scaling decisions are evidence-driven.
 
-Horizontal scaling requires stateless application design and shared external storage.
+A typical investigation may consider:
+
+1. query design
+2. indexes
+3. pagination and data-loading strategy
+4. selective caching
+5. CDN or edge delivery for appropriate public assets
+6. vertical VPS scaling
+7. horizontal scaling when measurements justify it
+
+This is guidance, not a mandatory sequence.
+
+Horizontal scaling requires compatible application design, including stateless web processes where appropriate and shared external persistence for state that cannot remain local.
 
 ## Background work
 
-Long tasks should eventually move outside web requests:
+Long-running work should move outside synchronous web requests when execution time, reliability or retry requirements justify it.
 
-- imports
-- AI batches
-- image processing
-- synchronization
-- heavy sitemap generation
+Potential future examples include:
 
-Queues and workers require ADR approval.
+- large imports
+- AI processing
+- media processing
+- synchronization jobs
+- scheduled maintenance
+
+No queue or worker architecture should be assumed to exist until implemented.
+
+Queues, distributed workers or equivalent background-processing infrastructure require architectural review and ADR approval when they materially affect the platform.
 
 ## Production readiness checklist
 
+The following is a readiness gate, not a description of current production state.
+
+Before declaring an environment production-ready, verify as applicable:
+
 - domain and TLS configured
-- secrets configured
-- isolated database
-- backups restored successfully in test
-- migrations rehearsed
-- health checks active
-- logs and error tracking available
-- rate limits enabled
-- robots and sitemap correct
-- no test accounts exposed
+- secrets configured securely
+- isolated production database
+- backup strategy active
+- restore procedure successfully tested
+- migrations rehearsed where risk requires it
+- health/readiness verification implemented
+- logs available
+- error monitoring available
+- rate limiting implemented where the threat model requires it
+- public endpoints verified
+- sensitive diagnostic endpoints protected
+- no test credentials or test accounts exposed
+- deployment rollback or forward-fix strategy understood
+
+Production readiness must be verified against actual infrastructure and application behavior.
 
 ## Forbidden practices
 
