@@ -40,6 +40,7 @@
     "test:roles:protection": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-protection.test.ts",
     "test:roles:hardcoded-uuid-audit": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-hardcoded-uuid-audit.test.ts",
     "test:roles:boundary": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-boundary.test.ts",
+    "test:roles:catalog-client-grants": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/roles/tests/roles-catalog-client-grants.test.ts",
     "test:memberships:reads": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-read-services.test.ts",
     "test:memberships:persistence": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/membership-persistence.test.ts src/core/modules/memberships/tests/invitation-persistence.test.ts",
     "test:memberships:lifecycle": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-lifecycle.test.ts",
