@@ -12,9 +12,8 @@ if [ "$actual_supabase_version" != "$SUPABASE_CLI_VERSION" ]; then
 fi
 
 DATABASE_URL="$MIGRATION_DATABASE_URL" prisma migrate deploy
-supabase db push --db-url "$SUPABASE_DB_URL" --include-all
+supabase db push --db-url "$SUPABASE_DB_URL" --include-all --yes
 DATABASE_URL="$MIGRATION_DATABASE_URL" prisma db seed
 
 DATABASE_URL="$MIGRATION_DATABASE_URL" \
   node --import tsx scripts/deploy/validate-database.ts
-

@@ -44,8 +44,11 @@ Repository entry points:
   canonical Role/Permission seed.
 
 Passwords are supplied only through the deployment secret environment. The
-bootstrap does not embed credentials in SQL, source or images. The migration
-role may inherit the official Supabase `supabase_admin` role when it exists;
+bootstrap does not embed credentials in SQL, source or images. In the official
+self-hosted stack, `POSTGRES_ADMIN_URL` uses the `supabase_admin` login because
+granting that role's membership requires a superuser. The migration role may
+inherit the official Supabase `supabase_admin` and `supabase_auth_admin` roles
+when they exist because repository migrations manage Auth constraints/triggers;
 `app_runtime` is explicitly prevented from inheriting or assuming migration
 privileges.
 

@@ -45,6 +45,7 @@ CMD ["node", "server.js"]
 
 FROM deps AS migrator
 ENV NODE_ENV=production
+ENV PATH=/app/node_modules/.bin:$PATH
 COPY . .
 RUN test "$(npx supabase --version)" = "2.109.1"
 CMD ["sh", "scripts/deploy/migrate-release.sh"]

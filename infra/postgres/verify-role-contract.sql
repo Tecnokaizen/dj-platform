@@ -29,11 +29,28 @@ BEGIN
     RAISE EXCEPTION 'runtime role can assume migration role';
   END IF;
 
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_admin')
+     AND pg_has_role(runtime_name, 'supabase_admin', 'MEMBER') THEN
+    RAISE EXCEPTION 'runtime role can assume supabase_admin';
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'supabase_auth_admin')
+     AND pg_has_role(runtime_name, 'supabase_auth_admin', 'MEMBER') THEN
+    RAISE EXCEPTION 'runtime role can assume supabase_auth_admin';
+  END IF;
+
   IF has_schema_privilege(runtime_name, 'public', 'CREATE') THEN
     RAISE EXCEPTION 'runtime role has DDL privilege on public schema';
+  END IF;
+
+  IF has_database_privilege(runtime_name, current_database(), 'CREATE') THEN
+    RAISE EXCEPTION 'runtime role can create database schemas';
+  END IF;
+
+  IF NOT has_database_privilege(migration_name, current_database(), 'CREATE') THEN
+    RAISE EXCEPTION 'migration role cannot create its Supabase ledger schema';
   END IF;
 END
 $contract$;
 
 SELECT 'role contract valid' AS result;
-
