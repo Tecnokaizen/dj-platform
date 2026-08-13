@@ -49,6 +49,17 @@ role may inherit the official Supabase `supabase_admin` role when it exists;
 `app_runtime` is explicitly prevented from inheriting or assuming migration
 privileges.
 
+The pinned Supabase topology is `self-hosted/v0.8.0` at commit
+`241bb11c0627f2981746d37033f57dbfa81d29b0`. It is materialized from the
+official repository by `scripts/deploy/fetch-supabase-release.sh`; the full
+official `docker/` topology is proven before optional services are evaluated.
+
+The repository Dockerfile exposes separate `runner` and `migrator` targets.
+The runner uses Node 22.23.2, Next standalone output, UID 1001, an ephemeral
+filesystem and `node server.js`. It contains no Prisma CLI, Supabase CLI or
+migration credentials. `docker-compose.staging.yml` is a staging topology
+template only; it does not establish a deployed staging environment.
+
 ## Purpose
 
 This document defines operational standards for deploying Products built on the platform.
