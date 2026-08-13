@@ -822,6 +822,21 @@ ADMIN
 
 must never grant ADMIN authority.
 
+### Resolution (2026-08-13 remediation)
+
+Approved client surface for `public.roles`:
+
+- `authenticated`: SELECT allowed (RLS policy `USING (true)`)
+- `anon`: SELECT denied
+- `anon` / `authenticated`: INSERT / UPDATE / DELETE denied
+
+Forward migration:
+
+`supabase/migrations/20260813180000_roles_catalog_client_grants.sql`
+
+Application Role resolution remains server-mediated through Core services.
+Role visibility still does not imply Role possession.
+
 ---
 
 ## R-022

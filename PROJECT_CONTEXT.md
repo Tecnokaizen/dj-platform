@@ -42,6 +42,11 @@ Identity, Organizations, Roles, Memberships, Tenancy Integration, Permissions,
 ownership enforcement and the minimum authorized Organization composition are
 implemented and reviewed. Milestone 2 is not authorized pending respecification.
 
+Post-closeout audit remediation on Draft PR #1 is recorded in
+`docs/reviews/ARCHITECTURE_REVIEW_V2_ADDENDUM.md` and
+`docs/reviews/SECURITY_REVIEW_V1_ADDENDUM.md`. Claude focused re-audit remains
+pending and is not claimed here.
+
 DJ Platform remains the current validation consumer.
 
 Production readiness not established.

@@ -81,7 +81,7 @@ Current Foundation sequence:
 Current status:
 
 **Platform Core Foundation — CLOSED / PASS** within its approved scope
-(Architecture Review V2; Security Review V1; ADR-001 through ADR-009).
+(Architecture Review V2 + addendum; Security Review V1 + addendum; ADR-001 through ADR-009).
 
 - Identity foundation implemented
 - Organizations Foundation CLOSED / PASS, including authorized mutations and app composition (`/organizations`)
@@ -90,7 +90,7 @@ Current status:
 - Permissions Foundation implemented, including Memberships administrative authorization and Organization mutation authorization
 - Ownership: M-088 closed by ADR-009 — callers supply an explicit non-OWNER `previousOwnerRoleId`; PostgreSQL enforces exactly one ACTIVE OWNER per Organization
 
-This Foundation closeout does **not** mean Production Ready. DJ Platform runtime readiness, Deployment Readiness and Domain DJ implementation remain separate work.
+This Foundation closeout does **not** mean Production Ready. DJ Platform runtime readiness, Deployment Readiness and Domain DJ implementation remain separate work. Claude focused re-audit of the post-closeout remediation remains pending.
 
 Future capabilities are not promoted into Platform Core merely because they could theoretically be reused.
 

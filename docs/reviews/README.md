@@ -15,7 +15,9 @@ Current versioned reviews:
 
 - `ARCHITECTURE_REVIEW_V1.md` — historical pre-implementation snapshot;
 - `ARCHITECTURE_REVIEW_V2.md` — Platform Core Foundation closure;
+- `ARCHITECTURE_REVIEW_V2_ADDENDUM.md` — post-closeout audit remediation record;
 - `SECURITY_REVIEW_V1.md` — Platform Core Foundation security review;
+- `SECURITY_REVIEW_V1_ADDENDUM.md` — post-closeout security remediation record;
 - `CURSOR_READINESS_V1.md` — historical agent-readiness snapshot.
 
 ## Purpose

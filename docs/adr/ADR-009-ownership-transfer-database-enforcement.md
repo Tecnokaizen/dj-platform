@@ -57,3 +57,15 @@ required, must be explicit and reviewed before deployment.
   transaction because enforcement is deferred, but must finish with exactly
   one at commit.
 - Foundation closure does not imply Production readiness.
+
+## Function Privilege Hardening (2026-08-13)
+
+Forward migration `20260813181000_harden_organization_owner_invariant_functions`
+does not change the invariant semantics above. It hardens helper portability:
+
+- fixed `search_path = ''` and schema-qualified `public.*` references;
+- `SECURITY DEFINER` only on the three `check_*` trigger helpers that nest-call
+  `assert_organization_owner_invariant`, so runtime roles do not need EXECUTE on
+  `assert_*`;
+- `assert_*` and `lock_*` remain `SECURITY INVOKER`;
+- no EXECUTE grants to `anon` or `authenticated`.
