@@ -187,6 +187,10 @@ async function createTestContext(options?: {
           membershipRepository: createMembershipRepository(client),
           findProfileIdByNormalizedAuthEmail:
             createFindProfileIdByNormalizedAuthEmail(client),
+          findOrganizationById: (organizationId) =>
+            client.organization.findUnique({ where: { id: organizationId } }),
+          findRoleById: (roleId) =>
+            client.role.findUnique({ where: { id: roleId } }),
         }),
       )
     },

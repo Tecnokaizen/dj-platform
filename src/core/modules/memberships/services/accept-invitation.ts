@@ -17,6 +17,10 @@ import {
 import type { InvitationDto } from '@/core/modules/memberships/types/invitation-dto'
 import type { MembershipDto } from '@/core/modules/memberships/types/membership-dto'
 import { normalizeEmail } from '@/core/modules/memberships/utils/normalize-email'
+import {
+  ORGANIZATION_ERROR_CODES,
+  OrganizationError,
+} from '@/core/modules/organizations/errors/organization-error'
 import { Prisma } from '@/generated/prisma/client'
 
 export type AcceptInvitationInput = {
@@ -59,12 +63,17 @@ export function createAcceptInvitationService(
     }
 
     await support.requireActiveOrganization(invitation.organizationId)
-    const role = await support.requireRole(invitation.roleId)
-    support.rejectOwnerRole(role)
+    const preliminaryRole = await support.requireRole(invitation.roleId)
+    support.rejectOwnerRole(preliminaryRole)
 
     try {
       const accepted = await support.runInTransaction(
-        async ({ invitationRepository, membershipRepository }) => {
+        async ({
+          invitationRepository,
+          membershipRepository,
+          findOrganizationById,
+          findRoleById,
+        }) => {
           const claimAt = support.now()
           const currentInvitation =
             await invitationRepository.findByTokenHash(tokenHash)
@@ -80,6 +89,26 @@ export function createAcceptInvitationService(
           if (currentInvitation.expiresAt <= claimAt) {
             throw new InvitationError(INVITATION_ERROR_CODES.EXPIRED)
           }
+
+          const organization = await findOrganizationById(
+            currentInvitation.organizationId,
+          )
+
+          if (!organization) {
+            throw new OrganizationError(ORGANIZATION_ERROR_CODES.NOT_FOUND)
+          }
+
+          if (organization.status !== 'ACTIVE') {
+            throw new OrganizationError(ORGANIZATION_ERROR_CODES.INVALID_STATE)
+          }
+
+          const role = await findRoleById(currentInvitation.roleId)
+
+          if (!role) {
+            throw new MembershipError(MEMBERSHIP_ERROR_CODES.ROLE_INVALID)
+          }
+
+          support.rejectOwnerRole(role)
 
           const currentMembership =
             await membershipRepository.findByOrganizationAndProfile(

@@ -25,6 +25,12 @@ import {
 } from '@/core/modules/memberships/services/invitation-lifecycle-support'
 import { createResendInvitationService } from '@/core/modules/memberships/services/resend-invitation'
 import { createRevokeInvitationService } from '@/core/modules/memberships/services/revoke-invitation'
+import {
+  ORGANIZATION_ERROR_CODES,
+  OrganizationError,
+  type OrganizationErrorCode,
+} from '@/core/modules/organizations/errors/organization-error'
+import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
 
 const TEST_PREFIX = 'm047-m054-test-'
@@ -137,11 +143,16 @@ async function createTestContext(options?: {
       email: ' Recipient@Example.COM ',
     },
   }
+  const hooks: {
+    beforeTransaction?: () => void | Promise<void>
+  } = {}
   const support = createInvitationLifecycleSupport({
     invitationRepository: createInvitationRepository(prisma),
     membershipRepository: createMembershipRepository(prisma),
-    runInTransaction: (operation) =>
-      prisma.$transaction((client) => {
+    runInTransaction: async (operation) => {
+      await hooks.beforeTransaction?.()
+
+      return prisma.$transaction((client) => {
         const repository = createMembershipRepository(client)
         const membershipRepository =
           options?.transactionMembershipStatusOverride === undefined
@@ -173,15 +184,26 @@ async function createTestContext(options?: {
           membershipRepository,
           findProfileIdByNormalizedAuthEmail:
             createFindProfileIdByNormalizedAuthEmail(client),
+          findOrganizationById: (organizationId) =>
+            client.organization.findUnique({
+              where: { id: organizationId },
+              select: organizationSelect,
+            }),
+          findRoleById: (roleId) =>
+            client.role.findUnique({ where: { id: roleId } }),
         })
-      }),
+      })
+    },
     getCurrentActorProfileId: async () => inviterProfileId,
     getCurrentRecipientIdentity: async () => {
       await identity.onResolve?.()
       return identity.current
     },
     findOrganizationById: (organizationId) =>
-      prisma.organization.findUnique({ where: { id: organizationId } }),
+      prisma.organization.findUnique({
+        where: { id: organizationId },
+        select: organizationSelect,
+      }),
     findRoleById: (roleId) => prisma.role.findUnique({ where: { id: roleId } }),
     generateInvitationToken: () => Buffer.alloc(32, 1).toString('base64url'),
     hashInvitationToken,
@@ -229,6 +251,7 @@ async function createTestContext(options?: {
     clock,
     createInvitation,
     expireInvitation: createExpireInvitationService(support),
+    hooks,
     identity,
     managerRole,
     memberRole,
@@ -264,6 +287,19 @@ async function expectMembershipError(
   } catch (error) {
     expect(error).toBeInstanceOf(MembershipError)
     expect((error as MembershipError).code).toBe(code)
+  }
+}
+
+async function expectOrganizationError(
+  promise: Promise<unknown>,
+  code: OrganizationErrorCode,
+): Promise<void> {
+  try {
+    await promise
+    expect.unreachable('Expected OrganizationError to be thrown')
+  } catch (error) {
+    expect(error).toBeInstanceOf(OrganizationError)
+    expect((error as OrganizationError).code).toBe(code)
   }
 }
 
@@ -469,6 +505,37 @@ describe('Invitation acceptance services (M-047 → M-054)', () => {
     await expectInvitationError(
       context.acceptInvitation({ token: created.rawToken }),
       INVITATION_ERROR_CODES.EXPIRED,
+    )
+    await expect(
+      context.prisma.organizationInvitation.findUniqueOrThrow({
+        where: { id: created.invitation.id },
+      }),
+    ).resolves.toMatchObject({ status: 'PENDING' })
+    await expect(
+      context.prisma.organizationMembership.findUnique({
+        where: {
+          organizationId_profileId: {
+            organizationId: context.organization.id,
+            profileId: context.recipientProfileId,
+          },
+        },
+      }),
+    ).resolves.toBeNull()
+  })
+
+  it('revalidates Organization ACTIVE state inside the claim transaction', async () => {
+    const context = await createTestContext()
+    const created = await context.createInvitation()
+    context.hooks.beforeTransaction = async () => {
+      await context.prisma.organization.update({
+        where: { id: context.organization.id },
+        data: { status: 'SUSPENDED' },
+      })
+    }
+
+    await expectOrganizationError(
+      context.acceptInvitation({ token: created.rawToken }),
+      ORGANIZATION_ERROR_CODES.INVALID_STATE,
     )
     await expect(
       context.prisma.organizationInvitation.findUniqueOrThrow({

@@ -1,10 +1,20 @@
 'use server'
 
-import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 import { createClient } from '@/lib/supabase/server'
+
+function getTrustedAppOrigin(): string {
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim()
+
+  if (configured) {
+    return configured.replace(/\/$/, '')
+  }
+
+  return 'http://localhost:3000'
+}
 
 export async function register(formData: FormData) {
   const displayName = String(formData.get('displayName') ?? '').trim()
@@ -28,13 +38,8 @@ export async function register(formData: FormData) {
     redirect('/register?error=Las contraseñas no coinciden')
   }
 
-  const requestHeaders = await headers()
-
-  const origin =
-    requestHeaders.get('origin') ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    'http://localhost:3000'
-
+  const origin = getTrustedAppOrigin()
+  const nextPath = getSafeInternalPath('/dashboard')
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.signUp({
@@ -45,7 +50,7 @@ export async function register(formData: FormData) {
         display_name: displayName,
         preferred_language: 'es',
       },
-      emailRedirectTo: `${origin}/auth/callback?next=/dashboard`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
     },
   })
 

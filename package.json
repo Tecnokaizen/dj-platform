@@ -24,6 +24,7 @@
     "db:seed": "prisma db seed",
     "postinstall": "prisma generate",
     "test:identity:auth-email-projection": "vitest run --config vitest.config.ts src/core/identity/profile/tests/profile-auth-email-projection.test.ts",
+    "test:identity:safe-internal-path": "vitest run --config vitest.config.ts src/core/identity/auth/tests/get-safe-internal-path.test.ts",
     "test:organizations:persistence": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence.test.ts",
     "test:organizations:lifecycle": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-lifecycle.test.ts",
     "test:organizations:persistence-integrity": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence-integrity.test.ts",

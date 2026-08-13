@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { login } from '@/core/identity/auth/actions/login'
+import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -46,7 +47,7 @@ export default async function LoginPage({
           <input
             type="hidden"
             name="next"
-            value={params.next ?? '/dashboard'}
+            value={getSafeInternalPath(params.next)}
           />
 
           <div>

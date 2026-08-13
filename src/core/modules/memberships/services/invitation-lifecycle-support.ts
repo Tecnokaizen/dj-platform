@@ -43,6 +43,8 @@ export type InvitationTransactionRepositories = {
   findProfileIdByNormalizedAuthEmail: (
     normalizedEmail: string
   ) => Promise<string | null>
+  findOrganizationById: (organizationId: string) => Promise<Organization | null>
+  findRoleById: (roleId: string) => Promise<Role | null>
 }
 
 export type AuthenticatedRecipientIdentity = {
@@ -222,6 +224,12 @@ export function createInvitationLifecycleSupportForClient(
     membershipRepository: createMembershipRepository(client),
     findProfileIdByNormalizedAuthEmail:
       createFindProfileIdByNormalizedAuthEmail(client),
+    findOrganizationById: (organizationId) =>
+      client.organization.findUnique({
+        where: { id: organizationId },
+        select: organizationSelect,
+      }),
+    findRoleById: (roleId) => client.role.findUnique({ where: { id: roleId } }),
   }
 
   return createInvitationLifecycleSupport({
@@ -230,12 +238,8 @@ export function createInvitationLifecycleSupportForClient(
     getCurrentActorProfileId: async () => options.actorProfileId,
     getCurrentRecipientIdentity:
       options.getCurrentRecipientIdentity ?? (async () => null),
-    findOrganizationById: (organizationId) =>
-      client.organization.findUnique({
-        where: { id: organizationId },
-        select: organizationSelect,
-      }),
-    findRoleById: (roleId) => client.role.findUnique({ where: { id: roleId } }),
+    findOrganizationById: transactionRepositories.findOrganizationById,
+    findRoleById: transactionRepositories.findRoleById,
     generateInvitationToken,
     hashInvitationToken,
     invitationLifetimeMs: INVITATION_LIFETIME_HOURS * 60 * 60 * 1000,
@@ -253,6 +257,13 @@ export const invitationLifecycleSupport = createInvitationLifecycleSupport({
         membershipRepository: createMembershipRepository(client),
         findProfileIdByNormalizedAuthEmail:
           createFindProfileIdByNormalizedAuthEmail(client),
+        findOrganizationById: (organizationId) =>
+          client.organization.findUnique({
+            where: { id: organizationId },
+            select: organizationSelect,
+          }),
+        findRoleById: (roleId) =>
+          client.role.findUnique({ where: { id: roleId } }),
       })
     ),
   getCurrentActorProfileId: async () => {
