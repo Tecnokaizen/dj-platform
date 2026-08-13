@@ -80,14 +80,17 @@ Current Foundation sequence:
 
 Current status:
 
-- Identity foundation implemented
-- Organizations Foundation Stage 1 CONDITIONAL PASS (O-037 Organization mutation authorization implemented)
-- Roles Foundation Stage 1 CLOSED / PASS
-- Memberships Foundation complete through its quality gate, with Tenancy Integration M-084→M-087 implemented
-- Permissions Foundation implemented, including Memberships administrative authorization and Organization mutation authorization
-- M-088 ownership transfer remains BLOCKED pending an approved previous-owner Role policy
+**Platform Core Foundation — CLOSED / PASS** within its approved scope
+(Architecture Review V2; Security Review V1; ADR-001 through ADR-009).
 
-Memberships and Permissions Foundation are closed for their approved scopes. Core Foundation is not declared complete while M-088 and remaining Organizations Stage 1 deferred tasks remain open.
+- Identity foundation implemented
+- Organizations Foundation CLOSED / PASS, including authorized mutations and app composition (`/organizations`)
+- Roles Foundation Stage 1 CLOSED / PASS
+- Memberships Foundation complete through its quality gate, with Tenancy Integration M-084→M-087
+- Permissions Foundation implemented, including Memberships administrative authorization and Organization mutation authorization
+- Ownership: M-088 closed by ADR-009 — callers supply an explicit non-OWNER `previousOwnerRoleId`; PostgreSQL enforces exactly one ACTIVE OWNER per Organization
+
+This Foundation closeout does **not** mean Production Ready. DJ Platform runtime readiness, Deployment Readiness and Domain DJ implementation remain separate work.
 
 Future capabilities are not promoted into Platform Core merely because they could theoretically be reused.
 
@@ -105,11 +108,13 @@ Current implemented foundation includes:
 - magic-link authentication
 - protected application area
 - application Profile
-- Prisma foundation
-- generated Prisma client
+- Prisma foundation and generated client
+- Organizations, Roles, Memberships, Tenancy and Permissions Foundation
+- ownership transfer and ACTIVE OWNER database enforcement
+- minimum authorized Organization management UI (`/organizations`)
 - initial Core and Domain source boundaries
 
-Large parts of the DJ Domain remain implementation work. Platform Core Foundation is substantially implemented for the approved Identity → Permissions sequence, with explicit remaining gates such as M-088.
+Large parts of the DJ Domain remain unimplemented. Milestone 2 is not authorized pending respecification.
 
 ---
 
