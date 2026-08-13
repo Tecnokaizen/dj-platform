@@ -8,9 +8,16 @@ import {
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import { PERMISSION_KEYS } from '@/core/modules/permissions/constants/permission-keys'
-import { runAuthorizedOrganizationOperation } from '@/core/modules/permissions/services/require-organization-permission'
+import {
+  runAuthorizedOrganizationOperation,
+  type AuthorizedOrganizationOperation,
+} from '@/core/modules/permissions/services/require-organization-permission'
 
 type OrganizationMutationClient = Pick<PrismaClient, 'organization'>
+
+type AuthorizedRunner = <Result>(
+  operation: AuthorizedOrganizationOperation<Prisma.TransactionClient, Result>
+) => Promise<Result>
 
 export function createRestoreOrganization(client: OrganizationMutationClient) {
   return async function restoreOrganizationRecord(
@@ -54,13 +61,22 @@ export function createRestoreOrganization(client: OrganizationMutationClient) {
   }
 }
 
-export async function restoreOrganization(
-  organizationId: string
-): Promise<Organization> {
-  return runAuthorizedOrganizationOperation({
-    permissionKey: PERMISSION_KEYS.ORGANIZATIONS_UPDATE,
-    resolveOrganizationId: async () => organizationId,
-    execute: async (client) =>
-      createRestoreOrganization(client)(organizationId),
-  })
+export function createAuthorizedRestoreOrganizationService(
+  runAuthorized: AuthorizedRunner
+) {
+  return async function restoreOrganization(
+    organizationId: string
+  ): Promise<Organization> {
+    return runAuthorized({
+      permissionKey: PERMISSION_KEYS.ORGANIZATIONS_UPDATE,
+      allowedOrganizationStatuses: ['ARCHIVED'],
+      resolveOrganizationId: async () => organizationId,
+      execute: async (client) =>
+        createRestoreOrganization(client)(organizationId),
+    })
+  }
 }
+
+export const restoreOrganization = createAuthorizedRestoreOrganizationService(
+  runAuthorizedOrganizationOperation
+)

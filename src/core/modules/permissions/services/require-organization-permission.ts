@@ -12,12 +12,18 @@ import { createPermissionAuthorizationServices } from '@/core/modules/permission
 import type { AuthorizationContext } from '@/core/modules/permissions/types/authorization-context'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import { createResolveOrganizationContextService } from '@/core/modules/organizations/services/switch-active-organization'
+import type { OrganizationStatus } from '@/core/modules/organizations/types/organization-status'
 import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 export type AuthorizedOrganizationOperation<Client, Result> = {
   permissionKey: PermissionKey
   resolveOrganizationId: (client: Client) => Promise<string>
+  /**
+   * Server-controlled statuses accepted while resolving Organization context.
+   * Defaults to ACTIVE only inside the resolver. Never take this from user input.
+   */
+  allowedOrganizationStatuses?: readonly OrganizationStatus[]
   execute: (client: Client, context: AuthorizationContext) => Promise<Result>
 }
 
@@ -29,7 +35,8 @@ export type OrganizationPermissionTransactionDependencies<Client> = {
   resolveOrganizationContext: (
     client: Client,
     profileId: string,
-    organizationId: string
+    organizationId: string,
+    allowedOrganizationStatuses?: readonly OrganizationStatus[]
   ) => Promise<AuthorizationContext>
   requirePermission: (
     client: Client,
@@ -53,6 +60,7 @@ export function createAuthorizedOrganizationOperationRunner<Client>(
   return async function runAuthorizedOrganizationOperation<Result>({
     permissionKey,
     resolveOrganizationId,
+    allowedOrganizationStatuses,
     execute,
   }: AuthorizedOrganizationOperation<Client, Result>): Promise<Result> {
     // Supabase is consulted before the database transaction. All tenant and
@@ -74,7 +82,8 @@ export function createAuthorizedOrganizationOperationRunner<Client>(
           const context = await dependencies.resolveOrganizationContext(
             client,
             profileId,
-            organizationId
+            organizationId,
+            allowedOrganizationStatuses
           )
 
           await dependencies.requirePermission(client, context, permissionKey)
@@ -96,7 +105,8 @@ export function createAuthorizedOrganizationOperationRunner<Client>(
 async function resolveTransactionOrganizationContext(
   client: Prisma.TransactionClient,
   profileId: string,
-  organizationId: string
+  organizationId: string,
+  allowedOrganizationStatuses?: readonly OrganizationStatus[]
 ): Promise<AuthorizationContext> {
   const membershipRepository = createMembershipRepository(client)
   const resolveOrganizationContext = createResolveOrganizationContextService({
@@ -109,6 +119,7 @@ async function resolveTransactionOrganizationContext(
     findActiveMembership:
       membershipRepository.findActiveByOrganizationAndProfile,
     findRoleById: (id) => client.role.findUnique({ where: { id } }),
+    allowedOrganizationStatuses,
   })
 
   return resolveOrganizationContext(organizationId)

@@ -18,10 +18,13 @@ import { organizationIdSchema } from '@/core/modules/organizations/schemas/organ
 import { findOrganizationById } from '@/core/modules/organizations/services/find-organization-by-id'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import type { OrganizationContext } from '@/core/modules/organizations/types/organization-context'
+import type { OrganizationStatus } from '@/core/modules/organizations/types/organization-status'
 import { requiredSystemRoleKeySchema } from '@/core/modules/roles/schemas/required-system-role-key'
 import { findRoleById } from '@/core/modules/roles/services/find-role-by-id'
 import type { Role } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
+
+const DEFAULT_ALLOWED_ORGANIZATION_STATUSES = ['ACTIVE'] as const satisfies readonly OrganizationStatus[]
 
 type ActiveMembershipContext = {
   id: string
@@ -40,11 +43,20 @@ export type ResolveOrganizationContextDependencies = {
     profileId: string
   ) => Promise<ActiveMembershipContext | null>
   findRoleById: (roleId: string) => Promise<Role | null>
+  /**
+   * Server-controlled Organization statuses accepted for this resolution.
+   * Defaults to ACTIVE only. Never accept this list from browser input.
+   */
+  allowedOrganizationStatuses?: readonly OrganizationStatus[]
 }
 
 export function createResolveOrganizationContextService(
   dependencies: ResolveOrganizationContextDependencies
 ) {
+  const allowedOrganizationStatuses =
+    dependencies.allowedOrganizationStatuses ??
+    DEFAULT_ALLOWED_ORGANIZATION_STATUSES
+
   return async function resolveOrganizationContext(
     organizationId: string
   ): Promise<OrganizationContext> {
@@ -71,7 +83,7 @@ export function createResolveOrganizationContextService(
       throw new OrganizationError(ORGANIZATION_ERROR_CODES.NOT_FOUND)
     }
 
-    if (organization.status !== 'ACTIVE') {
+    if (!allowedOrganizationStatuses.includes(organization.status)) {
       throw new OrganizationError(ORGANIZATION_ERROR_CODES.INVALID_STATE)
     }
 

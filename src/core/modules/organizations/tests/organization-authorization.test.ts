@@ -86,7 +86,8 @@ function createTestAuthorizedRunner(profileId: string, prisma: PrismaClient) {
     resolveOrganizationContext: async (
       client,
       actorProfileId,
-      organizationId
+      organizationId,
+      allowedOrganizationStatuses
     ) => {
       const membershipRepository = createMembershipRepository(client)
       return createResolveOrganizationContextService({
@@ -99,6 +100,7 @@ function createTestAuthorizedRunner(profileId: string, prisma: PrismaClient) {
         findActiveMembership:
           membershipRepository.findActiveByOrganizationAndProfile,
         findRoleById: (id) => client.role.findUnique({ where: { id } }),
+        allowedOrganizationStatuses,
       })(organizationId)
     },
     requirePermission: async (client, context, permissionKey) => {
