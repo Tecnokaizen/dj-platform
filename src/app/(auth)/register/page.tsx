@@ -13,8 +13,7 @@ export default async function RegisterPage({
   searchParams,
 }: RegisterPageProps) {
   const params = await searchParams
-  const errorMessage =
-    getAuthPublicErrorMessage(params.error) ?? params.error ?? null
+  const errorMessage = getAuthPublicErrorMessage(params.error)
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-neutral-950 px-4 py-12 text-white">

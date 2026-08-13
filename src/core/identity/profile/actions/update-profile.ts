@@ -3,7 +3,10 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { AUTH_PUBLIC_ERROR_CODES } from '@/core/identity/auth/errors/auth-public-error'
+import {
+  AUTH_PUBLIC_ERROR_CODES,
+  AUTH_PUBLIC_MESSAGE_CODES,
+} from '@/core/identity/auth/errors/auth-public-error'
 import { updateCurrentProfile } from '@/core/identity/profile/services/update-current-profile'
 
 const ALLOWED_LANGUAGES = ['es', 'en'] as const
@@ -17,23 +20,25 @@ export async function updateProfile(formData: FormData) {
   ).trim()
 
   if (!displayName) {
-    redirect('/profile?error=El nombre visible es obligatorio')
+    redirect(
+      `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_DISPLAY_NAME_REQUIRED}`
+    )
   }
 
   if (displayName.length > 120) {
     redirect(
-      '/profile?error=El nombre visible no puede superar los 120 caracteres'
+      `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_DISPLAY_NAME_TOO_LONG}`
     )
   }
 
   if (djName.length > 120) {
     redirect(
-      '/profile?error=El nombre DJ no puede superar los 120 caracteres'
+      `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_DJ_NAME_TOO_LONG}`
     )
   }
 
   if (bio.length > 1000) {
-    redirect('/profile?error=La biografía no puede superar los 1000 caracteres')
+    redirect(`/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_BIO_TOO_LONG}`)
   }
 
   if (
@@ -41,7 +46,9 @@ export async function updateProfile(formData: FormData) {
       preferredLanguage as (typeof ALLOWED_LANGUAGES)[number]
     )
   ) {
-    redirect('/profile?error=El idioma seleccionado no es válido')
+    redirect(
+      `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_LANGUAGE_INVALID}`
+    )
   }
 
   try {
@@ -61,5 +68,5 @@ export async function updateProfile(formData: FormData) {
   revalidatePath('/dashboard')
   revalidatePath('/', 'layout')
 
-  redirect('/profile?success=Perfil actualizado correctamente')
+  redirect(`/profile?success=${AUTH_PUBLIC_MESSAGE_CODES.PROFILE_UPDATED}`)
 }

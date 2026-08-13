@@ -3,7 +3,10 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { AUTH_PUBLIC_ERROR_CODES } from '@/core/identity/auth/errors/auth-public-error'
+import {
+  AUTH_PUBLIC_ERROR_CODES,
+  AUTH_PUBLIC_MESSAGE_CODES,
+} from '@/core/identity/auth/errors/auth-public-error'
 import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 import { createClient } from '@/lib/supabase/server'
 
@@ -28,15 +31,17 @@ export async function register(formData: FormData) {
   const confirmPassword = String(formData.get('confirmPassword') ?? '')
 
   if (!displayName || !email || !password) {
-    redirect('/register?error=Completa todos los campos')
+    redirect(
+      `/register?error=${AUTH_PUBLIC_ERROR_CODES.REGISTRATION_FIELDS_REQUIRED}`
+    )
   }
 
   if (password.length < 8) {
-    redirect('/register?error=La contraseña debe tener al menos 8 caracteres')
+    redirect(`/register?error=${AUTH_PUBLIC_ERROR_CODES.PASSWORD_TOO_SHORT}`)
   }
 
   if (password !== confirmPassword) {
-    redirect('/register?error=Las contraseñas no coinciden')
+    redirect(`/register?error=${AUTH_PUBLIC_ERROR_CODES.PASSWORD_MISMATCH}`)
   }
 
   const origin = getTrustedAppOrigin()
@@ -68,7 +73,5 @@ export async function register(formData: FormData) {
     redirect('/dashboard')
   }
 
-  redirect(
-    '/login?message=Cuenta creada. Revisa tu correo para confirmar el registro.'
-  )
+  redirect(`/login?message=${AUTH_PUBLIC_MESSAGE_CODES.ACCOUNT_CREATED}`)
 }

@@ -16,7 +16,7 @@ export async function login(formData: FormData) {
   const nextPath = getSafeInternalPath(formData.get('next'))
 
   if (!email || !password) {
-    redirect('/login?error=Introduce tu email y contraseña')
+    redirect(`/login?error=${AUTH_PUBLIC_ERROR_CODES.REQUIRED_CREDENTIALS}`)
   }
 
   const supabase = await createClient()
