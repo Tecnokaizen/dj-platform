@@ -104,28 +104,56 @@ async function seedTenantFixtures(client: pg.Client) {
     [ids.archivedOrganization, 'Archived tenant', 'ARCHIVED'],
   ] as const
 
-  for (const [id, name, status] of organizations) {
-    await client.query(
-      `INSERT INTO public.organizations (
-        id, name, slug, status, locale, timezone, created_at, updated_at
-      ) VALUES ($1, $2, $3, $4, 'es', 'UTC', NOW(), NOW())`,
-      [id, name, `rls-${id}`, status]
-    )
-  }
+  await client.query('BEGIN')
 
-  await client.query(
-    `INSERT INTO public.profiles (id, username, created_at, updated_at)
-     VALUES
-       ($1, 'rls-active-profile', NOW(), NOW()),
-       ($2, 'rls-other-profile', NOW(), NOW())`,
-    [ids.activeProfile, ids.otherProfile]
-  )
-  await client.query(
-    `INSERT INTO public.roles (
-      id, key, name, is_system, sort_order, created_at, updated_at
-    ) VALUES ($1, 'RLS_MEMBER', 'RLS Member', TRUE, 100, NOW(), NOW())`,
-    [ids.role]
-  )
+  try {
+    await client.query(
+      `INSERT INTO public.roles (
+        id, key, name, is_system, sort_order, created_at, updated_at
+      ) VALUES
+        ($1, 'RLS_MEMBER', 'RLS Member', TRUE, 100, NOW(), NOW()),
+        ($2, 'OWNER', 'Owner', TRUE, 10, NOW(), NOW())`,
+      [ids.role, randomUUID()]
+    )
+    const ownerRole = await client.query<{ id: string }>(
+      `SELECT id FROM public.roles WHERE key = 'OWNER'`
+    )
+    const ownerRoleId = ownerRole.rows[0]?.id
+
+    if (!ownerRoleId) {
+      throw new Error('OWNER Role fixture was not created')
+    }
+
+    for (const [id, name, status] of organizations) {
+      await client.query(
+        `INSERT INTO public.organizations (
+          id, name, slug, status, locale, timezone, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, 'es', 'UTC', NOW(), NOW())`,
+        [id, name, `rls-${id}`, status]
+      )
+
+      const ownerProfileId = randomUUID()
+      await client.query(
+        `INSERT INTO public.profiles (id, username, created_at, updated_at)
+         VALUES ($1, $2, NOW(), NOW())`,
+        [ownerProfileId, `rls-owner-${id.slice(0, 8)}`]
+      )
+      await client.query(
+        `INSERT INTO public.organization_memberships (
+          id, organization_id, profile_id, role_id, status,
+          created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, 'ACTIVE', NOW(), NOW())`,
+        [randomUUID(), id, ownerProfileId, ownerRoleId]
+      )
+    }
+
+    await client.query(
+      `INSERT INTO public.profiles (id, username, created_at, updated_at)
+       VALUES
+         ($1, 'rls-active-profile', NOW(), NOW()),
+         ($2, 'rls-other-profile', NOW(), NOW())`,
+      [ids.activeProfile, ids.otherProfile]
+    )
 
   const memberships = [
     [
@@ -161,39 +189,44 @@ async function seedTenantFixtures(client: pg.Client) {
     ],
   ] as const
 
-  for (const [id, organizationId, profileId, status] of memberships) {
+    for (const [id, organizationId, profileId, status] of memberships) {
+      await client.query(
+        `INSERT INTO public.organization_memberships (
+          id, organization_id, profile_id, role_id, status,
+          suspended_at, removed_at, created_at, updated_at
+        ) VALUES (
+          $1, $2, $3, $4, $5::membership_status,
+          CASE WHEN $5::text = 'SUSPENDED' THEN NOW() ELSE NULL END,
+          CASE WHEN $5::text = 'REMOVED' THEN NOW() ELSE NULL END,
+          NOW(), NOW()
+        )`,
+        [id, organizationId, profileId, ids.role, status]
+      )
+    }
+
     await client.query(
-      `INSERT INTO public.organization_memberships (
-        id, organization_id, profile_id, role_id, status,
-        suspended_at, removed_at, created_at, updated_at
+      `INSERT INTO public.organization_invitations (
+        id, organization_id, recipient_email, normalized_email, role_id,
+        status, token_hash, expires_at, invited_by_membership_id,
+        created_at, updated_at
       ) VALUES (
-        $1, $2, $3, $4, $5::membership_status,
-        CASE WHEN $5::text = 'SUSPENDED' THEN NOW() ELSE NULL END,
-        CASE WHEN $5::text = 'REMOVED' THEN NOW() ELSE NULL END,
+        $1, $2, 'recipient@example.com', 'recipient@example.com', $3,
+        'PENDING', $4, NOW() + INTERVAL '72 hours', $5,
         NOW(), NOW()
       )`,
-      [id, organizationId, profileId, ids.role, status]
+      [
+        randomUUID(),
+        ids.activeOrganization,
+        ids.role,
+        'a'.repeat(64),
+        ids.activeMembership,
+      ]
     )
+    await client.query('COMMIT')
+  } catch (error) {
+    await client.query('ROLLBACK')
+    throw error
   }
-
-  await client.query(
-    `INSERT INTO public.organization_invitations (
-      id, organization_id, recipient_email, normalized_email, role_id,
-      status, token_hash, expires_at, invited_by_membership_id,
-      created_at, updated_at
-    ) VALUES (
-      $1, $2, 'recipient@example.com', 'recipient@example.com', $3,
-      'PENDING', $4, NOW() + INTERVAL '72 hours', $5,
-      NOW(), NOW()
-    )`,
-    [
-      randomUUID(),
-      ids.activeOrganization,
-      ids.role,
-      'a'.repeat(64),
-      ids.activeMembership,
-    ]
-  )
 }
 
 async function queryAsAuthenticated<Row extends pg.QueryResultRow>(

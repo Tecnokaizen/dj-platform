@@ -110,25 +110,6 @@ export function createAcceptInvitationService(
 
           support.rejectOwnerRole(role)
 
-          const currentMembership =
-            await membershipRepository.findByOrganizationAndProfile(
-              currentInvitation.organizationId,
-              identity.profileId,
-            )
-
-          if (currentMembership) {
-            switch (currentMembership.status) {
-              case 'ACTIVE':
-                throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
-              case 'SUSPENDED':
-                throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
-              case 'REMOVED':
-                break
-              default:
-                throw new MembershipError(MEMBERSHIP_ERROR_CODES.INVALID_STATE)
-            }
-          }
-
           const claimed = await invitationRepository.acceptPending(
             currentInvitation.id,
             currentInvitation.updatedAt,
@@ -154,6 +135,25 @@ export function createAcceptInvitationService(
             }
 
             throw new InvitationError(INVITATION_ERROR_CODES.NOT_PENDING)
+          }
+
+          const currentMembership =
+            await membershipRepository.findByOrganizationAndProfile(
+              currentInvitation.organizationId,
+              identity.profileId,
+            )
+
+          if (currentMembership) {
+            switch (currentMembership.status) {
+              case 'ACTIVE':
+                throw new InvitationError(INVITATION_ERROR_CODES.ALREADY_MEMBER)
+              case 'SUSPENDED':
+                throw new MembershipError(MEMBERSHIP_ERROR_CODES.SUSPENDED)
+              case 'REMOVED':
+                break
+              default:
+                throw new MembershipError(MEMBERSHIP_ERROR_CODES.INVALID_STATE)
+            }
           }
 
           const membership =

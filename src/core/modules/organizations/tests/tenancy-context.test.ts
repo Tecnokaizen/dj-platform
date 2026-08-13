@@ -66,7 +66,7 @@ async function createOrganization(
 
   const { organization } = await createOwnedOrganizationTestRecord(prisma, {
     name: `Context ${label}`,
-    slug: `${SLUG_PREFIX}${label}-${randomUUID()}`,
+    slug: `${SLUG_PREFIX}${label}-${randomUUID().slice(0, 8)}`,
   })
 
   if (status !== 'ACTIVE') {
