@@ -6,7 +6,6 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { MEMBERSHIP_ERROR_CODES } from '@/core/modules/memberships/errors/membership-error'
 import { createMembershipRepository } from '@/core/modules/memberships/repositories/membership-repository'
 import { createTransferOrganizationOwnershipService } from '@/core/modules/memberships/services/transfer-organization-ownership'
-import { PERMISSION_KEYS } from '@/core/modules/permissions/constants/permission-keys'
 import { PERMISSION_ERROR_CODES } from '@/core/modules/permissions/errors/permission-error'
 import { createRolePermissionRepository } from '@/core/modules/permissions/repositories/role-permission-repository'
 import { createPermissionAuthorizationServices } from '@/core/modules/permissions/services/permission-authorization'
@@ -362,9 +361,40 @@ describe('Organization ownership invariant and transfer (M-088)', () => {
     }
   })
 
-  it('does not permit transfer without the dedicated Permission', async () => {
-    expect(PERMISSION_KEYS.ORGANIZATIONS_TRANSFER_OWNERSHIP).toBe(
-      'organizations.transfer_ownership'
+  it('denies ownership transfer for an active ADMIN without transfer Permission', async () => {
+    const context = await createContext()
+    const adminProfileId = await createProfile(context.prisma, 'admin-actor')
+    await context.prisma.organizationMembership.create({
+      data: {
+        organizationId: context.organization.id,
+        profileId: adminProfileId,
+        roleId: context.adminRole.id,
+        status: 'ACTIVE',
+      },
+    })
+
+    const transfer = createTransferOrganizationOwnershipService(
+      createAuthorizedRunner(adminProfileId, context.prisma)
     )
+
+    await expect(
+      transfer({
+        organizationId: context.organization.id,
+        targetMembershipId: context.targetMembership.id,
+        previousOwnerRoleId: context.adminRole.id,
+      })
+    ).rejects.toMatchObject({
+      name: 'PermissionError',
+      code: PERMISSION_ERROR_CODES.DENIED,
+    })
+
+    await expect(
+      context.prisma.organizationMembership.findUniqueOrThrow({
+        where: { id: context.ownerMembership.id },
+      })
+    ).resolves.toMatchObject({
+      roleId: context.ownerRole.id,
+      status: 'ACTIVE',
+    })
   })
 })

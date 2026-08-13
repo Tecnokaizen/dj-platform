@@ -50,6 +50,7 @@
     "test:memberships:invitation-acceptance": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/invitation-acceptance.test.ts",
     "test:memberships:owner-safety": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/owner-safety.test.ts",
     "test:memberships:ownership-transfer": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/ownership-transfer.test.ts",
+    "test:memberships:owner-invariant-portability": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/owner-invariant-portability.test.ts",
     "test:memberships:access-foundation": "vitest run --config vitest.config.ts src/core/modules/memberships/tests/membership-access-foundation.test.ts",
     "test:memberships:phase12": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/memberships/tests/*.test.ts",
     "test:tenancy:onboarding": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-onboarding.test.ts",
