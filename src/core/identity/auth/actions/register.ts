@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { AUTH_PUBLIC_ERROR_CODES } from '@/core/identity/auth/errors/auth-public-error'
 import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 import { createClient } from '@/lib/supabase/server'
 
@@ -55,7 +56,9 @@ export async function register(formData: FormData) {
   })
 
   if (error) {
-    redirect(`/register?error=${encodeURIComponent(error.message)}`)
+    redirect(
+      `/register?error=${AUTH_PUBLIC_ERROR_CODES.REGISTRATION_FAILED}`
+    )
   }
 
   revalidatePath('/', 'layout')

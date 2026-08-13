@@ -81,12 +81,13 @@ Current Foundation sequence:
 Current status:
 
 - Identity foundation implemented
-- Organizations Foundation Stage 1 CONDITIONAL PASS
+- Organizations Foundation Stage 1 CONDITIONAL PASS (O-037 Organization mutation authorization implemented)
 - Roles Foundation Stage 1 CLOSED / PASS
-- Memberships Foundation implementation in progress
-- Permissions pending / deferred
+- Memberships Foundation complete through its quality gate, with Tenancy Integration M-084→M-087 implemented
+- Permissions Foundation implemented, including Memberships administrative authorization and Organization mutation authorization
+- M-088 ownership transfer remains BLOCKED pending an approved previous-owner Role policy
 
-The Memberships schema, enums, models, migration and repository lookups exist, but Memberships Foundation remains incomplete.
+Memberships and Permissions Foundation are closed for their approved scopes. Core Foundation is not declared complete while M-088 and remaining Organizations Stage 1 deferred tasks remain open.
 
 Future capabilities are not promoted into Platform Core merely because they could theoretically be reused.
 
@@ -108,7 +109,7 @@ Current implemented foundation includes:
 - generated Prisma client
 - initial Core and Domain source boundaries
 
-Large parts of the DJ Domain and Core Foundation remain implementation work.
+Large parts of the DJ Domain remain implementation work. Platform Core Foundation is substantially implemented for the approved Identity → Permissions sequence, with explicit remaining gates such as M-088.
 
 ---
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { AUTH_PUBLIC_ERROR_CODES } from '@/core/identity/auth/errors/auth-public-error'
 import { updateCurrentProfile } from '@/core/identity/profile/services/update-current-profile'
 
 const ALLOWED_LANGUAGES = ['es', 'en'] as const
@@ -50,13 +51,10 @@ export async function updateProfile(formData: FormData) {
       bio: bio || null,
       preferredLanguage,
     })
-  } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : 'No se pudo actualizar el perfil'
-
-    redirect(`/profile?error=${encodeURIComponent(message)}`)
+  } catch {
+    redirect(
+      `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_UPDATE_FAILED}`
+    )
   }
 
   revalidatePath('/profile')

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+import { AUTH_PUBLIC_ERROR_CODES } from '@/core/identity/auth/errors/auth-public-error'
 import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 import { createClient } from '@/lib/supabase/server'
 
@@ -18,6 +19,9 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.redirect(
-    new URL('/login?error=auth_callback_failed', url.origin)
+    new URL(
+      `/login?error=${AUTH_PUBLIC_ERROR_CODES.AUTH_CALLBACK_FAILED}`,
+      url.origin
+    )
   )
 }

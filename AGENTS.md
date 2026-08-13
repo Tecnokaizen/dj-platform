@@ -234,7 +234,7 @@ Approved Foundation sequence:
 
 Identity already has source implementation.
 
-Organizations, Roles, Memberships and Permissions have approved specifications but remain implementation work.
+Organizations, Roles, Memberships, Tenancy Integration and Permissions have approved specifications and implemented Foundation source for their approved scopes. Organizations Stage 1 remains CONDITIONAL PASS. M-088 ownership transfer remains BLOCKED pending policy approval.
 
 Do not skip Foundation dependencies without Architecture approval.
 

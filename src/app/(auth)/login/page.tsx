@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { login } from '@/core/identity/auth/actions/login'
+import { getAuthPublicErrorMessage } from '@/core/identity/auth/errors/auth-public-error'
 import { getSafeInternalPath } from '@/core/identity/auth/utils/get-safe-internal-path'
 
 type LoginPageProps = {
@@ -15,6 +16,8 @@ export default async function LoginPage({
   searchParams,
 }: LoginPageProps) {
   const params = await searchParams
+  const errorMessage =
+    getAuthPublicErrorMessage(params.error) ?? params.error ?? null
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-neutral-950 px-4 py-12 text-white">
@@ -31,9 +34,9 @@ export default async function LoginPage({
           </p>
         </div>
 
-        {params.error ? (
+        {errorMessage ? (
           <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
-            {params.error}
+            {errorMessage}
           </div>
         ) : null}
 

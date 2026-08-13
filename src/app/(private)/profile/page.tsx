@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 
+import { getAuthPublicErrorMessage } from '@/core/identity/auth/errors/auth-public-error'
 import { ProfileForm } from '@/core/identity/profile/components/profile-form'
 import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
 
@@ -15,6 +16,8 @@ export default async function ProfilePage({
 }: ProfilePageProps) {
   const params = await searchParams
   const session = await getCurrentProfile()
+  const errorMessage =
+    getAuthPublicErrorMessage(params.error) ?? params.error ?? null
 
   if (!session) {
     redirect('/login')
@@ -43,9 +46,9 @@ export default async function ProfilePage({
         </div>
       ) : null}
 
-      {params.error ? (
+      {errorMessage ? (
         <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200">
-          {params.error}
+          {errorMessage}
         </div>
       ) : null}
 

@@ -204,7 +204,7 @@ Remaining tenancy and Organizations decision gates:
 - M-088 ownership transfer and previous-owner Role policy;
 - database enforcement strategy for exactly one active OWNER;
 - O-017, O-018 and O-021;
-- Permissions integration for Organization read/update services;
+- Product-facing Organization read composition (`organizations.read`) where required beyond Core mutation authorization;
 - Product-level Organization context composition where required.
 
 createOrganizationRecord remains an internal persistence primitive only.
@@ -290,13 +290,15 @@ Foundation implementation and validation complete for the approved scope:
 - drift detection without silent deletion;
 - Permission reads and tenant-scoped authorization evaluation;
 - server-only persistence grants;
-- Memberships administrative integration.
+- Memberships administrative integration;
+- Organization mutation authorization (`organizations.update`) for update,
+  suspend, archive, restore and reactivate.
 
 Protected administrative operations revalidate tenant context and explicit
 RolePermission mappings in the same serializable database transaction as their
 read or mutation. Permission-aware RLS, authorization caching, Domain extension,
-Organization-service integration and ownership-transfer integration remain
-deferred pending their documented decision gates.
+Product-facing Organization read composition and ownership-transfer integration
+remain deferred pending their documented decision gates.
 
 Other future Core capabilities must not be implemented speculatively.
 
@@ -826,11 +828,12 @@ implementation.
 Roles Foundation Stage 1 and Memberships Foundation are closed for their
 approved scopes. Tenancy Integration M-084 through M-087 is implemented.
 Permissions Foundation and Memberships administrative integration M-089 through
-M-094 are implemented and validated.
+M-094 are implemented and validated. Organization mutation authorization (O-037)
+is implemented for update and lifecycle writes.
 
-M-088 ownership transfer remains blocked pending approved policy. Organization
-service authorization, permission-aware RLS, caching and Domain Permission
-composition remain explicitly deferred.
+M-088 ownership transfer remains blocked pending approved policy.
+Permission-aware RLS, caching, Domain Permission composition and Product-facing
+Organization read composition remain explicitly deferred.
 
 Large parts of DJ Domain functionality remain unimplemented.
 
@@ -924,12 +927,11 @@ Documentation must not be followed blindly when repository evidence proves it st
 
 Current consolidation priorities:
 
-1. review and commit the Permissions Foundation change set;
-2. perform formal Foundation Architecture and security review;
-3. align remaining agent instructions with current repository maturity;
-4. backfill foundational ADRs where established decisions require records;
-5. resolve M-088 ownership-transfer policy before implementation;
-6. authorize the next bounded Core or Product milestone explicitly.
+1. perform formal Foundation Architecture and security review;
+2. align remaining agent instructions and maturity docs with current repository evidence;
+3. backfill foundational ADRs where established decisions require records;
+4. resolve M-088 ownership-transfer policy before implementation;
+5. authorize the next bounded Core or Product milestone explicitly.
 
 ---
 
