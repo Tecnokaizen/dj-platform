@@ -16,11 +16,16 @@ import {
   OrganizationError,
 } from '@/core/modules/organizations/errors/organization-error'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'm033-m038-test-'
 
 type TestContext = {
   organizationId: string
+  ownerMembershipId: string
   profileId: string
   memberRoleId: string
   adminRoleId: string
@@ -44,41 +49,9 @@ async function cleanupMembershipLifecycleRecords(): Promise<void> {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
-    select: {
-      id: true,
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organization.deleteMany({
-      where: {
-        id: {
-          in: organizationIds,
-        },
-      },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -103,12 +76,10 @@ async function createTestContext(): Promise<TestContext> {
   ])
   const profileId = randomUUID()
   const suffix = randomUUID().slice(0, 20)
-  const [organization] = await Promise.all([
-    prisma.organization.create({
-      data: {
-        name: 'Membership Lifecycle Test',
-        slug: `${TEST_PREFIX}${suffix}`,
-      },
+  const [ownedOrganization] = await Promise.all([
+    createOwnedOrganizationTestRecord(prisma, {
+      name: 'Membership Lifecycle Test',
+      slug: `${TEST_PREFIX}${suffix}`,
     }),
     prisma.profile.create({
       data: {
@@ -117,9 +88,11 @@ async function createTestContext(): Promise<TestContext> {
       },
     }),
   ])
+  const { organization, ownerMembership } = ownedOrganization
 
   return {
     organizationId: organization.id,
+    ownerMembershipId: ownerMembership.id,
     profileId,
     memberRoleId: memberRole.id,
     adminRoleId: adminRole.id,
@@ -277,12 +250,8 @@ describe('Membership lifecycle services (M-033 → M-038)', () => {
     const { prisma } = await import('@/lib/prisma')
     const { removeMembership, suspendMembership } =
       await createLifecycleTestServices()
-    const ownerMembership = await prisma.organizationMembership.create({
-      data: {
-        organizationId: context.organizationId,
-        profileId: context.profileId,
-        roleId: context.ownerRoleId,
-      },
+    const ownerMembership = await prisma.organizationMembership.findUniqueOrThrow({
+      where: { id: context.ownerMembershipId },
     })
 
     await expectMembershipError(

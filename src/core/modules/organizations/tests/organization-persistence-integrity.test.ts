@@ -9,6 +9,10 @@ import {
   ORGANIZATION_ERROR_CODES,
   OrganizationError,
 } from '@/core/modules/organizations/errors/organization-error'
+import {
+  createOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'o022-test-'
 
@@ -20,12 +24,8 @@ async function cleanupOrganizationTestRecords(): Promise<void> {
 
   const { prisma } = await import('@/lib/prisma')
 
-  await prisma.organization.deleteMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
 }
 
@@ -83,14 +83,11 @@ describe('Organization persistence integrity (O-022)', () => {
   })
 
   it('generates a Prisma UUID id that is persisted', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { findOrganizationById } = await import(
       '@/core/modules/organizations/services/find-organization-by-id'
     )
 
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-022 UUID',
       slug: createOrganizationTestSlug(TEST_PREFIX),
     })
@@ -103,14 +100,11 @@ describe('Organization persistence integrity (O-022)', () => {
   })
 
   it('applies Prisma defaults for status, locale, timezone and archivedAt', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { findOrganizationById } = await import(
       '@/core/modules/organizations/services/find-organization-by-id'
     )
 
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-022 Defaults',
       slug: createOrganizationTestSlug(TEST_PREFIX),
     })
@@ -187,9 +181,6 @@ describe('Organization persistence integrity (O-022)', () => {
   })
 
   it('keeps createdAt stable and advances updatedAt on Prisma update', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
@@ -199,7 +190,7 @@ describe('Organization persistence integrity (O-022)', () => {
       '@/core/modules/organizations/services/find-organization-by-id'
     )
 
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-022 Timestamps',
       slug: createOrganizationTestSlug(TEST_PREFIX),
     })
@@ -223,19 +214,16 @@ describe('Organization persistence integrity (O-022)', () => {
   })
 
   it('rejects duplicate slug via UNIQUE constraint mapped to SLUG_CONFLICT', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
 
     const slug = createOrganizationTestSlug(TEST_PREFIX)
 
-    await createOrganizationRecord({
+    await createOrganizationTestRecord({
       name: 'O-022 Unique Owner',
       slug,
     })
 
     try {
-      await createOrganizationRecord({
+      await createOrganizationTestRecord({
         name: 'O-022 Unique Duplicate',
         slug,
       })

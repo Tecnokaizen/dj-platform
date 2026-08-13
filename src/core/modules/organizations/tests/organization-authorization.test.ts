@@ -17,6 +17,10 @@ import {
   assertOrganizationsTestDatabase,
   createOrganizationTestSlug,
 } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 import { seedSystemRoles } from '@/core/modules/roles/seed/seed-system-roles'
 import type { Prisma, PrismaClient } from '@/generated/prisma/client'
 
@@ -26,20 +30,9 @@ async function cleanup(): Promise<void> {
   assertOrganizationsTestDatabase()
   const { prisma } = await import('@/lib/prisma')
 
-  const organizations = await prisma.organization.findMany({
-    where: { slug: { startsWith: TEST_PREFIX } },
-    select: { id: true },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationMembership.deleteMany({
-      where: { organizationId: { in: organizationIds } },
-    })
-    await prisma.organization.deleteMany({
-      where: { id: { in: organizationIds } },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: { username: { startsWith: TEST_PREFIX } },
@@ -55,28 +48,31 @@ async function createAuthorizedActor(roleKey: 'OWNER' | 'MEMBER') {
   const profileId = randomUUID()
   const suffix = randomUUID().slice(0, 12)
 
-  const organization = await prisma.organization.create({
-    data: {
-      name: 'O-037 Org',
-      slug: createOrganizationTestSlug(TEST_PREFIX),
-    },
-  })
-
   await prisma.profile.create({
     data: {
       id: profileId,
       username: `${TEST_PREFIX}${roleKey.toLowerCase()}-${suffix}`,
     },
   })
-
-  await prisma.organizationMembership.create({
-    data: {
-      organizationId: organization.id,
-      profileId,
-      roleId: role.id,
-      status: 'ACTIVE',
+  const { organization } = await createOwnedOrganizationTestRecord(
+    prisma,
+    {
+      name: 'O-037 Org',
+      slug: createOrganizationTestSlug(TEST_PREFIX),
     },
-  })
+    roleKey === 'OWNER' ? profileId : undefined,
+  )
+
+  if (roleKey !== 'OWNER') {
+    await prisma.organizationMembership.create({
+      data: {
+        organizationId: organization.id,
+        profileId,
+        roleId: role.id,
+        status: 'ACTIVE',
+      },
+    })
+  }
 
   return { organization, profileId, prisma }
 }

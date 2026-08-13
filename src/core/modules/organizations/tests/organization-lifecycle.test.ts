@@ -10,6 +10,10 @@ import {
 } from '@/core/modules/organizations/errors/organization-error'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import type { OrganizationStatus } from '@/core/modules/organizations/types/organization-status'
+import {
+  createOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'o020-test-'
 
@@ -31,12 +35,8 @@ async function cleanupOrganizationTestRecords(): Promise<void> {
 
   const { prisma } = await import('@/lib/prisma')
 
-  await prisma.organization.deleteMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
 }
 
@@ -57,11 +57,7 @@ async function countOrganizationTestRecords(): Promise<number> {
 async function createActiveOrganization(
   name: string
 ): Promise<Organization> {
-  const { createOrganizationRecord } = await import(
-    '@/core/modules/organizations/services/create-organization-record'
-  )
-
-  return createOrganizationRecord({
+  return createOrganizationTestRecord({
     name,
     slug: createOrganizationTestSlug(TEST_PREFIX),
   })

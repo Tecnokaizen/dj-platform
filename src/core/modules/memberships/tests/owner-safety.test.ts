@@ -26,6 +26,10 @@ import { createRemoveMembershipService } from '@/core/modules/memberships/servic
 import { restoreRemovedMembership } from '@/core/modules/memberships/services/restore-removed-membership'
 import { createSuspendMembershipService } from '@/core/modules/memberships/services/suspend-membership'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'm055-m059-test-'
 const INITIAL_NOW = new Date('2026-08-11T12:00:00.000Z')
@@ -57,41 +61,9 @@ async function cleanupOwnerSafetyRecords(): Promise<void> {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
-    select: {
-      id: true,
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organization.deleteMany({
-      where: {
-        id: {
-          in: organizationIds,
-        },
-      },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -119,13 +91,7 @@ async function createTestContext() {
   const memberProfileId = randomUUID()
   const removedProfileId = randomUUID()
   const candidateProfileId = randomUUID()
-  const [organization] = await Promise.all([
-    prisma.organization.create({
-      data: {
-        name: 'OWNER Safety Test',
-        slug: `${TEST_PREFIX}${suffix}`,
-      },
-    }),
+  await Promise.all([
     prisma.profile.create({
       data: {
         id: ownerProfileId,
@@ -151,16 +117,17 @@ async function createTestContext() {
       },
     }),
   ])
-  const [ownerMembership, memberMembership, removedMembership] =
+  const { organization, ownerMembership } =
+    await createOwnedOrganizationTestRecord(
+      prisma,
+      {
+        name: 'OWNER Safety Test',
+        slug: `${TEST_PREFIX}${suffix}`,
+      },
+      ownerProfileId,
+    )
+  const [memberMembership, removedMembership] =
     await Promise.all([
-      prisma.organizationMembership.create({
-        data: {
-          organizationId: organization.id,
-          profileId: ownerProfileId,
-          roleId: ownerRole.id,
-          status: 'ACTIVE',
-        },
-      }),
       prisma.organizationMembership.create({
         data: {
           organizationId: organization.id,

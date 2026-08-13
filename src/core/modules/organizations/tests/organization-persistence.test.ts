@@ -9,6 +9,10 @@ import {
   OrganizationError,
 } from '@/core/modules/organizations/errors/organization-error'
 import type { Organization } from '@/core/modules/organizations/types/organization'
+import {
+  createOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'o019-test-'
 
@@ -33,12 +37,8 @@ async function cleanupOrganizationTestRecords(): Promise<void> {
 
   const { prisma } = await import('@/lib/prisma')
 
-  await prisma.organization.deleteMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
 }
 
@@ -72,12 +72,8 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('creates an Organization with Prisma defaults', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
-
     const slug = createOrganizationTestSlug(TEST_PREFIX)
-    const organization = await createOrganizationRecord({
+    const organization = await createOrganizationTestRecord({
       name: 'O-019 Create Org',
       slug,
     })
@@ -91,14 +87,11 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('finds an Organization by id and returns null on miss', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { findOrganizationById } = await import(
       '@/core/modules/organizations/services/find-organization-by-id'
     )
 
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-019 Find By Id',
       slug: createOrganizationTestSlug(TEST_PREFIX),
     })
@@ -112,15 +105,12 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('finds an Organization by slug and returns null on miss', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { findOrganizationBySlug } = await import(
       '@/core/modules/organizations/services/find-organization-by-slug'
     )
 
     const slug = createOrganizationTestSlug(TEST_PREFIX)
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-019 Find By Slug',
       slug,
     })
@@ -136,16 +126,13 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('updates owned fields and clears logoUrl with null', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
     const { prisma } = await import('@/lib/prisma')
     const updateOrganization = createUpdateOrganization(prisma)
 
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-019 Update Org',
       slug: createOrganizationTestSlug(TEST_PREFIX),
       logoUrl: 'https://example.com/logo.png',
@@ -165,16 +152,13 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('rejects empty update with UPDATE_EMPTY', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
     const { prisma } = await import('@/lib/prisma')
     const updateOrganization = createUpdateOrganization(prisma)
 
-    const created = await createOrganizationRecord({
+    const created = await createOrganizationTestRecord({
       name: 'O-019 Empty Update',
       slug: createOrganizationTestSlug(TEST_PREFIX),
     })
@@ -199,19 +183,16 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('rejects duplicate create slug with SLUG_CONFLICT', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
 
     const slug = createOrganizationTestSlug(TEST_PREFIX)
 
-    await createOrganizationRecord({
+    await createOrganizationTestRecord({
       name: 'O-019 Slug Owner',
       slug,
     })
 
     await expectOrganizationError(
-      createOrganizationRecord({
+      createOrganizationTestRecord({
         name: 'O-019 Slug Duplicate',
         slug,
       }),
@@ -220,9 +201,6 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('rejects update to an occupied slug with SLUG_CONFLICT', async () => {
-    const { createOrganizationRecord } = await import(
-      '@/core/modules/organizations/services/create-organization-record'
-    )
     const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
@@ -232,12 +210,12 @@ describe('Organization persistence (O-019)', () => {
     const occupiedSlug = createOrganizationTestSlug(TEST_PREFIX)
     const otherSlug = createOrganizationTestSlug(TEST_PREFIX)
 
-    await createOrganizationRecord({
+    await createOrganizationTestRecord({
       name: 'O-019 Occupied Slug',
       slug: occupiedSlug,
     })
 
-    const other = await createOrganizationRecord({
+    const other = await createOrganizationTestRecord({
       name: 'O-019 Other Org',
       slug: otherSlug,
     })

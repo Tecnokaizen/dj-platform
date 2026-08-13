@@ -235,5 +235,25 @@ export function createMembershipRepository(client: MembershipRepositoryClient) {
 
       return updated ?? null
     },
+
+    async transferActiveRole(
+      membershipId: string,
+      expectedRoleId: string,
+      targetRoleId: string
+    ): Promise<MembershipRecord | null> {
+      const [updated] = await client.organizationMembership.updateManyAndReturn({
+        where: {
+          id: membershipId,
+          roleId: expectedRoleId,
+          status: 'ACTIVE',
+        },
+        data: {
+          roleId: targetRoleId,
+        },
+        select: membershipRecordSelect,
+      })
+
+      return updated ?? null
+    },
   }
 }

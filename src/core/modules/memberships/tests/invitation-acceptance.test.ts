@@ -32,6 +32,10 @@ import {
 } from '@/core/modules/organizations/errors/organization-error'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'm047-m054-test-'
 const INITIAL_NOW = new Date('2026-08-11T12:00:00.000Z')
@@ -41,41 +45,9 @@ async function cleanupInvitationAcceptanceRecords(): Promise<void> {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
-    select: {
-      id: true,
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organization.deleteMany({
-      where: {
-        id: {
-          in: organizationIds,
-        },
-      },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -103,12 +75,10 @@ async function createTestContext(options?: {
   const suffix = randomUUID().slice(0, 18)
   const inviterProfileId = randomUUID()
   const recipientProfileId = randomUUID()
-  const [organization] = await Promise.all([
-    prisma.organization.create({
-      data: {
-        name: 'Invitation Acceptance Test',
-        slug: `${TEST_PREFIX}${suffix}`,
-      },
+  const [{ organization }] = await Promise.all([
+    createOwnedOrganizationTestRecord(prisma, {
+      name: 'Invitation Acceptance Test',
+      slug: `${TEST_PREFIX}${suffix}`,
     }),
     prisma.profile.create({
       data: {

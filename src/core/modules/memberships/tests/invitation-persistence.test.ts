@@ -3,6 +3,10 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 import type { InvitationStatus } from '@/generated/prisma/client'
 
 const TEST_PREFIX = 'm069-m070-test-'
@@ -17,41 +21,9 @@ async function cleanupInvitationPersistenceRecords(): Promise<void> {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
-    select: {
-      id: true,
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organization.deleteMany({
-      where: {
-        id: {
-          in: organizationIds,
-        },
-      },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -75,11 +47,9 @@ async function createPersistenceContext() {
   const suffix = randomUUID().slice(0, 18)
   const inviterProfileId = randomUUID()
   const acceptedProfileId = randomUUID()
-  const organization = await prisma.organization.create({
-    data: {
-      name: 'Invitation Persistence Test',
-      slug: `${TEST_PREFIX}${suffix}`,
-    },
+  const { organization } = await createOwnedOrganizationTestRecord(prisma, {
+    name: 'Invitation Persistence Test',
+    slug: `${TEST_PREFIX}${suffix}`,
   })
   await prisma.profile.create({
     data: {

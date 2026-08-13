@@ -24,6 +24,10 @@ import {
 import { createResendInvitationService } from '@/core/modules/memberships/services/resend-invitation'
 import { createRevokeInvitationService } from '@/core/modules/memberships/services/revoke-invitation'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'm042-m046-test-'
 const INITIAL_NOW = new Date('2026-08-11T12:00:00.000Z')
@@ -35,41 +39,9 @@ async function cleanupInvitationLifecycleRecords(): Promise<void> {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
-    select: {
-      id: true,
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organization.deleteMany({
-      where: {
-        id: {
-          in: organizationIds,
-        },
-      },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -98,12 +70,10 @@ async function createTestContext(options?: {
   const activeRecipientProfileId = randomUUID()
   const suspendedRecipientProfileId = randomUUID()
   const removedRecipientProfileId = randomUUID()
-  const [organization] = await Promise.all([
-    prisma.organization.create({
-      data: {
-        name: 'Invitation Lifecycle Test',
-        slug: `${TEST_PREFIX}${suffix}`,
-      },
+  const [{ organization }] = await Promise.all([
+    createOwnedOrganizationTestRecord(prisma, {
+      name: 'Invitation Lifecycle Test',
+      slug: `${TEST_PREFIX}${suffix}`,
     }),
     prisma.profile.create({
       data: {

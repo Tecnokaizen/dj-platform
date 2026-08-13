@@ -20,6 +20,10 @@ import {
   resolveOrganizationContextDependencies,
 } from '@/core/modules/organizations/services/switch-active-organization'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 import type { OrganizationStatus } from '@/core/modules/organizations/types/organization-status'
 import { seedSystemRoles } from '@/core/modules/roles/seed/seed-system-roles'
 
@@ -30,27 +34,9 @@ async function cleanupTenancyContextRecords() {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: SLUG_PREFIX,
-      },
-    },
-    select: { id: true },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: SLUG_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: { organizationId: { in: organizationIds } },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: { organizationId: { in: organizationIds } },
-    })
-    await prisma.organization.deleteMany({
-      where: { id: { in: organizationIds } },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -78,13 +64,22 @@ async function createOrganization(
 ) {
   const { prisma } = await import('@/lib/prisma')
 
-  return prisma.organization.create({
-    data: {
-      name: `Context ${label}`,
-      slug: `${SLUG_PREFIX}${label}-${randomUUID()}`,
-      status,
-    },
+  const { organization } = await createOwnedOrganizationTestRecord(prisma, {
+    name: `Context ${label}`,
+    slug: `${SLUG_PREFIX}${label}-${randomUUID()}`,
   })
+
+  if (status !== 'ACTIVE') {
+    return prisma.organization.update({
+      where: { id: organization.id },
+      data: {
+        status,
+        ...(status === 'ARCHIVED' ? { archivedAt: new Date() } : {}),
+      },
+    })
+  }
+
+  return organization
 }
 
 describe('Tenancy discovery and context (M-085 → M-086)', () => {

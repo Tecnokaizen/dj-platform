@@ -9,6 +9,10 @@ import {
 import { createOrganizationMembershipListingServices } from '@/core/modules/memberships/services/list-memberships-for-organization'
 import { membershipReadRepository } from '@/core/modules/memberships/services/membership-read-support'
 import { assertOrganizationsTestDatabase } from '@/core/modules/organizations/tests/assert-test-database'
+import {
+  createOwnedOrganizationTestRecord,
+  deleteOrganizationTestRecords,
+} from '@/core/modules/organizations/tests/organization-owner-fixture'
 
 const TEST_PREFIX = 'm029-m032-test-'
 
@@ -18,6 +22,7 @@ type ReadTestContext = {
   removedMembershipId: string
   organizationAId: string
   organizationBId: string
+  ownerMembershipAId: string
   profileAId: string
   profileBId: string
 }
@@ -26,41 +31,9 @@ async function cleanupMembershipReadRecords(): Promise<void> {
   assertOrganizationsTestDatabase()
 
   const { prisma } = await import('@/lib/prisma')
-  const organizations = await prisma.organization.findMany({
-    where: {
-      slug: {
-        startsWith: TEST_PREFIX,
-      },
-    },
-    select: {
-      id: true,
-    },
+  await deleteOrganizationTestRecords(prisma, {
+    slug: { startsWith: TEST_PREFIX },
   })
-  const organizationIds = organizations.map(({ id }) => id)
-
-  if (organizationIds.length > 0) {
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organizationMembership.deleteMany({
-      where: {
-        organizationId: {
-          in: organizationIds,
-        },
-      },
-    })
-    await prisma.organization.deleteMany({
-      where: {
-        id: {
-          in: organizationIds,
-        },
-      },
-    })
-  }
 
   await prisma.profile.deleteMany({
     where: {
@@ -85,18 +58,14 @@ async function createReadTestContext(): Promise<ReadTestContext> {
   const suffix = randomUUID().slice(0, 18)
   const profileAId = randomUUID()
   const profileBId = randomUUID()
-  const [organizationA, organizationB] = await Promise.all([
-    prisma.organization.create({
-      data: {
-        name: 'Membership Reads A',
-        slug: `${TEST_PREFIX}a-${suffix}`,
-      },
+  const [ownedOrganizationA, ownedOrganizationB] = await Promise.all([
+    createOwnedOrganizationTestRecord(prisma, {
+      name: 'Membership Reads A',
+      slug: `${TEST_PREFIX}a-${suffix}`,
     }),
-    prisma.organization.create({
-      data: {
-        name: 'Membership Reads B',
-        slug: `${TEST_PREFIX}b-${suffix}`,
-      },
+    createOwnedOrganizationTestRecord(prisma, {
+      name: 'Membership Reads B',
+      slug: `${TEST_PREFIX}b-${suffix}`,
     }),
     prisma.profile.create({
       data: {
@@ -111,6 +80,8 @@ async function createReadTestContext(): Promise<ReadTestContext> {
       },
     }),
   ])
+  const organizationA = ownedOrganizationA.organization
+  const organizationB = ownedOrganizationB.organization
 
   const [activeMembership, suspendedMembership, removedMembership] =
     await Promise.all([
@@ -148,6 +119,7 @@ async function createReadTestContext(): Promise<ReadTestContext> {
     removedMembershipId: removedMembership.id,
     organizationAId: organizationA.id,
     organizationBId: organizationB.id,
+    ownerMembershipAId: ownedOrganizationA.ownerMembership.id,
     profileAId,
     profileBId,
   }
@@ -241,11 +213,18 @@ describe('Membership read services (M-029 → M-032)', () => {
       context.organizationAId
     )
 
-    expect(all).toHaveLength(2)
+    expect(all.map(({ id }) => id).sort()).toEqual(
+      [
+        context.activeMembershipId,
+        context.ownerMembershipAId,
+        context.suspendedMembershipId,
+      ].sort()
+    )
     expect(suspended).toHaveLength(1)
     expect(suspended[0]?.id).toBe(context.suspendedMembershipId)
-    expect(active).toHaveLength(1)
-    expect(active[0]?.id).toBe(context.activeMembershipId)
+    expect(active.map(({ id }) => id).sort()).toEqual(
+      [context.activeMembershipId, context.ownerMembershipAId].sort()
+    )
   })
 
   it('lists Memberships by Profile with a strict ACTIVE variant', async () => {
