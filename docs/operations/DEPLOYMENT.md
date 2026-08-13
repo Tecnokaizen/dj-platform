@@ -60,6 +60,11 @@ filesystem and `node server.js`. It contains no Prisma CLI, Supabase CLI or
 migration credentials. `docker-compose.staging.yml` is a staging topology
 template only; it does not establish a deployed staging environment.
 
+The application exposes `/api/health` for process liveness and `/api/ready`
+for configuration, PostgreSQL, Auth and PostgREST reachability. Both routes are
+excluded from the session proxy, return no dependency details and disable HTTP
+caching. A failed dependency returns only `503 {"status":"not_ready"}`.
+
 ## Purpose
 
 This document defines operational standards for deploying Products built on the platform.

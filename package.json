@@ -31,6 +31,7 @@
     "test:identity:safe-internal-path": "vitest run --config vitest.config.ts src/core/identity/auth/tests/get-safe-internal-path.test.ts",
     "test:identity:auth-public-error": "vitest run --config vitest.config.ts src/core/identity/auth/tests/auth-public-error.test.ts",
     "test:config": "vitest run --config vitest.config.ts src/config/tests/environment.test.ts",
+    "test:operations:readiness": "vitest run --config vitest.config.ts src/operations/tests/readiness.test.ts",
     "test:organizations:persistence": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence.test.ts",
     "test:organizations:lifecycle": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-lifecycle.test.ts",
     "test:organizations:persistence-integrity": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence-integrity.test.ts",
