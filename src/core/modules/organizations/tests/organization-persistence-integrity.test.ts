@@ -190,9 +190,11 @@ describe('Organization persistence integrity (O-022)', () => {
     const { createOrganizationRecord } = await import(
       '@/core/modules/organizations/services/create-organization-record'
     )
-    const { updateOrganization } = await import(
+    const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
+    const { prisma } = await import('@/lib/prisma')
+    const updateOrganization = createUpdateOrganization(prisma)
     const { findOrganizationById } = await import(
       '@/core/modules/organizations/services/find-organization-by-id'
     )

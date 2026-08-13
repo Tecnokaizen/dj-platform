@@ -1175,11 +1175,11 @@ No temporary Membership representation is permitted.
 
 # Stage 3 — Authorization Integration
 
-The following work is deferred until Permissions exists.
+Permissions Foundation now exists. O-037 authorizes Organization mutations.
 
 ---
 
-## O-037 — DEFERRED
+## O-037 — DONE
 
 ### Permission-Based Organization Authorization
 
@@ -1194,6 +1194,28 @@ Roles
 
 Permissions
 ```
+
+### Stage 3 Implementation — 2026-08-13
+
+Organization mutations are authorized through the shared
+`runAuthorizedOrganizationOperation` frontier with `organizations.update`:
+
+```text
+updateOrganization
+suspendOrganization
+archiveOrganization
+restoreOrganization
+reactivateOrganization
+```
+
+Low-level persistence remains available as client-scoped factories for
+transaction reuse and Foundation lifecycle tests. Public exports require an
+authenticated Profile, revalidate ACTIVE Membership + Role inside a
+`SERIALIZABLE` transaction, and deny writes when RolePermission mapping is
+absent. Organization onboarding (`createOrganization`) remains outside this
+permission key. `organizations.read` wiring for Product-facing reads remains
+available for future O-017/O-018 composition and is not required for this
+mutation boundary.
 
 ---
 

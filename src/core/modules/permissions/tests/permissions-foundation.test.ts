@@ -457,4 +457,36 @@ describe('tenant-scoped Permission authorization', () => {
     })
     expect(runInTransaction).not.toHaveBeenCalled()
   })
+
+  it('retries bounded SERIALIZABLE conflicts before succeeding', async () => {
+    const context = createAuthorizationContext()
+    const { Prisma } = await import('@/generated/prisma/client')
+    let attempts = 0
+    const runAuthorizedOperation = createAuthorizedOrganizationOperationRunner({
+      getCurrentProfileId: async () => context.profileId,
+      runInTransaction: async (operation) => {
+        attempts += 1
+
+        if (attempts < 3) {
+          throw new Prisma.PrismaClientKnownRequestError('conflict', {
+            code: 'P2034',
+            clientVersion: 'test',
+          })
+        }
+
+        return operation({ id: 'transaction-client' })
+      },
+      resolveOrganizationContext: async () => context,
+      requirePermission: async () => context,
+    })
+
+    await expect(
+      runAuthorizedOperation({
+        permissionKey: PERMISSION_KEYS.ORGANIZATIONS_UPDATE,
+        resolveOrganizationId: async () => context.organizationId,
+        execute: async () => 'written',
+      }),
+    ).resolves.toBe('written')
+    expect(attempts).toBe(3)
+  })
 })

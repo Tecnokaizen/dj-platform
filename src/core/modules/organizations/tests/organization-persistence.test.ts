@@ -139,9 +139,11 @@ describe('Organization persistence (O-019)', () => {
     const { createOrganizationRecord } = await import(
       '@/core/modules/organizations/services/create-organization-record'
     )
-    const { updateOrganization } = await import(
+    const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
+    const { prisma } = await import('@/lib/prisma')
+    const updateOrganization = createUpdateOrganization(prisma)
 
     const created = await createOrganizationRecord({
       name: 'O-019 Update Org',
@@ -166,9 +168,11 @@ describe('Organization persistence (O-019)', () => {
     const { createOrganizationRecord } = await import(
       '@/core/modules/organizations/services/create-organization-record'
     )
-    const { updateOrganization } = await import(
+    const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
+    const { prisma } = await import('@/lib/prisma')
+    const updateOrganization = createUpdateOrganization(prisma)
 
     const created = await createOrganizationRecord({
       name: 'O-019 Empty Update',
@@ -182,9 +186,11 @@ describe('Organization persistence (O-019)', () => {
   })
 
   it('rejects update for missing id with NOT_FOUND', async () => {
-    const { updateOrganization } = await import(
+    const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
+    const { prisma } = await import('@/lib/prisma')
+    const updateOrganization = createUpdateOrganization(prisma)
 
     await expectOrganizationError(
       updateOrganization(crypto.randomUUID(), { name: 'Missing' }),
@@ -217,9 +223,11 @@ describe('Organization persistence (O-019)', () => {
     const { createOrganizationRecord } = await import(
       '@/core/modules/organizations/services/create-organization-record'
     )
-    const { updateOrganization } = await import(
+    const { createUpdateOrganization } = await import(
       '@/core/modules/organizations/services/update-organization'
     )
+    const { prisma } = await import('@/lib/prisma')
+    const updateOrganization = createUpdateOrganization(prisma)
 
     const occupiedSlug = createOrganizationTestSlug(TEST_PREFIX)
     const otherSlug = createOrganizationTestSlug(TEST_PREFIX)

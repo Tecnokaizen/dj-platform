@@ -97,6 +97,30 @@ async function assertUnchangedAfterInvalidTransition(params: {
   )
 }
 
+
+async function organizationMutations() {
+  const { prisma } = await import('@/lib/prisma')
+  const { createArchiveOrganization } = await import(
+    '@/core/modules/organizations/services/archive-organization'
+  )
+  const { createReactivateOrganization } = await import(
+    '@/core/modules/organizations/services/reactivate-organization'
+  )
+  const { createRestoreOrganization } = await import(
+    '@/core/modules/organizations/services/restore-organization'
+  )
+  const { createSuspendOrganization } = await import(
+    '@/core/modules/organizations/services/suspend-organization'
+  )
+
+  return {
+    archiveOrganization: createArchiveOrganization(prisma),
+    reactivateOrganization: createReactivateOrganization(prisma),
+    restoreOrganization: createRestoreOrganization(prisma),
+    suspendOrganization: createSuspendOrganization(prisma),
+  }
+}
+
 describe('Organization lifecycle (O-020)', () => {
   beforeAll(async () => {
     assertOrganizationsTestDatabase()
@@ -113,9 +137,7 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('transitions ACTIVE → SUSPENDED with archivedAt null', async () => {
-    const { suspendOrganization } = await import(
-      '@/core/modules/organizations/services/suspend-organization'
-    )
+    const { suspendOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Suspend')
     const suspended = await suspendOrganization(created.id)
@@ -129,12 +151,8 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('transitions SUSPENDED → ACTIVE with archivedAt null', async () => {
-    const { suspendOrganization } = await import(
-      '@/core/modules/organizations/services/suspend-organization'
-    )
-    const { reactivateOrganization } = await import(
-      '@/core/modules/organizations/services/reactivate-organization'
-    )
+    const { suspendOrganization } = await organizationMutations()
+    const { reactivateOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Reactivate')
     await suspendOrganization(created.id)
@@ -150,9 +168,7 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('transitions ACTIVE → ARCHIVED with archivedAt set', async () => {
-    const { archiveOrganization } = await import(
-      '@/core/modules/organizations/services/archive-organization'
-    )
+    const { archiveOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Archive')
     const archived = await archiveOrganization(created.id)
@@ -168,12 +184,8 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('transitions ARCHIVED → ACTIVE with archivedAt null', async () => {
-    const { archiveOrganization } = await import(
-      '@/core/modules/organizations/services/archive-organization'
-    )
-    const { restoreOrganization } = await import(
-      '@/core/modules/organizations/services/restore-organization'
-    )
+    const { archiveOrganization } = await organizationMutations()
+    const { restoreOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Restore')
     await archiveOrganization(created.id)
@@ -189,9 +201,7 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects suspend from SUSPENDED without partial mutation', async () => {
-    const { suspendOrganization } = await import(
-      '@/core/modules/organizations/services/suspend-organization'
-    )
+    const { suspendOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Suspend Susp')
     const suspended = await suspendOrganization(created.id)
@@ -211,12 +221,8 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects suspend from ARCHIVED without partial mutation', async () => {
-    const { archiveOrganization } = await import(
-      '@/core/modules/organizations/services/archive-organization'
-    )
-    const { suspendOrganization } = await import(
-      '@/core/modules/organizations/services/suspend-organization'
-    )
+    const { archiveOrganization } = await organizationMutations()
+    const { suspendOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Suspend Arch')
     const archived = await archiveOrganization(created.id)
@@ -234,9 +240,7 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects reactivate from ACTIVE without partial mutation', async () => {
-    const { reactivateOrganization } = await import(
-      '@/core/modules/organizations/services/reactivate-organization'
-    )
+    const { reactivateOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Reactivate Act')
 
@@ -253,12 +257,8 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects reactivate from ARCHIVED without partial mutation', async () => {
-    const { archiveOrganization } = await import(
-      '@/core/modules/organizations/services/archive-organization'
-    )
-    const { reactivateOrganization } = await import(
-      '@/core/modules/organizations/services/reactivate-organization'
-    )
+    const { archiveOrganization } = await organizationMutations()
+    const { reactivateOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Reactivate Arch')
     const archived = await archiveOrganization(created.id)
@@ -276,12 +276,8 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects archive from SUSPENDED without partial mutation', async () => {
-    const { suspendOrganization } = await import(
-      '@/core/modules/organizations/services/suspend-organization'
-    )
-    const { archiveOrganization } = await import(
-      '@/core/modules/organizations/services/archive-organization'
-    )
+    const { suspendOrganization } = await organizationMutations()
+    const { archiveOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Archive Susp')
     await suspendOrganization(created.id)
@@ -299,9 +295,7 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects archive from ARCHIVED without partial mutation', async () => {
-    const { archiveOrganization } = await import(
-      '@/core/modules/organizations/services/archive-organization'
-    )
+    const { archiveOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Archive Arch')
     const archived = await archiveOrganization(created.id)
@@ -319,9 +313,7 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects restore from ACTIVE without partial mutation', async () => {
-    const { restoreOrganization } = await import(
-      '@/core/modules/organizations/services/restore-organization'
-    )
+    const { restoreOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Restore Act')
 
@@ -338,12 +330,8 @@ describe('Organization lifecycle (O-020)', () => {
   })
 
   it('rejects restore from SUSPENDED without partial mutation', async () => {
-    const { suspendOrganization } = await import(
-      '@/core/modules/organizations/services/suspend-organization'
-    )
-    const { restoreOrganization } = await import(
-      '@/core/modules/organizations/services/restore-organization'
-    )
+    const { suspendOrganization } = await organizationMutations()
+    const { restoreOrganization } = await organizationMutations()
 
     const created = await createActiveOrganization('O-020 Invalid Restore Susp')
     await suspendOrganization(created.id)

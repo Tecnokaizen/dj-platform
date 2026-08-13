@@ -12,7 +12,7 @@ import { createPermissionAuthorizationServices } from '@/core/modules/permission
 import type { AuthorizationContext } from '@/core/modules/permissions/types/authorization-context'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import { createResolveOrganizationContextService } from '@/core/modules/organizations/services/switch-active-organization'
-import type { Prisma } from '@/generated/prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 export type AuthorizedOrganizationOperation<Client, Result> = {
@@ -38,6 +38,15 @@ export type OrganizationPermissionTransactionDependencies<Client> = {
   ) => Promise<AuthorizationContext>
 }
 
+const SERIALIZABLE_RETRY_LIMIT = 3
+
+function isSerializableConflict(error: unknown): boolean {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2034'
+  )
+}
+
 export function createAuthorizedOrganizationOperationRunner<Client>(
   dependencies: OrganizationPermissionTransactionDependencies<Client>
 ) {
@@ -54,18 +63,33 @@ export function createAuthorizedOrganizationOperationRunner<Client>(
       throw new ProfileError(PROFILE_ERROR_CODES.NOT_FOUND)
     }
 
-    return dependencies.runInTransaction(async (client) => {
-      const organizationId = await resolveOrganizationId(client)
-      const context = await dependencies.resolveOrganizationContext(
-        client,
-        profileId,
-        organizationId
-      )
+    let attempt = 0
 
-      await dependencies.requirePermission(client, context, permissionKey)
+    while (true) {
+      attempt += 1
 
-      return execute(client, context)
-    })
+      try {
+        return await dependencies.runInTransaction(async (client) => {
+          const organizationId = await resolveOrganizationId(client)
+          const context = await dependencies.resolveOrganizationContext(
+            client,
+            profileId,
+            organizationId
+          )
+
+          await dependencies.requirePermission(client, context, permissionKey)
+
+          return execute(client, context)
+        })
+      } catch (error) {
+        if (
+          !isSerializableConflict(error) ||
+          attempt >= SERIALIZABLE_RETRY_LIMIT
+        ) {
+          throw error
+        }
+      }
+    }
   }
 }
 
