@@ -29,6 +29,8 @@
     "test:organizations:persistence": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence.test.ts",
     "test:organizations:lifecycle": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-lifecycle.test.ts",
     "test:organizations:persistence-integrity": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-persistence-integrity.test.ts",
+    "test:organizations:slug": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-slug.test.ts",
+    "test:organizations:app-integration": "vitest run --config vitest.config.ts src/core/modules/organizations/tests/organization-read-integration.test.ts src/core/modules/organizations/tests/organization-public-notice.test.ts",
     "test:organizations:authorization": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-authorization.test.ts",
     "test:roles:persistence": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-persistence.test.ts",
     "test:roles:lookup": "vitest run --config vitest.config.ts src/core/modules/roles/tests/role-lookup.test.ts",

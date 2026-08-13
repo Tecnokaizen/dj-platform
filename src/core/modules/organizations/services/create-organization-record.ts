@@ -8,10 +8,11 @@ import {
 } from '@/core/modules/organizations/errors/organization-error'
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
+import { createOrganizationRecordSchema } from '@/core/modules/organizations/schemas/create-organization-record'
 
 export type CreateOrganizationRecordInput = {
   name: string
-  slug: string
+  slug?: string
   logoUrl?: string | null
   locale?: string
   timezone?: string
@@ -25,14 +26,16 @@ export function createCreateOrganizationRecord(
   return async function createOrganizationRecord(
     input: CreateOrganizationRecordInput
   ): Promise<Organization> {
+    const parsed = createOrganizationRecordSchema.parse(input)
+
     try {
       return await client.organization.create({
         data: {
-          name: input.name,
-          slug: input.slug,
-          ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
-          ...(input.locale !== undefined ? { locale: input.locale } : {}),
-          ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
+          name: parsed.name,
+          slug: parsed.slug,
+          ...(parsed.logoUrl !== undefined ? { logoUrl: parsed.logoUrl } : {}),
+          ...(parsed.locale !== undefined ? { locale: parsed.locale } : {}),
+          ...(parsed.timezone !== undefined ? { timezone: parsed.timezone } : {}),
         },
         select: organizationSelect,
       })

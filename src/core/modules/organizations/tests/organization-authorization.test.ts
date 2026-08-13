@@ -25,6 +25,7 @@ import { seedSystemRoles } from '@/core/modules/roles/seed/seed-system-roles'
 import type { Prisma, PrismaClient } from '@/generated/prisma/client'
 
 const TEST_PREFIX = 'o037-test-'
+type TestedRoleKey = 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER'
 
 async function cleanup(): Promise<void> {
   assertOrganizationsTestDatabase()
@@ -39,7 +40,7 @@ async function cleanup(): Promise<void> {
   })
 }
 
-async function createAuthorizedActor(roleKey: 'OWNER' | 'MEMBER') {
+async function createAuthorizedActor(roleKey: TestedRoleKey) {
   const { prisma } = await import('@/lib/prisma')
   await seedSystemRoles(prisma)
   await syncPermissionsFoundation(prisma)
@@ -127,9 +128,11 @@ describe('Organization permission authorization (O-037)', () => {
     await cleanup()
   })
 
-  it('allows organizations.update for OWNER through the authorized wrapper', async () => {
+  it.each(['OWNER', 'ADMIN'] as const)(
+    'allows organizations.update for %s through the authorized wrapper',
+    async (roleKey) => {
     const { organization, profileId, prisma } =
-      await createAuthorizedActor('OWNER')
+      await createAuthorizedActor(roleKey)
     const runAuthorized = createTestAuthorizedRunner(profileId, prisma)
 
     const updated = await runAuthorized({
@@ -142,11 +145,14 @@ describe('Organization permission authorization (O-037)', () => {
     })
 
     expect(updated.name).toBe('O-037 Updated')
-  })
+    }
+  )
 
-  it('denies organizations.update for MEMBER and does not write', async () => {
+  it.each(['MEMBER', 'VIEWER'] as const)(
+    'denies organizations.update for %s and does not write',
+    async (roleKey) => {
     const { organization, profileId, prisma } =
-      await createAuthorizedActor('MEMBER')
+      await createAuthorizedActor(roleKey)
     const runAuthorized = createTestAuthorizedRunner(profileId, prisma)
 
     await expect(
@@ -164,5 +170,6 @@ describe('Organization permission authorization (O-037)', () => {
     await expect(
       prisma.organization.findUniqueOrThrow({ where: { id: organization.id } }),
     ).resolves.toMatchObject({ status: 'ACTIVE' })
-  })
+    }
+  )
 })

@@ -8,6 +8,7 @@ import {
 import { organizationSelect } from '@/core/modules/organizations/persistence/organization-select'
 import type { Organization } from '@/core/modules/organizations/types/organization'
 import type { UpdateOrganizationInput } from '@/core/modules/organizations/types/update-organization-input'
+import { updateOrganizationSchema } from '@/core/modules/organizations/schemas/update-organization'
 import { PERMISSION_KEYS } from '@/core/modules/permissions/constants/permission-keys'
 import { runAuthorizedOrganizationOperation } from '@/core/modules/permissions/services/require-organization-permission'
 
@@ -28,12 +29,14 @@ export function createUpdateOrganization(client: OrganizationMutationClient) {
       throw new OrganizationError(ORGANIZATION_ERROR_CODES.UPDATE_EMPTY)
     }
 
+    const parsed = updateOrganizationSchema.parse(input)
+
     const data = {
-      ...(input.name !== undefined ? { name: input.name } : {}),
-      ...(input.slug !== undefined ? { slug: input.slug } : {}),
-      ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
-      ...(input.locale !== undefined ? { locale: input.locale } : {}),
-      ...(input.timezone !== undefined ? { timezone: input.timezone } : {}),
+      ...(parsed.name !== undefined ? { name: parsed.name } : {}),
+      ...(parsed.slug !== undefined ? { slug: parsed.slug } : {}),
+      ...(parsed.logoUrl !== undefined ? { logoUrl: parsed.logoUrl } : {}),
+      ...(parsed.locale !== undefined ? { locale: parsed.locale } : {}),
+      ...(parsed.timezone !== undefined ? { timezone: parsed.timezone } : {}),
     }
 
     try {

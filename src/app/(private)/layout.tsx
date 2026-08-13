@@ -60,6 +60,12 @@ export default async function PrivateLayout({
             >
               Perfil
             </Link>
+            <Link
+              href="/organizations"
+              className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
+            >
+              Organizaciones
+            </Link>
             <span className="block rounded-lg px-3 py-2 text-neutral-500">
               Biblioteca (próximamente)
             </span>

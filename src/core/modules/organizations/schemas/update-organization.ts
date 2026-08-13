@@ -4,7 +4,7 @@ import { organizationSlugSchema } from '@/core/modules/organizations/schemas/org
 
 export const updateOrganizationSchema = z
   .object({
-    name: z.string().min(1).optional(),
+    name: z.string().trim().min(1).optional(),
     slug: organizationSlugSchema.optional(),
     logoUrl: z.string().nullable().optional(),
     locale: z.string().optional(),
