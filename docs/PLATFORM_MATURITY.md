@@ -1,9 +1,9 @@
 ---
 title: Platform Maturity
-version: 2.0.0
+version: 3.0.0
 status: Living Document
 owner: Platform Architecture
-updated: 2026-08-09
+updated: 2026-08-13
 related:
   - architecture/README.md
   - architecture/PLATFORM_CORE_SPEC.md
@@ -437,7 +437,7 @@ Identity does not own:
 
 Status:
 
-**Specified — Implementation Pending**
+**Foundation CLOSED / PASS**
 
 Organizations has a complete Core documentation package.
 
@@ -457,7 +457,9 @@ Organization must not contain a second ownership system such as:
 - `ownerUserId`
 - `ownerProfileId`
 
-Organizations Foundation is the next Platform Core persistence implementation step.
+Persistence, lifecycle, tenant discovery, authorized read/update composition,
+canonical slug behavior and ownership enforcement are implemented. ADR-009
+closes ownership transfer and PostgreSQL invariant enforcement.
 
 ---
 
@@ -465,7 +467,7 @@ Organizations Foundation is the next Platform Core persistence implementation st
 
 Status:
 
-**Specified — Implementation Pending**
+**Foundation CLOSED / PASS**
 
 Roles has a complete Core documentation package.
 
@@ -483,7 +485,8 @@ Role semantic identity is based on stable keys.
 
 UUID values must not be hard-coded into application behavior.
 
-Roles must be implemented before Memberships Foundation.
+The canonical Role catalog and persistence boundary are implemented and
+validated.
 
 ---
 
@@ -491,7 +494,7 @@ Roles must be implemented before Memberships Foundation.
 
 Status:
 
-**Specified — Implementation Pending**
+**Foundation CLOSED / PASS**
 
 Memberships has a complete Core documentation package.
 
@@ -517,7 +520,8 @@ Invitation lifecycle:
 - REVOKED
 - EXPIRED
 
-Memberships depends on canonical Organizations and Roles.
+Membership and Invitation persistence, lifecycle, security, reads and
+administrative authorization are implemented and validated.
 
 ---
 
@@ -525,7 +529,7 @@ Memberships depends on canonical Organizations and Roles.
 
 Status:
 
-**Specified — Implementation Pending**
+**Foundation CLOSED / PASS**
 
 Tenancy is an architectural concern rather than an independent Core module.
 
@@ -539,7 +543,8 @@ Canonical relationship:
 
 Trusted tenant context must be resolved server-side.
 
-Tenancy Integration follows Organizations, Roles and Memberships Foundation.
+Atomic onboarding, discovery, context validation and Membership-based RLS are
+implemented.
 
 ---
 
@@ -547,7 +552,7 @@ Tenancy Integration follows Organizations, Roles and Memberships Foundation.
 
 Status:
 
-**Specified — Implementation Pending**
+**Foundation CLOSED / PASS**
 
 Permissions has a complete Core documentation package.
 
@@ -565,7 +570,8 @@ There is no implicit OWNER bypass.
 
 Domains may define business-specific Permission keys but must use the Platform Core Permission engine.
 
-Permissions implementation follows Tenancy Integration.
+The canonical catalog, RolePermission policy and transaction-scoped
+authorization frontier are implemented.
 
 ---
 
@@ -573,12 +579,12 @@ Permissions implementation follows Tenancy Integration.
 
 The approved implementation sequence is:
 
-1. Identity — implemented foundation
-2. Organizations Foundation
-3. Roles Foundation
-4. Memberships Foundation
-5. Tenancy Integration
-6. Permissions
+1. Identity — CLOSED / PASS
+2. Organizations — CLOSED / PASS
+3. Roles — CLOSED / PASS
+4. Memberships — CLOSED / PASS
+5. Tenancy Integration — CLOSED / PASS
+6. Permissions — CLOSED / PASS
 
 Implementation agents must not bypass this sequence using temporary tenant, Role, Membership or Permission models.
 
@@ -902,7 +908,7 @@ Complete the remaining documentation audits and repository context consolidation
 
 Status:
 
-**Pending**
+**Complete for Foundation scope**
 
 Tasks include:
 
@@ -917,7 +923,7 @@ Tasks include:
 
 Status:
 
-**Pending**
+**Historical review available; next milestone blocked**
 
 Perform formal Cursor / AI Agent Readiness Review.
 
@@ -931,17 +937,10 @@ Can the implementation agent execute the next approved task without making archi
 
 Status:
 
-**Partially Started**
+**CLOSED / PASS**
 
-Identity already exists.
-
-Remaining Foundation sequence:
-
-1. Organizations Foundation
-2. Roles Foundation
-3. Memberships Foundation
-4. Tenancy Integration
-5. Permissions
+The complete approved Foundation sequence is implemented and reviewed. This
+does not authorize Milestone 2 and does not imply Production readiness.
 
 ---
 
@@ -949,11 +948,11 @@ Remaining Foundation sequence:
 
 Status:
 
-**Pending**
+**Implemented for Foundation scope**
 
-Introduce appropriate automated testing before implementation complexity makes regression protection expensive.
-
-Exact tooling should be adopted intentionally and reflected in the technology stack.
+Vitest coverage protects Identity, Organizations, Roles, Memberships, Tenancy,
+Permissions, migrations and security boundaries. The closure gate records 33
+test files and 198 passing tests. Product E2E remains pending.
 
 ---
 
@@ -1031,13 +1030,13 @@ Do not infer architectural approval from implementation convenience.
 
 # Final Principle
 
-The platform has a consolidated architectural foundation and a real implementation baseline.
-
-It is not yet a complete Platform Core.
+The Platform Core Foundation is CLOSED / PASS within its approved scope.
 
 It is not yet production-ready.
 
-The immediate objective is to finish consolidation, formalize the architecture baseline and then continue implementation through the approved Foundation sequence.
+The immediate objective is to respecify and explicitly authorize the next
+milestone while completing deployment, backup/restore, monitoring, runbook and
+Product E2E readiness work.
 
 Measure maturity from evidence.
 

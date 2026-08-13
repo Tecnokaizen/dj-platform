@@ -1,8 +1,8 @@
 ---
 title: Project Context
-version: 2.1.0
+version: 3.0.0
 status: Living Document
-updated: 2026-08-12
+updated: 2026-08-13
 repository: dj-platform
 ---
 
@@ -36,11 +36,11 @@ DJ
 
 Current State:
 
-Architecture consolidated for the implemented Foundation boundary.
+Platform Core Foundation CLOSED / PASS within its approved scope.
 
-Platform Core Foundation implementation now reaches Identity, Organizations,
-Roles, Memberships, Tenancy Integration and Permissions. Known decision gates
-and deferred integrations remain explicit below.
+Identity, Organizations, Roles, Memberships, Tenancy Integration, Permissions,
+ownership enforcement and the minimum authorized Organization composition are
+implemented and reviewed. Milestone 2 is not authorized pending respecification.
 
 DJ Platform remains the current validation consumer.
 
@@ -150,11 +150,9 @@ Organizations:
 
 Specification complete.
 
-Organizations Foundation Stage 1:
+Organizations Foundation:
 
-CONDITIONAL PASS (O-029).
-
-Foundation may be paused.
+CLOSED / PASS.
 
 Organizations Stage 1 is not the whole operational tenancy boundary. The
 cross-module tenancy foundation is now implemented through Memberships and
@@ -172,23 +170,21 @@ Implemented and validated:
 - Zod validation schemas
 - application types and OrganizationDto
 - stable Organization errors
-- O-019 persistence tests (8/8)
-- O-020 lifecycle tests (12/12)
-- O-022 persistence-integrity tests (6/6)
-- total Organizations integration tests (26/26)
+- O-019 persistence tests
+- O-020 lifecycle tests
+- O-021 slug normalization, generation and concurrency tests
+- O-022 persistence-integrity tests
+- O-017 authorized Organization read composition and DTO boundary
+- O-018 authorized Organization update Server Action and allowlisted notices
 - O-023 RLS requirements review
 - O-024 server-only access review
 - O-025 documentation validation
 - O-026 architecture boundaries review
 - O-027 source structure review
 - O-028 technical validation PASS
-- O-029 implementation review CONDITIONAL PASS
-
-Deferred Organizations tasks (not completed):
-
-- O-017
-- O-018
-- O-021
+- O-029 implementation review superseded by Architecture Review V2
+- O-033 deferred database enforcement completed through ADR-009
+- O-034 ownership transfer completed through M-088 and ADR-009
 
 Implemented cross-module tenancy capabilities:
 
@@ -199,13 +195,13 @@ Implemented cross-module tenancy capabilities:
 - Membership-based tenant RLS;
 - explicit RolePermission authorization for Memberships administration.
 
-Remaining tenancy and Organizations decision gates:
+Resolved tenancy and Organizations decisions include:
 
-- M-088 ownership transfer and previous-owner Role policy;
-- database enforcement strategy for exactly one active OWNER;
-- O-017, O-018 and O-021;
-- Product-facing Organization read composition (`organizations.read`) where required beyond Core mutation authorization;
-- Product-level Organization context composition where required.
+- explicit `previousOwnerRoleId` for M-088;
+- deferred PostgreSQL constraint triggers for exactly one ACTIVE OWNER;
+- authorized Product-facing Organization read/update composition.
+
+Product-level active Organization selection UI remains a future Product concern.
 
 createOrganizationRecord remains an internal persistence primitive only.
 It is not the public createOrganization() workflow.
@@ -260,9 +256,9 @@ Implemented work includes:
 - Tenancy Integration M-084 through M-087;
 - Permissions Integration M-089 through M-094.
 
-M-088 ownership transfer remains blocked pending an approved previous-owner
-Role policy. This is an explicit decision gate, not an incomplete Memberships
-Foundation implementation.
+M-088 ownership transfer is closed by ADR-009. The caller supplies an explicit
+existing non-OWNER `previousOwnerRoleId`; the transfer and database invariant
+are implemented and validated.
 
 Conceptual link:
 
@@ -669,15 +665,17 @@ Consolidated.
 
 Formal versioned reviews:
 
-Pending.
+- Architecture Review V1 retained as historical snapshot;
+- Architecture Review V2 closes the Platform Core Foundation scope;
+- Security Review V1 records the Foundation security assessment.
 
 ADR framework:
 
 Defined.
 
-Foundation ADR backfill:
+Foundation ADRs:
 
-Pending.
+ADR-001 through ADR-009 accepted.
 
 Domain documentation:
 
@@ -812,7 +810,7 @@ The repository currently contains:
 - Profile functionality;
 - Prisma foundation;
 - generated Prisma client;
-- Organizations Foundation Stage 1 CONDITIONAL PASS (pausable);
+- Organizations Foundation CLOSED / PASS;
 - Roles Foundation Stage 1 CLOSED / PASS;
 - Memberships Foundation and quality gate complete;
 - atomic Organization onboarding, tenant discovery and context validation;
@@ -821,9 +819,8 @@ The repository currently contains:
 - transaction-scoped Memberships administrative authorization;
 - initial Domain and Core source boundaries.
 
-Organizations Foundation Stage 1 remains CONDITIONAL PASS. Its deferred tasks
-O-017, O-018 and O-021 are not silently closed by the cross-module tenancy
-implementation.
+Organizations O-017, O-018, O-021, O-033 and O-034 are closed with application,
+test and database evidence.
 
 Roles Foundation Stage 1 and Memberships Foundation are closed for their
 approved scopes. Tenancy Integration M-084 through M-087 is implemented.
@@ -831,9 +828,9 @@ Permissions Foundation and Memberships administrative integration M-089 through
 M-094 are implemented and validated. Organization mutation authorization (O-037)
 is implemented for update and lifecycle writes.
 
-M-088 ownership transfer remains blocked pending approved policy.
-Permission-aware RLS, caching, Domain Permission composition and Product-facing
-Organization read composition remain explicitly deferred.
+M-088 is closed by ADR-009 with an explicit previous-owner Role and database
+enforcement. Permission-aware RLS beyond the current tenant boundary, caching
+and Domain Permission composition remain explicitly deferred.
 
 Large parts of DJ Domain functionality remain unimplemented.
 
@@ -925,32 +922,21 @@ Documentation must not be followed blindly when repository evidence proves it st
 
 # Current Priorities
 
-Current consolidation priorities:
+Current post-Foundation priorities:
 
-1. perform formal Foundation Architecture and security review;
-2. align remaining agent instructions and maturity docs with current repository evidence;
-3. backfill foundational ADRs where established decisions require records;
-4. resolve M-088 ownership-transfer policy before implementation;
+1. respecify Milestone 2 before authorization;
+2. plan deployment and rollback validation;
+3. verify backups and restore procedures;
+4. establish monitoring, runbooks and Product E2E coverage;
 5. authorize the next bounded Core or Product milestone explicitly.
 
 ---
 
-# Foundation ADRs Pending
+# Foundation ADRs
 
-Architectural decisions already established should be backfilled into ADRs where appropriate.
-
-Current candidates:
-
-- Platform Core and Domain Boundary;
-- Identity Source of Truth;
-- Internal Identifier Strategy;
-- Tenancy and Organization Model;
-- Roles, Memberships and Ownership Model;
-- Authorization and Permission Model;
-- Prisma and Data Access Conventions;
-- Deployment and Infrastructure Strategy.
-
-Future ADRs should be created only when real decisions require them.
+ADR-001 through ADR-008 establish the original Foundation baseline. ADR-009
+records ownership transfer and database enforcement. Future ADRs should be
+created only when real decisions require them.
 
 ---
 
@@ -958,8 +944,6 @@ Future ADRs should be created only when real decisions require them.
 
 Known areas still requiring explicit decisions or implementation review may include:
 
-- ownership transfer behavior for the previous OWNER;
-- exact database enforcement of one active OWNER per Organization;
 - future storage architecture;
 - future AI provider architecture;
 - future search architecture;
@@ -988,16 +972,16 @@ Approved sequence:
 
 Identity foundation already exists.
 
-Organizations Foundation Stage 1 is CONDITIONAL PASS and may be paused.
+Organizations Foundation is CLOSED / PASS.
 
 Roles Foundation Stage 1 is CLOSED / PASS.
 
 Memberships Foundation and Tenancy Integration are implemented for their
 approved scopes.
 
-Permissions Foundation and Memberships administrative integration are the
-current closure milestone. No subsequent implementation module is authorized by
-this document.
+The complete Platform Core Foundation sequence is CLOSED / PASS within scope.
+No subsequent implementation module is authorized by this document. M2-001 is
+blocked pending respecification because its paths and responsibilities are stale.
 
 Current authorization link:
 

@@ -234,7 +234,7 @@ Approved Foundation sequence:
 
 Identity already has source implementation.
 
-Organizations, Roles, Memberships, Tenancy Integration and Permissions have approved specifications and implemented Foundation source for their approved scopes. Organizations Stage 1 remains CONDITIONAL PASS. M-088 ownership transfer remains BLOCKED pending policy approval.
+Identity, Organizations, Roles, Memberships, Tenancy Integration and Permissions are CLOSED / PASS for the approved Platform Core Foundation scope. ADR-009 resolves M-088 and PostgreSQL enforces exactly one ACTIVE OWNER per persisted Organization.
 
 Do not skip Foundation dependencies without Architecture approval.
 
@@ -1091,12 +1091,11 @@ Do not claim validation that was not executed.
 Current repository priorities are:
 
 1. maintain documentation and source alignment;
-2. complete context instructions;
-3. backfill foundational ADRs;
-4. perform formal Architecture Review;
-5. perform AI Agent / Cursor Readiness Review;
-6. validate repository state;
-7. resume Core Foundation implementation.
+2. respecify Milestone 2 before authorization;
+3. plan deployment and rollback validation;
+4. verify backups and restore procedures;
+5. establish monitoring, runbooks and Product E2E coverage;
+6. authorize the next bounded milestone explicitly.
 
 Agents must not jump ahead to unrelated strategic capabilities.
 

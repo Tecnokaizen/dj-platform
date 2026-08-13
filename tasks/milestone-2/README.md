@@ -1,5 +1,11 @@
 # Milestone 2 — Core Platform
 
+**Status:** Blocked pending respecification of M2-001.
+
+The execution order below is historical planning context, not current
+implementation authorization. M2-001 overlaps the closed Platform Core
+Foundation and references stale paths and ownership rules.
+
 ## Execution order
 
 1. M2-001-core-foundation.md

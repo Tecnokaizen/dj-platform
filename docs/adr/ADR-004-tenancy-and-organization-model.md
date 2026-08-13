@@ -4,6 +4,9 @@
 **Date:** 2026-08-09
 **Decision Type:** Foundation Architecture
 
+**Subsequent decision:** ADR-009 specifies ownership transfer and deferred
+PostgreSQL enforcement of exactly one ACTIVE OWNER.
+
 ## Context
 
 Platform Core must support Products that operate with isolated organizational contexts.

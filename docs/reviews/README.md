@@ -11,6 +11,13 @@ related:
 
 # Architecture Reviews
 
+Current versioned reviews:
+
+- `ARCHITECTURE_REVIEW_V1.md` — historical pre-implementation snapshot;
+- `ARCHITECTURE_REVIEW_V2.md` — Platform Core Foundation closure;
+- `SECURITY_REVIEW_V1.md` — Platform Core Foundation security review;
+- `CURSOR_READINESS_V1.md` — historical agent-readiness snapshot.
+
 ## Purpose
 
 This directory contains formal reviews performed throughout the evolution of the platform.

@@ -2795,7 +2795,7 @@ Membership/Organization lifecycle denial, Invitation secrecy, denied writes,
 
 ---
 
-## M-088 — BLOCKED PENDING OWNERSHIP POLICY
+## M-088 — DONE
 
 ### Ownership Transfer
 
@@ -2826,6 +2826,16 @@ ADMIN
 ```
 
 until that policy is explicitly approved.
+
+### Closure — 2026-08-13
+
+ADR-009 approves an explicit `previousOwnerRoleId` that must resolve to a
+non-OWNER Role. `transferOrganizationOwnership` requires
+`organizations.transfer_ownership`, an ACTIVE OWNER actor and an ACTIVE target
+Membership in the same tenant. It locks the Organization and performs both
+conditional Role changes in a SERIALIZABLE transaction with bounded P2034
+retry. PostgreSQL deferred constraint triggers preserve exactly one ACTIVE
+OWNER for every persisted Organization.
 
 ---
 

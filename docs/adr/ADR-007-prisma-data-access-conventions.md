@@ -4,6 +4,10 @@
 **Date:** 2026-08-09
 **Decision Type:** Foundation Architecture
 
+**Subsequent decision:** ADR-009 approves raw PostgreSQL constraint triggers
+and Organization-row locking where Prisma cannot express the ownership
+invariant safely.
+
 ## Context
 
 `dj-platform` uses PostgreSQL with Prisma ORM.

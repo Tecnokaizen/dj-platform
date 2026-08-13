@@ -4,6 +4,9 @@
 **Date:** 2026-08-09
 **Decision Type:** Foundation Architecture
 
+**Subsequent decision:** ADR-009 requires the dedicated persisted
+`organizations.transfer_ownership` Permission and an ACTIVE OWNER actor.
+
 ## Context
 
 Platform Core requires a reusable authorization model that works independently from any particular Product or business Domain.

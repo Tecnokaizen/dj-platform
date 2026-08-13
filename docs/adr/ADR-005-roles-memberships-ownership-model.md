@@ -4,6 +4,9 @@
 **Date:** 2026-08-09
 **Decision Type:** Foundation Architecture
 
+**Subsequent decision:** ADR-009 resolves the previous-owner Role policy and
+the atomic ownership-transfer invariant.
+
 ## Context
 
 Platform Core needs a reusable model for representing:

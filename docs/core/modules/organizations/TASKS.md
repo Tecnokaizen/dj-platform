@@ -611,7 +611,7 @@ Do not define Membership-, Role- or Permission-specific errors here.
 
 # Phase 5 — Server Integration
 
-## O-017
+## O-017 — DONE
 
 ### Implement Read Integration
 
@@ -633,9 +633,13 @@ Internal application services
 - Prisma is not accessed from `src/app`.
 - No HTTP API is introduced without a real requirement.
 
+Implemented by `/organizations` through the authorized Organization listing
+service. The App layer receives `OrganizationDto` plus `canUpdate` and never
+accesses Prisma directly.
+
 ---
 
-## O-018
+## O-018 — DONE
 
 ### Implement Organization Update Action
 
@@ -668,6 +672,11 @@ Until those capabilities exist, this action must not be exposed as a fully autho
 - No client-only authorization.
 - No direct Prisma access.
 - Missing authorization capability is not replaced with temporary flags.
+
+Implemented as a Server Action using schema validation, the authorized
+`updateOrganization` service, path revalidation and allowlisted public notice
+codes. Editing is rendered only when persisted permissions include
+`organizations.update`; server-side authorization remains authoritative.
 
 ---
 
@@ -723,7 +732,7 @@ Also cover invalid transitions.
 
 ---
 
-## O-021
+## O-021 — DONE
 
 ### Slug Tests
 
@@ -744,6 +753,10 @@ Invalid input
 Database uniqueness remains authoritative.
 
 Race conditions are handled through the persistence constraint.
+
+Slug generation and normalization use trim → NFKD → diacritic removal → ASCII
+lowercase hyphen form, constrained to 3–63 characters. PostgreSQL remains the
+uniqueness authority and concurrent conflicts map to `ORGANIZATION_SLUG_CONFLICT`.
 
 ---
 
@@ -1080,7 +1093,7 @@ Target Organization Membership must be validated.
 
 ---
 
-## O-033 — BLOCKED
+## O-033 — DONE
 
 ### Ownership Enforcement
 
@@ -1101,9 +1114,13 @@ Roles
 
 Do not introduce an Organization owner column.
 
+Closed by ADR-009 and the deferred PostgreSQL constraint-trigger migration.
+Every persisted ACTIVE, SUSPENDED or ARCHIVED Organization retains exactly one
+ACTIVE OWNER Membership.
+
 ---
 
-## O-034 — BLOCKED
+## O-034 — DONE
 
 ### Ownership Transfer
 
@@ -1126,6 +1143,10 @@ Assign OWNER to target Membership
 
 Downgrade previous OWNER
 ```
+
+Closed by ADR-009 and M-088 with an explicit non-OWNER
+`previousOwnerRoleId`, Organization row locking, conditional updates and a
+SERIALIZABLE transaction.
 
 ---
 
@@ -1213,9 +1234,9 @@ transaction reuse and Foundation lifecycle tests. Public exports require an
 authenticated Profile, revalidate ACTIVE Membership + Role inside a
 `SERIALIZABLE` transaction, and deny writes when RolePermission mapping is
 absent. Organization onboarding (`createOrganization`) remains outside this
-permission key. `organizations.read` wiring for Product-facing reads remains
-available for future O-017/O-018 composition and is not required for this
-mutation boundary.
+permission key. O-017/O-018 now compose `organizations.read` and
+`organizations.update` in the minimal `/organizations` Server Component and
+Server Action without direct App-layer Prisma access.
 
 ---
 
