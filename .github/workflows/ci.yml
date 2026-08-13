@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deployment-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          DATABASE_URL: postgresql://build-only:build-only@127.0.0.1:5432/build-only
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install --yes postgresql-client
+
+      - name: Create disposable secrets
+        shell: bash
+        run: |
+          echo "POSTGRES_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          echo "MIGRATION_ROLE_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+          echo "APP_RUNTIME_ROLE_PASSWORD=$(openssl rand -hex 24)" >> "$GITHUB_ENV"
+
+      - name: Validate source contract
+        run: |
+          npm run prisma:validate
+          npm run prisma:generate
+          git diff --exit-code -- src/generated/prisma
+          npm run typecheck
+          npm run lint
+          npm audit --audit-level=high
+          git diff --check
+        env:
+          DATABASE_URL: postgresql://build-only:build-only@127.0.0.1:5432/build-only
+
+      - name: Materialize official Supabase release
+        shell: bash
+        run: |
+          npm run infra:supabase:fetch
+          sh scripts/ci/configure-supabase.sh
+          anon_key="$(sed -n 's/^ANON_KEY=//p' infra/supabase/vendor/.env)"
+          echo "::add-mask::$anon_key"
+          echo "ANON_KEY=$anon_key" >> "$GITHUB_ENV"
+
+      - name: Start required Supabase topology
+        working-directory: infra/supabase/vendor
+        run: |
+          docker compose \
+            --env-file .env \
+            -f docker-compose.yml \
+            -f ../docker-compose.ci.yml \
+            up --detach --wait db auth rest meta studio api-gw mailpit
+
+      - name: Bootstrap roles and migrate from zero
+        shell: bash
+        run: |
+          export POSTGRES_ADMIN_URL="postgresql://postgres:$POSTGRES_PASSWORD@127.0.0.1:54322/postgres"
+          export MIGRATION_ROLE_NAME=platform_migration
+          export APP_RUNTIME_ROLE_NAME=app_runtime
+          export MIGRATION_DATABASE_URL="postgresql://platform_migration:$MIGRATION_ROLE_PASSWORD@127.0.0.1:54322/postgres"
+          export SUPABASE_DB_URL="$MIGRATION_DATABASE_URL"
+          export SUPABASE_CLI_VERSION=2.109.1
+          export RUNTIME_DATABASE_URL="postgresql://app_runtime:$APP_RUNTIME_ROLE_PASSWORD@127.0.0.1:54322/postgres"
+          npm run db:bootstrap-roles
+          npm run db:migrate:release
+          npm run db:migrate:release
+          DATABASE_URL="$RUNTIME_DATABASE_URL" sh scripts/deploy/verify-app-runtime.sh
+
+      - name: Run complete test suite
+        shell: bash
+        run: |
+          DATABASE_URL="postgresql://platform_migration:$MIGRATION_ROLE_PASSWORD@127.0.0.1:54322/postgres" \
+          NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000 \
+          NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:8000 \
+          NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY" \
+          npm test
+
+      - name: Build normal Next production output
+        shell: bash
+        run: |
+          DATABASE_URL="postgresql://app_runtime:$APP_RUNTIME_ROLE_PASSWORD@127.0.0.1:54322/postgres" \
+          NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000 \
+          NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:8000 \
+          NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY" \
+          npm run build
+
+      - name: Build runner and migrator images
+        run: |
+          docker build --target runner \
+            --build-arg NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000 \
+            --build-arg NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:8000 \
+            --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY" \
+            --tag dj-platform:ci-runner .
+          docker build --target migrator --tag dj-platform:ci-migrator .
+
+      - name: Verify and smoke runner
+        shell: bash
+        run: |
+          test "$(docker image inspect dj-platform:ci-runner --format '{{.Config.User}}')" = nextjs
+          docker run --rm --entrypoint sh dj-platform:ci-runner -c \
+            'test "$(id -u)" = 1001 && test ! -e node_modules/.bin/prisma && test ! -e node_modules/.bin/supabase && test -d .next/static && test -d public'
+
+          docker run --detach --name platform-ci-web --network host \
+            --read-only --tmpfs /tmp \
+            -e DATABASE_URL="postgresql://app_runtime:$APP_RUNTIME_ROLE_PASSWORD@127.0.0.1:54322/postgres" \
+            -e NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000 \
+            -e NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:8000 \
+            -e NEXT_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY" \
+            dj-platform:ci-runner
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/ready >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:3000/api/health
+          curl --fail --silent http://127.0.0.1:3000/api/ready
+          docker stop --timeout 10 platform-ci-web
+          test "$(docker inspect platform-ci-web --format '{{.State.ExitCode}}')" = 0
+          docker rm platform-ci-web
+
+      - name: Supabase diagnostics
+        if: failure()
+        working-directory: infra/supabase/vendor
+        run: docker compose --env-file .env -f docker-compose.yml -f ../docker-compose.ci.yml ps && docker compose --env-file .env -f docker-compose.yml -f ../docker-compose.ci.yml logs --no-color --tail=200

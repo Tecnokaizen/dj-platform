@@ -65,6 +65,12 @@ for configuration, PostgreSQL, Auth and PostgREST reachability. Both routes are
 excluded from the session proxy, return no dependency details and disable HTTP
 caching. A failed dependency returns only `503 {"status":"not_ready"}`.
 
+GitHub Actions runs the deployment-readiness gate on Pull Requests and `main`.
+It materializes the pinned official Supabase release, migrates a fresh database
+twice, verifies `app_runtime`, runs the complete Vitest suite without hardcoded
+counts, retains the normal Turbopack build, builds both Docker targets and
+smoke-tests a non-root runner against Auth, REST and PostgreSQL.
+
 ## Purpose
 
 This document defines operational standards for deploying Products built on the platform.
