@@ -64,6 +64,10 @@ SELECT format('GRANT CONNECT ON DATABASE %I TO %I', current_database(), :'runtim
 SELECT format('GRANT CREATE ON DATABASE %I TO %I', current_database(), :'migration_role') \gexec
 SELECT format('REVOKE CREATE ON DATABASE %I FROM %I', current_database(), :'runtime_role') \gexec
 SELECT format('GRANT USAGE, CREATE ON SCHEMA public TO %I', :'migration_role') \gexec
+-- Supabase images often grant CREATE on schema public to PUBLIC. ADR-010
+-- requires the web runtime to have no DDL; revoke the PUBLIC grant so
+-- has_schema_privilege(app_runtime, public, CREATE) is false.
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 SELECT format('REVOKE CREATE ON SCHEMA public FROM %I', :'runtime_role') \gexec
 
 -- Supabase CLI owns a separate migration ledger and always issues CREATE

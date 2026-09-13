@@ -22,6 +22,7 @@ prisma/dev.db-journal
 *.tsbuildinfo
 
 # Cursor
+.cursor/mcp.json
 
 # IDE
 .vscode/settings.json

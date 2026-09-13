@@ -42,19 +42,21 @@ Identity, Organizations, Roles, Memberships, Tenancy Integration, Permissions,
 ownership enforcement and the minimum authorized Organization composition are
 implemented and reviewed. Milestone 2 is not authorized pending respecification.
 
+**Production (2026-09-13):** Foundation recovered on the canonical Coolify
+`supabase-db` (Prisma 8 finished / 0 rolled_back; Supabase SQL ledger 6;
+`validate-database` PASS). See `docs/CURRENT_STATE.md` and
+`docs/operations/PLATFORM_CORE_RECOVERY.md`. Legacy `platform-core-bd` remains
+empty and pending deprecation.
+
 Post-closeout audit remediation on Draft PR #1 is recorded in
 `docs/reviews/ARCHITECTURE_REVIEW_V2_ADDENDUM.md` and
-`docs/reviews/SECURITY_REVIEW_V1_ADDENDUM.md`. Claude focused re-audit remains
-pending and is not claimed here.
+`docs/reviews/SECURITY_REVIEW_V1_ADDENDUM.md`.
 
-DJ Platform remains the current validation consumer.
+DJ Platform remains the historical validation consumer; Product naming toward
+DJ Studio is a later Domain/Product phase.
 
-Production readiness not established.
-
-Deployment-readiness Phase A is authorized by ADR-010. It covers reproducible
-runtime/migrator images, official Supabase topology, controlled migrations,
-health/readiness, CI and backup/restore tooling. Real staging provisioning
-(Phase B) and Production remain unauthorized.
+Staging/production ops readiness continues under ADR-010. Real staging
+provisioning (Phase B) remains a separate authorization.
 
 ---
 

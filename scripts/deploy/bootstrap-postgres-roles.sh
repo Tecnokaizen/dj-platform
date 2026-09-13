@@ -17,3 +17,13 @@ PGOPTIONS="-c platform.migration_role=$MIGRATION_ROLE_NAME -c platform.runtime_r
     --no-psqlrc \
     --file infra/postgres/verify-role-contract.sql
 
+# Transfer postgres-owned application objects in public to the migration role
+# so prisma migrate deploy can ALTER tables created by the historical init.
+# Does not modify auth.* ownership.
+PGOPTIONS="-c platform.migration_role=$MIGRATION_ROLE_NAME" \
+  MIGRATION_ROLE_NAME="$MIGRATION_ROLE_NAME" \
+  psql "$POSTGRES_ADMIN_URL" \
+    --no-psqlrc \
+    --set=ON_ERROR_STOP=1 \
+    --file scripts/deploy/prepare-public-schema-ownership.sql
+
