@@ -59,7 +59,6 @@ export default async function ProfilePage({
         <ProfileForm
           profile={{
             display_name: session.profile.display_name,
-            dj_name: session.profile.dj_name,
             bio: session.profile.bio,
             preferred_language:
               session.profile.preferred_language ?? 'es',
