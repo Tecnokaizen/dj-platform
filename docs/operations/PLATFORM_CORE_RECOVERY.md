@@ -62,7 +62,9 @@ Admin bootstrap against Supabase self-host must use a **superuser** connection
 
 - Prisma: 8 finished / 0 rolled_back
 - Supabase repo migrations: 6
-- System roles: 5; permissions: 12; role_permissions: 27
+- System roles: 5; Core permissions: 12; Core role_permissions: 27
+  (Product/DJ Studio installs add Domain permissions on top — see
+  `scripts/deploy/validate-database.ts` key-based checks, not rigid totals)
 - profiles / auth.users: 2 / 2
 - `validate-database`: PASS
 - Supabase stack: healthy

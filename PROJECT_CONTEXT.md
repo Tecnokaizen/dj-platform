@@ -52,11 +52,17 @@ Post-closeout audit remediation on Draft PR #1 is recorded in
 `docs/reviews/ARCHITECTURE_REVIEW_V2_ADDENDUM.md` and
 `docs/reviews/SECURITY_REVIEW_V1_ADDENDUM.md`.
 
-DJ Platform remains the historical validation consumer; Product naming toward
-DJ Studio is a later Domain/Product phase.
+DJ Platform remains the historical validation consumer. Product/Domain naming
+toward DJ Studio is frozen by ADR-011 (Domain boundary, Organization tenancy for
+Domain data, Profile field extraction intent). Milestone
+**DJ-STUDIO-001** (Organization-scoped Music Library + Playlist Foundation) is
+specified at `docs/domains/dj-studio/DJ-STUDIO-001.md`. Phase 2 **M1–M7** is
+implemented locally (schema → RLS/RBAC → Domain runtime → minimal Product UI)
+with **FULL FINAL VALIDATION PASS** and **READY FOR STAGING**. Production has
+**not** been deployed or modified.
 
 Staging/production ops readiness continues under ADR-010. Real staging
-provisioning (Phase B) remains a separate authorization.
+provisioning (Phase B) remains a separate authorization after review.
 
 ---
 
@@ -687,7 +693,7 @@ Defined.
 
 Foundation ADRs:
 
-ADR-001 through ADR-009 accepted.
+ADR-001 through ADR-011 accepted.
 
 Domain documentation:
 
@@ -947,7 +953,8 @@ Current post-Foundation priorities:
 
 ADR-001 through ADR-008 establish the original Foundation baseline. ADR-009
 records ownership transfer and database enforcement. ADR-010 defines the
-deployment runtime and staging-readiness contract. Future ADRs should be
+deployment runtime and staging-readiness contract. ADR-011 freezes DJ Studio
+Domain boundary and Organization tenancy for Domain data. Future ADRs should be
 created only when real decisions require them.
 
 ---

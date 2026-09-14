@@ -22,15 +22,21 @@ Only deployment-readiness Phase A is authorized. It may validate containers,
 database bootstrap, migration order, CI, health/readiness and recovery against
 disposable infrastructure. It must not provision Coolify staging or production.
 
-The operational release sequence is:
+The operational release sequence is phased:
 
-1. idempotent cluster-role bootstrap;
-2. `prisma migrate deploy` with the migration role;
-3. pinned Supabase CLI migration push with the migration role;
-4. canonical idempotent seed;
-5. database validation;
-6. web deployment using only `app_runtime` credentials;
-7. readiness verification.
+0. idempotent cluster-role bootstrap;
+1. **Foundation** — Prisma Foundation migrations → Supabase S1–S6 →
+   Foundation seed (roles + Core permissions) → Foundation validate;
+2. **DJ Studio / Product** — Prisma Domain M1–M4 → Supabase M5 →
+   Product seed (Foundation + Domain permissions) → Product validate;
+3. web deployment using only `app_runtime` credentials;
+4. readiness verification.
+
+Domain Prisma migrations live in `prisma/migrations-dj-studio/` and are
+deployed via `prisma.dj-studio.config.ts`. Domain Supabase M5 lives in
+`supabase/migrations-dj-studio/` so Foundation `db push` never runs after
+M1 renames. This ordering keeps S1–S6 on pre-rename table names and ensures
+OWNER exists before M4 personal-org bootstrap.
 
 The web service never receives owner/migration credentials or migration tools.
 See ADR-010 for the complete privilege and topology contract.
@@ -39,9 +45,14 @@ Repository entry points:
 
 - `scripts/deploy/bootstrap-postgres-roles.sh` provisions cluster roles through
   an administrator connection and validates their attributes;
-- `scripts/deploy/migrate-release.sh` is the single release migration runner;
-- `scripts/deploy/validate-database.ts` verifies both migration ledgers and the
-  canonical Role/Permission seed.
+- `scripts/deploy/migrate-foundation.sh` — Foundation phase only;
+- `scripts/deploy/migrate-dj-studio.sh` — Domain / Product phase only;
+- `scripts/deploy/migrate-release.sh` — Foundation then DJ Studio (canonical);
+- `scripts/deploy/migrate-prisma-all.sh` — local/test Prisma Foundation+Domain;
+- `scripts/deploy/validate-database.ts` — key-based Foundation and Product checks
+  (`--foundation` / `--product`); not rigid permission totals.
+- `npm run db:seed:foundation` — Core seed only (idempotent);
+- `npm run db:seed` — Product seed (Foundation + Domain, idempotent).
 
 Passwords are supplied only through the deployment secret environment. The
 bootstrap does not embed credentials in SQL, source or images. In the official
