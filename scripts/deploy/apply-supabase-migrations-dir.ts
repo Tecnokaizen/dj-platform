@@ -5,7 +5,7 @@
  * filename (e.g. `20260806_auth_profiles_rls.sql` → `20260806`).
  *
  * Used for:
- * - Foundation S1–S6 (`supabase/migrations`) so Domain M5 can live outside
+ * - Foundation S1–S7 (`supabase/migrations`) so Domain M5 can live outside
  *   that folder without breaking idempotent `migrate-release` re-runs
  * - Domain M5 (`supabase/migrations-dj-studio`)
  *

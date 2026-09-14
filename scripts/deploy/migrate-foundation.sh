@@ -2,7 +2,7 @@
 set -eu
 
 # PHASE 1 — Platform Core Foundation
-# Prisma Foundation → Supabase S1–S6 → Foundation seed → Foundation validate
+# Prisma Foundation → Supabase S1–S7 → Foundation seed → Foundation validate
 
 : "${MIGRATION_DATABASE_URL:?MIGRATION_DATABASE_URL is required}"
 
@@ -20,7 +20,7 @@ fi
 echo "=== PHASE 1: Foundation Prisma migrations ==="
 DATABASE_URL="$MIGRATION_DATABASE_URL" prisma migrate deploy
 
-echo "=== PHASE 1: Foundation Supabase migrations (S1–S6) ==="
+echo "=== PHASE 1: Foundation Supabase migrations (S1–S7) ==="
 # Applied via ledger-aware SQL runner (not `supabase db push`) so Domain M5 can
 # live outside `supabase/migrations/` without breaking idempotent re-runs.
 DATABASE_URL="$MIGRATION_DATABASE_URL" \

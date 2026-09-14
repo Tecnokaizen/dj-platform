@@ -6,10 +6,13 @@ import { SYSTEM_ROLE_KEYS } from '../../src/core/modules/roles/constants/system-
 import { DJ_STUDIO_PERMISSION_KEYS } from '../../src/domains/dj-studio/permissions/permission-keys'
 import { DJ_STUDIO_SYSTEM_ROLE_PERMISSION_POLICY } from '../../src/domains/dj-studio/permissions/system-role-permission-policy'
 
-const FOUNDATION_PRISMA_MIGRATION_COUNT = 8
-const FOUNDATION_SUPABASE_MIGRATION_COUNT = 6
-const DJ_STUDIO_PRISMA_MIGRATION_COUNT = 4
-const DJ_STUDIO_SUPABASE_MIGRATION_COUNT = 1
+export const FOUNDATION_PRISMA_MIGRATION_COUNT = 8
+export const FOUNDATION_SUPABASE_MIGRATION_COUNT = 7
+export const DJ_STUDIO_PRISMA_MIGRATION_COUNT = 4
+export const DJ_STUDIO_SUPABASE_MIGRATION_COUNT = 1
+
+/** Foundation Supabase S7 — profiles authenticated PostgREST grants */
+export const FOUNDATION_SUPABASE_S7_VERSION = '20260914230000'
 
 export type ValidateMode = 'foundation' | 'product'
 
@@ -42,13 +45,23 @@ async function assertFoundation(
   }
 
   if (options.expectSupabaseLedger) {
-    const supabase = await client.query<{ count: string }>(
-      `SELECT count(*)::text AS count FROM supabase_migrations.schema_migrations`,
+    const supabase = await client.query<{ version: string }>(
+      `SELECT version FROM supabase_migrations.schema_migrations ORDER BY version`,
     )
-    const supabaseCount = Number(supabase.rows[0]?.count ?? 0)
-    if (supabaseCount < FOUNDATION_SUPABASE_MIGRATION_COUNT) {
+    const versions = new Set(supabase.rows.map((row) => row.version))
+    if (versions.size < FOUNDATION_SUPABASE_MIGRATION_COUNT) {
       throw new Error(
-        `Foundation Supabase ledger incomplete: expected at least ${FOUNDATION_SUPABASE_MIGRATION_COUNT}, got ${supabaseCount}`,
+        `Foundation Supabase ledger incomplete: expected at least ${FOUNDATION_SUPABASE_MIGRATION_COUNT}, got ${versions.size}`,
+      )
+    }
+    if (
+      !versions.has(FOUNDATION_SUPABASE_S7_VERSION) &&
+      ![...versions].some((version) =>
+        version.startsWith(FOUNDATION_SUPABASE_S7_VERSION),
+      )
+    ) {
+      throw new Error(
+        `Missing Foundation Supabase S7 in ledger: ${FOUNDATION_SUPABASE_S7_VERSION}`,
       )
     }
   }
@@ -92,6 +105,42 @@ async function assertFoundation(
         )
       }
     }
+  }
+
+  const profileGrants = await client.query<{
+    auth_select: boolean
+    auth_insert: boolean
+    auth_update: boolean
+    auth_delete: boolean
+    anon_select: boolean
+    anon_insert: boolean
+    anon_update: boolean
+    anon_delete: boolean
+  }>(
+    `SELECT
+       has_table_privilege('authenticated', 'public.profiles', 'SELECT') AS auth_select,
+       has_table_privilege('authenticated', 'public.profiles', 'INSERT') AS auth_insert,
+       has_table_privilege('authenticated', 'public.profiles', 'UPDATE') AS auth_update,
+       has_table_privilege('authenticated', 'public.profiles', 'DELETE') AS auth_delete,
+       has_table_privilege('anon', 'public.profiles', 'SELECT') AS anon_select,
+       has_table_privilege('anon', 'public.profiles', 'INSERT') AS anon_insert,
+       has_table_privilege('anon', 'public.profiles', 'UPDATE') AS anon_update,
+       has_table_privilege('anon', 'public.profiles', 'DELETE') AS anon_delete`,
+  )
+  const grants = profileGrants.rows[0]
+  if (
+    !grants?.auth_select ||
+    !grants.auth_update ||
+    grants.auth_insert ||
+    grants.auth_delete ||
+    grants.anon_select ||
+    grants.anon_insert ||
+    grants.anon_update ||
+    grants.anon_delete
+  ) {
+    throw new Error(
+      'profiles privilege contract failed: authenticated needs SELECT+UPDATE only; anon needs none',
+    )
   }
 
   console.log('foundation database validation passed')
