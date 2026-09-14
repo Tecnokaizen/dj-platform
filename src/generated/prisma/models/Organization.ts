@@ -224,6 +224,11 @@ export type OrganizationWhereInput = {
   archivedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
   memberships?: Prisma.OrganizationMembershipListRelationFilter
   invitations?: Prisma.OrganizationInvitationListRelationFilter
+  libraryItems?: Prisma.LibraryItemListRelationFilter
+  tags?: Prisma.TagListRelationFilter
+  libraryItemTags?: Prisma.LibraryItemTagListRelationFilter
+  playlists?: Prisma.PlaylistListRelationFilter
+  playlistItems?: Prisma.PlaylistItemListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -239,6 +244,11 @@ export type OrganizationOrderByWithRelationInput = {
   archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   memberships?: Prisma.OrganizationMembershipOrderByRelationAggregateInput
   invitations?: Prisma.OrganizationInvitationOrderByRelationAggregateInput
+  libraryItems?: Prisma.LibraryItemOrderByRelationAggregateInput
+  tags?: Prisma.TagOrderByRelationAggregateInput
+  libraryItemTags?: Prisma.LibraryItemTagOrderByRelationAggregateInput
+  playlists?: Prisma.PlaylistOrderByRelationAggregateInput
+  playlistItems?: Prisma.PlaylistItemOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -257,6 +267,11 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   archivedAt?: Prisma.DateTimeNullableFilter<"Organization"> | Date | string | null
   memberships?: Prisma.OrganizationMembershipListRelationFilter
   invitations?: Prisma.OrganizationInvitationListRelationFilter
+  libraryItems?: Prisma.LibraryItemListRelationFilter
+  tags?: Prisma.TagListRelationFilter
+  libraryItemTags?: Prisma.LibraryItemTagListRelationFilter
+  playlists?: Prisma.PlaylistListRelationFilter
+  playlistItems?: Prisma.PlaylistItemListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -304,6 +319,11 @@ export type OrganizationCreateInput = {
   archivedAt?: Date | string | null
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -319,6 +339,11 @@ export type OrganizationUncheckedCreateInput = {
   archivedAt?: Date | string | null
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
   invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -334,6 +359,11 @@ export type OrganizationUpdateInput = {
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -349,6 +379,11 @@ export type OrganizationUncheckedUpdateInput = {
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
   invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -390,6 +425,11 @@ export type OrganizationUncheckedUpdateManyInput = {
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
+export type OrganizationScalarRelationFilter = {
+  is?: Prisma.OrganizationWhereInput
+  isNot?: Prisma.OrganizationWhereInput
+}
+
 export type OrganizationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
@@ -429,17 +469,78 @@ export type OrganizationMinOrderByAggregateInput = {
   archivedAt?: Prisma.SortOrder
 }
 
-export type OrganizationScalarRelationFilter = {
-  is?: Prisma.OrganizationWhereInput
-  isNot?: Prisma.OrganizationWhereInput
+export type OrganizationCreateNestedOneWithoutLibraryItemsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLibraryItemsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutLibraryItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLibraryItemsInput
+  upsert?: Prisma.OrganizationUpsertWithoutLibraryItemsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutLibraryItemsInput, Prisma.OrganizationUpdateWithoutLibraryItemsInput>, Prisma.OrganizationUncheckedUpdateWithoutLibraryItemsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutTagsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTagsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutTagsInput
+  upsert?: Prisma.OrganizationUpsertWithoutTagsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutTagsInput, Prisma.OrganizationUpdateWithoutTagsInput>, Prisma.OrganizationUncheckedUpdateWithoutTagsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutLibraryItemTagsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemTagsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemTagsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLibraryItemTagsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutLibraryItemTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemTagsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemTagsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutLibraryItemTagsInput
+  upsert?: Prisma.OrganizationUpsertWithoutLibraryItemTagsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutLibraryItemTagsInput, Prisma.OrganizationUpdateWithoutLibraryItemTagsInput>, Prisma.OrganizationUncheckedUpdateWithoutLibraryItemTagsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutPlaylistsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlaylistsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutPlaylistsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlaylistsInput
+  upsert?: Prisma.OrganizationUpsertWithoutPlaylistsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPlaylistsInput, Prisma.OrganizationUpdateWithoutPlaylistsInput>, Prisma.OrganizationUncheckedUpdateWithoutPlaylistsInput>
+}
+
+export type OrganizationCreateNestedOneWithoutPlaylistItemsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistItemsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistItemsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlaylistItemsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutPlaylistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistItemsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistItemsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutPlaylistItemsInput
+  upsert?: Prisma.OrganizationUpsertWithoutPlaylistItemsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutPlaylistItemsInput, Prisma.OrganizationUpdateWithoutPlaylistItemsInput>, Prisma.OrganizationUncheckedUpdateWithoutPlaylistItemsInput>
 }
 
 export type EnumOrganizationStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrganizationStatus
-}
-
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
 }
 
 export type OrganizationCreateNestedOneWithoutMembershipsInput = {
@@ -470,6 +571,466 @@ export type OrganizationUpdateOneRequiredWithoutInvitationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutInvitationsInput, Prisma.OrganizationUpdateWithoutInvitationsInput>, Prisma.OrganizationUncheckedUpdateWithoutInvitationsInput>
 }
 
+export type OrganizationCreateWithoutLibraryItemsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutLibraryItemsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutLibraryItemsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemsInput>
+}
+
+export type OrganizationUpsertWithoutLibraryItemsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutLibraryItemsInput, Prisma.OrganizationUncheckedUpdateWithoutLibraryItemsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutLibraryItemsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutLibraryItemsInput, Prisma.OrganizationUncheckedUpdateWithoutLibraryItemsInput>
+}
+
+export type OrganizationUpdateWithoutLibraryItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutLibraryItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutTagsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+}
+
+export type OrganizationUpsertWithoutTagsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutTagsInput, Prisma.OrganizationUncheckedUpdateWithoutTagsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutTagsInput, Prisma.OrganizationUncheckedCreateWithoutTagsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutTagsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutTagsInput, Prisma.OrganizationUncheckedUpdateWithoutTagsInput>
+}
+
+export type OrganizationUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutLibraryItemTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutLibraryItemTagsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutLibraryItemTagsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemTagsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemTagsInput>
+}
+
+export type OrganizationUpsertWithoutLibraryItemTagsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutLibraryItemTagsInput, Prisma.OrganizationUncheckedUpdateWithoutLibraryItemTagsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutLibraryItemTagsInput, Prisma.OrganizationUncheckedCreateWithoutLibraryItemTagsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutLibraryItemTagsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutLibraryItemTagsInput, Prisma.OrganizationUncheckedUpdateWithoutLibraryItemTagsInput>
+}
+
+export type OrganizationUpdateWithoutLibraryItemTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutLibraryItemTagsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutPlaylistsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutPlaylistsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutPlaylistsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistsInput>
+}
+
+export type OrganizationUpsertWithoutPlaylistsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlaylistsInput, Prisma.OrganizationUncheckedUpdateWithoutPlaylistsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPlaylistsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlaylistsInput, Prisma.OrganizationUncheckedUpdateWithoutPlaylistsInput>
+}
+
+export type OrganizationUpdateWithoutPlaylistsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPlaylistsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutPlaylistItemsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutPlaylistItemsInput = {
+  id?: string
+  name: string
+  slug: string
+  status?: $Enums.OrganizationStatus
+  logoUrl?: string | null
+  locale?: string
+  timezone?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  archivedAt?: Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutPlaylistItemsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistItemsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistItemsInput>
+}
+
+export type OrganizationUpsertWithoutPlaylistItemsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlaylistItemsInput, Prisma.OrganizationUncheckedUpdateWithoutPlaylistItemsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutPlaylistItemsInput, Prisma.OrganizationUncheckedCreateWithoutPlaylistItemsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutPlaylistItemsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutPlaylistItemsInput, Prisma.OrganizationUncheckedUpdateWithoutPlaylistItemsInput>
+}
+
+export type OrganizationUpdateWithoutPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrganizationStatusFieldUpdateOperationsInput | $Enums.OrganizationStatus
+  logoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locale?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
 export type OrganizationCreateWithoutMembershipsInput = {
   id?: string
   name: string
@@ -482,6 +1043,11 @@ export type OrganizationCreateWithoutMembershipsInput = {
   updatedAt?: Date | string
   archivedAt?: Date | string | null
   invitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembershipsInput = {
@@ -496,6 +1062,11 @@ export type OrganizationUncheckedCreateWithoutMembershipsInput = {
   updatedAt?: Date | string
   archivedAt?: Date | string | null
   invitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembershipsInput = {
@@ -526,6 +1097,11 @@ export type OrganizationUpdateWithoutMembershipsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invitations?: Prisma.OrganizationInvitationUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
@@ -540,6 +1116,11 @@ export type OrganizationUncheckedUpdateWithoutMembershipsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutInvitationsInput = {
@@ -554,6 +1135,11 @@ export type OrganizationCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   archivedAt?: Date | string | null
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -568,6 +1154,11 @@ export type OrganizationUncheckedCreateWithoutInvitationsInput = {
   updatedAt?: Date | string
   archivedAt?: Date | string | null
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutOrganizationInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutOrganizationInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedCreateNestedManyWithoutOrganizationInput
+  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutOrganizationInput
+  playlistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -598,6 +1189,11 @@ export type OrganizationUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -612,6 +1208,11 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutOrganizationNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutOrganizationNestedInput
+  libraryItemTags?: Prisma.LibraryItemTagUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutOrganizationNestedInput
+  playlistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -622,11 +1223,21 @@ export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
 export type OrganizationCountOutputType = {
   memberships: number
   invitations: number
+  libraryItems: number
+  tags: number
+  libraryItemTags: number
+  playlists: number
+  playlistItems: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | OrganizationCountOutputTypeCountMembershipsArgs
   invitations?: boolean | OrganizationCountOutputTypeCountInvitationsArgs
+  libraryItems?: boolean | OrganizationCountOutputTypeCountLibraryItemsArgs
+  tags?: boolean | OrganizationCountOutputTypeCountTagsArgs
+  libraryItemTags?: boolean | OrganizationCountOutputTypeCountLibraryItemTagsArgs
+  playlists?: boolean | OrganizationCountOutputTypeCountPlaylistsArgs
+  playlistItems?: boolean | OrganizationCountOutputTypeCountPlaylistItemsArgs
 }
 
 /**
@@ -653,6 +1264,41 @@ export type OrganizationCountOutputTypeCountInvitationsArgs<ExtArgs extends runt
   where?: Prisma.OrganizationInvitationWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountLibraryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LibraryItemWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TagWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountLibraryItemTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LibraryItemTagWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountPlaylistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlaylistWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlaylistItemWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -667,6 +1313,11 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   archivedAt?: boolean
   memberships?: boolean | Prisma.Organization$membershipsArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
+  libraryItems?: boolean | Prisma.Organization$libraryItemsArgs<ExtArgs>
+  tags?: boolean | Prisma.Organization$tagsArgs<ExtArgs>
+  libraryItemTags?: boolean | Prisma.Organization$libraryItemTagsArgs<ExtArgs>
+  playlists?: boolean | Prisma.Organization$playlistsArgs<ExtArgs>
+  playlistItems?: boolean | Prisma.Organization$playlistItemsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -713,6 +1364,11 @@ export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.Organization$membershipsArgs<ExtArgs>
   invitations?: boolean | Prisma.Organization$invitationsArgs<ExtArgs>
+  libraryItems?: boolean | Prisma.Organization$libraryItemsArgs<ExtArgs>
+  tags?: boolean | Prisma.Organization$tagsArgs<ExtArgs>
+  libraryItemTags?: boolean | Prisma.Organization$libraryItemTagsArgs<ExtArgs>
+  playlists?: boolean | Prisma.Organization$playlistsArgs<ExtArgs>
+  playlistItems?: boolean | Prisma.Organization$playlistItemsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -723,6 +1379,11 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     memberships: Prisma.$OrganizationMembershipPayload<ExtArgs>[]
     invitations: Prisma.$OrganizationInvitationPayload<ExtArgs>[]
+    libraryItems: Prisma.$LibraryItemPayload<ExtArgs>[]
+    tags: Prisma.$TagPayload<ExtArgs>[]
+    libraryItemTags: Prisma.$LibraryItemTagPayload<ExtArgs>[]
+    playlists: Prisma.$PlaylistPayload<ExtArgs>[]
+    playlistItems: Prisma.$PlaylistItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1131,6 +1792,11 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   memberships<T extends Prisma.Organization$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invitations<T extends Prisma.Organization$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  libraryItems<T extends Prisma.Organization$libraryItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$libraryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LibraryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tags<T extends Prisma.Organization$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  libraryItemTags<T extends Prisma.Organization$libraryItemTagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$libraryItemTagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LibraryItemTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  playlists<T extends Prisma.Organization$playlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$playlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  playlistItems<T extends Prisma.Organization$playlistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$playlistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1608,6 +2274,126 @@ export type Organization$invitationsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.OrganizationInvitationScalarFieldEnum | Prisma.OrganizationInvitationScalarFieldEnum[]
+}
+
+/**
+ * Organization.libraryItems
+ */
+export type Organization$libraryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LibraryItem
+   */
+  select?: Prisma.LibraryItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LibraryItem
+   */
+  omit?: Prisma.LibraryItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LibraryItemInclude<ExtArgs> | null
+  where?: Prisma.LibraryItemWhereInput
+  orderBy?: Prisma.LibraryItemOrderByWithRelationInput | Prisma.LibraryItemOrderByWithRelationInput[]
+  cursor?: Prisma.LibraryItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LibraryItemScalarFieldEnum | Prisma.LibraryItemScalarFieldEnum[]
+}
+
+/**
+ * Organization.tags
+ */
+export type Organization$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tag
+   */
+  select?: Prisma.TagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tag
+   */
+  omit?: Prisma.TagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TagInclude<ExtArgs> | null
+  where?: Prisma.TagWhereInput
+  orderBy?: Prisma.TagOrderByWithRelationInput | Prisma.TagOrderByWithRelationInput[]
+  cursor?: Prisma.TagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TagScalarFieldEnum | Prisma.TagScalarFieldEnum[]
+}
+
+/**
+ * Organization.libraryItemTags
+ */
+export type Organization$libraryItemTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LibraryItemTag
+   */
+  select?: Prisma.LibraryItemTagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LibraryItemTag
+   */
+  omit?: Prisma.LibraryItemTagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LibraryItemTagInclude<ExtArgs> | null
+  where?: Prisma.LibraryItemTagWhereInput
+  orderBy?: Prisma.LibraryItemTagOrderByWithRelationInput | Prisma.LibraryItemTagOrderByWithRelationInput[]
+  cursor?: Prisma.LibraryItemTagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LibraryItemTagScalarFieldEnum | Prisma.LibraryItemTagScalarFieldEnum[]
+}
+
+/**
+ * Organization.playlists
+ */
+export type Organization$playlistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Playlist
+   */
+  select?: Prisma.PlaylistSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Playlist
+   */
+  omit?: Prisma.PlaylistOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlaylistInclude<ExtArgs> | null
+  where?: Prisma.PlaylistWhereInput
+  orderBy?: Prisma.PlaylistOrderByWithRelationInput | Prisma.PlaylistOrderByWithRelationInput[]
+  cursor?: Prisma.PlaylistWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlaylistScalarFieldEnum | Prisma.PlaylistScalarFieldEnum[]
+}
+
+/**
+ * Organization.playlistItems
+ */
+export type Organization$playlistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlaylistItem
+   */
+  select?: Prisma.PlaylistItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlaylistItem
+   */
+  omit?: Prisma.PlaylistItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlaylistItemInclude<ExtArgs> | null
+  where?: Prisma.PlaylistItemWhereInput
+  orderBy?: Prisma.PlaylistItemOrderByWithRelationInput | Prisma.PlaylistItemOrderByWithRelationInput[]
+  cursor?: Prisma.PlaylistItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PlaylistItemScalarFieldEnum | Prisma.PlaylistItemScalarFieldEnum[]
 }
 
 /**
