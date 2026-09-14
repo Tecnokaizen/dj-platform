@@ -187,5 +187,12 @@ jobs:
 
       - name: Supabase diagnostics
         if: failure()
-        working-directory: infra/supabase/vendor
-        run: docker compose --env-file .env -f docker-compose.yml -f ../docker-compose.ci.yml ps && docker compose --env-file .env -f docker-compose.yml -f ../docker-compose.ci.yml logs --no-color --tail=200
+        shell: bash
+        run: |
+          if [ -d infra/supabase/vendor ]; then
+            cd infra/supabase/vendor
+            docker compose --env-file .env -f docker-compose.yml -f ../docker-compose.ci.yml ps
+            docker compose --env-file .env -f docker-compose.yml -f ../docker-compose.ci.yml logs --no-color --tail=200
+          else
+            echo "Supabase topology was not materialized; skipping diagnostics."
+          fi
