@@ -77,6 +77,7 @@ This directory contains:
 - `DEPLOYMENT.md`
 - `MONITORING.md`
 - `BACKUPS.md`
+- `PLATFORM_CORE_RECOVERY.md`
 - `RUNBOOKS.md`
 - `INCIDENT_RESPONSE.md`
 - `MAINTENANCE.md`

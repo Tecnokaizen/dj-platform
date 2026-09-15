@@ -1,6 +1,5 @@
 import {
   PERMISSION_DEFINITIONS,
-  type PermissionDefinition,
   validatePermissionDefinitions,
 } from '@/core/modules/permissions/constants/permission-definitions'
 import { SYSTEM_ROLE_PERMISSION_POLICY } from '@/core/modules/permissions/constants/system-role-permission-policy'
@@ -42,23 +41,21 @@ export async function validatePermissionCatalog(
       description: true,
     },
   })
-  const definitionsByKey = new Map<string, PermissionDefinition>(
-    PERMISSION_DEFINITIONS.map((definition) => [definition.key, definition]),
+  const persistedByKey = new Map(
+    persistedPermissions.map((permission) => [permission.key, permission]),
   )
 
-  if (
-    persistedPermissions.length !== PERMISSION_DEFINITIONS.length ||
-    persistedPermissions.some((permission) => {
-      const definition = definitionsByKey.get(permission.key)
+  // Core validates only its own catalog. Domain permissions may coexist.
+  for (const definition of PERMISSION_DEFINITIONS) {
+    const permission = persistedByKey.get(definition.key)
 
-      return (
-        !definition ||
-        permission.name !== definition.name ||
-        permission.description !== definition.description
-      )
-    })
-  ) {
-    throw new PermissionError(PERMISSION_ERROR_CODES.CATALOG_DRIFT)
+    if (
+      !permission ||
+      permission.name !== definition.name ||
+      permission.description !== definition.description
+    ) {
+      throw new PermissionError(PERMISSION_ERROR_CODES.CATALOG_DRIFT)
+    }
   }
 }
 
@@ -66,17 +63,6 @@ export async function syncPermissionCatalog(
   client: PermissionsFoundationClient,
 ): Promise<void> {
   validatePermissionDefinitions()
-
-  const approvedKeys = new Set<string>(
-    PERMISSION_DEFINITIONS.map(({ key }) => key),
-  )
-  const persistedKeys = await client.permission.findMany({
-    select: { key: true },
-  })
-
-  if (persistedKeys.some(({ key }) => !approvedKeys.has(key))) {
-    throw new PermissionError(PERMISSION_ERROR_CODES.CATALOG_DRIFT)
-  }
 
   for (const definition of PERMISSION_DEFINITIONS) {
     await client.permission.upsert({
@@ -156,16 +142,23 @@ async function resolveSystemPolicyState(
 export async function validateSystemRolePermissionPolicy(
   client: PermissionsFoundationClient,
 ): Promise<void> {
-  const { expectedMappings, rolesByKey } =
+  const { expectedMappings, rolesByKey, permissionsByKey } =
     await resolveSystemPolicyState(client)
+  const corePermissionIds = new Set(
+    [...permissionsByKey.values()].map(({ id }) => id),
+  )
   const persistedMappings = await client.rolePermission.findMany({
     where: { roleId: { in: [...rolesByKey.values()].map(({ id }) => id) } },
     select: { roleId: true, permissionId: true },
   })
+  const persistedCoreMappings = persistedMappings.filter(({ permissionId }) =>
+    corePermissionIds.has(permissionId),
+  )
 
+  // Domain RolePermissions may coexist. Unexpected Core grants are drift.
   if (
-    persistedMappings.length !== expectedMappings.size ||
-    persistedMappings.some(
+    persistedCoreMappings.length !== expectedMappings.size ||
+    persistedCoreMappings.some(
       ({ roleId, permissionId }) =>
         !expectedMappings.has(`${roleId}:${permissionId}`),
     )
@@ -179,13 +172,19 @@ export async function syncSystemRolePermissionPolicy(
 ): Promise<void> {
   const { expectedMappings, rolesByKey, permissionsByKey } =
     await resolveSystemPolicyState(client)
+  const corePermissionIds = new Set(
+    [...permissionsByKey.values()].map(({ id }) => id),
+  )
   const persistedMappings = await client.rolePermission.findMany({
     where: { roleId: { in: [...rolesByKey.values()].map(({ id }) => id) } },
     select: { roleId: true, permissionId: true },
   })
+  const persistedCoreMappings = persistedMappings.filter(({ permissionId }) =>
+    corePermissionIds.has(permissionId),
+  )
 
   if (
-    persistedMappings.some(
+    persistedCoreMappings.some(
       ({ roleId, permissionId }) =>
         !expectedMappings.has(`${roleId}:${permissionId}`),
     )

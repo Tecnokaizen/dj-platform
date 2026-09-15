@@ -1,4 +1,10 @@
+import Link from 'next/link'
+
+import { loadProductStudioContext } from '@/app/(private)/_lib/load-product-studio-context'
 import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
+import { listLibraryItems } from '@/domains/dj-studio/library/services/library-item-services'
+import { listPlaylists } from '@/domains/dj-studio/playlists/services/playlist-services'
+import { getOwnDjStudioProfile } from '@/domains/dj-studio/profile/services/dj-studio-profile-services'
 
 export default async function DashboardPage() {
   const session = await getCurrentProfile()
@@ -7,49 +13,52 @@ export default async function DashboardPage() {
     return null
   }
 
+  const { context } = await loadProductStudioContext()
+  const [libraryItems, playlists, studioProfile] = await Promise.all([
+    listLibraryItems(context),
+    listPlaylists(context),
+    getOwnDjStudioProfile(),
+  ])
+
   const displayName =
-    session.profile?.display_name ??
-    session.profile?.dj_name ??
-    session.user.email ??
+    studioProfile?.stageName?.trim() ||
+    session.profile?.display_name ||
+    session.user.email ||
     'DJ'
 
   return (
     <section>
-      <p className="text-sm font-medium text-violet-400">
-        Milestone 2 · Sprint 1
-      </p>
+      <p className="text-sm font-medium text-violet-400">DJ Studio</p>
 
-      <h1 className="mt-2 text-4xl font-bold">
-        Bienvenido, {displayName}
-      </h1>
+      <h1 className="mt-2 text-4xl font-bold">Bienvenido, {displayName}</h1>
 
       <p className="mt-4 max-w-2xl text-neutral-400">
-        Ya tienes funcionando la autenticación SSR con Supabase y el perfil
-        sincronizado automáticamente mediante la tabla <strong>profiles</strong>.
+        Organización activa lista. Music Library y Playlists usan Domain
+        services con RBAC.
       </p>
 
-      <div className="mt-10 grid gap-6 md:grid-cols-3">
-        <div className="rounded-xl border border-white/10 bg-neutral-900 p-6">
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
+        <Link
+          href="/library"
+          className="rounded-xl border border-white/10 bg-neutral-900 p-6 transition hover:border-violet-500/40"
+        >
           <p className="text-sm text-neutral-400">Biblioteca</p>
-          <p className="mt-3 text-3xl font-bold">0</p>
-          <p className="text-sm text-neutral-500">Tracks</p>
-        </div>
+          <p className="mt-3 text-3xl font-bold">{libraryItems.length}</p>
+          <p className="text-sm text-neutral-500">Library items</p>
+        </Link>
 
-        <div className="rounded-xl border border-white/10 bg-neutral-900 p-6">
+        <Link
+          href="/playlists"
+          className="rounded-xl border border-white/10 bg-neutral-900 p-6 transition hover:border-violet-500/40"
+        >
           <p className="text-sm text-neutral-400">Playlists</p>
-          <p className="mt-3 text-3xl font-bold">0</p>
+          <p className="mt-3 text-3xl font-bold">{playlists.length}</p>
           <p className="text-sm text-neutral-500">Creadas</p>
-        </div>
-
-        <div className="rounded-xl border border-white/10 bg-neutral-900 p-6">
-          <p className="text-sm text-neutral-400">Importaciones</p>
-          <p className="mt-3 text-3xl font-bold">0</p>
-          <p className="text-sm text-neutral-500">Realizadas</p>
-        </div>
+        </Link>
       </div>
 
       <div className="mt-10 rounded-xl border border-white/10 bg-neutral-900 p-6">
-        <h2 className="mb-4 text-xl font-semibold">Información del perfil</h2>
+        <h2 className="mb-4 text-xl font-semibold">Sesión</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
@@ -63,13 +72,13 @@ export default async function DashboardPage() {
           </div>
 
           <div>
-            <p className="text-sm text-neutral-500">Nombre DJ</p>
-            <p>{session.profile?.dj_name ?? 'Sin configurar'}</p>
+            <p className="text-sm text-neutral-500">Stage name</p>
+            <p>{studioProfile?.stageName ?? 'Sin configurar'}</p>
           </div>
 
           <div>
-            <p className="text-sm text-neutral-500">Administrador</p>
-            <p>{session.profile?.is_admin ? 'Sí' : 'No'}</p>
+            <p className="text-sm text-neutral-500">Experience</p>
+            <p>{studioProfile?.experienceLevel ?? 'Sin configurar'}</p>
           </div>
         </div>
       </div>

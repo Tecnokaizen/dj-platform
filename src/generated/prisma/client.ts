@@ -47,6 +47,36 @@ export { Prisma }
  */
 export type Profile = Prisma.ProfileModel
 /**
+ * Model DjStudioProfile
+ * 
+ */
+export type DjStudioProfile = Prisma.DjStudioProfileModel
+/**
+ * Model LibraryItem
+ * 
+ */
+export type LibraryItem = Prisma.LibraryItemModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model LibraryItemTag
+ * 
+ */
+export type LibraryItemTag = Prisma.LibraryItemTagModel
+/**
+ * Model Playlist
+ * 
+ */
+export type Playlist = Prisma.PlaylistModel
+/**
+ * Model PlaylistItem
+ * 
+ */
+export type PlaylistItem = Prisma.PlaylistItemModel
+/**
  * Model Organization
  * 
  */
@@ -152,27 +182,27 @@ export type IngestionItem = Prisma.IngestionItemModel
  */
 export type EnrichmentJob = Prisma.EnrichmentJobModel
 /**
- * Model UserTrack
+ * Model LegacyUserTrack
  * 
  */
-export type UserTrack = Prisma.UserTrackModel
+export type LegacyUserTrack = Prisma.LegacyUserTrackModel
 /**
- * Model Tag
+ * Model LegacyProfileTag
  * 
  */
-export type Tag = Prisma.TagModel
+export type LegacyProfileTag = Prisma.LegacyProfileTagModel
 /**
- * Model UserTrackTag
+ * Model LegacyUserTrackTag
  * 
  */
-export type UserTrackTag = Prisma.UserTrackTagModel
+export type LegacyUserTrackTag = Prisma.LegacyUserTrackTagModel
 /**
- * Model Playlist
+ * Model LegacyProfilePlaylist
  * 
  */
-export type Playlist = Prisma.PlaylistModel
+export type LegacyProfilePlaylist = Prisma.LegacyProfilePlaylistModel
 /**
- * Model PlaylistTrack
+ * Model LegacyPlaylistTrack
  * 
  */
-export type PlaylistTrack = Prisma.PlaylistTrackModel
+export type LegacyPlaylistTrack = Prisma.LegacyPlaylistTrackModel

@@ -9,10 +9,14 @@ next-env.d.ts
 tsconfig.tsbuildinfo
 .DS_Store
 *.log
+infra/supabase/vendor/
 
 # Prisma
 prisma/dev.db
 prisma/dev.db-journal
+
+# Supabase CLI local cache
+supabase/.temp/
 
 # Turbopack
 .turbo
@@ -21,6 +25,7 @@ prisma/dev.db-journal
 *.tsbuildinfo
 
 # Cursor
+.cursor/mcp.json
 
 # IDE
 .vscode/settings.json

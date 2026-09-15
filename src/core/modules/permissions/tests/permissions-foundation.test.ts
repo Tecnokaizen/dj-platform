@@ -87,14 +87,19 @@ describe('Permissions Foundation persistence', () => {
 
   it('synchronizes the catalog and policy idempotently', async () => {
     const { prisma } = await import('@/lib/prisma')
+    const coreKeys = Object.values(PERMISSION_KEYS)
 
     await prisma.$transaction((client) => syncPermissionsFoundation(client))
     await prisma.$transaction((client) => syncPermissionsFoundation(client))
 
-    await expect(prisma.permission.count()).resolves.toBe(12)
-    await expect(prisma.rolePermission.count()).resolves.toBe(
-      EXPECTED_MAPPING_COUNT
-    )
+    await expect(
+      prisma.permission.count({ where: { key: { in: coreKeys } } }),
+    ).resolves.toBe(12)
+    await expect(
+      prisma.rolePermission.count({
+        where: { permission: { key: { in: coreKeys } } },
+      }),
+    ).resolves.toBe(EXPECTED_MAPPING_COUNT)
     await expect(validatePermissionCatalog(prisma)).resolves.toBeUndefined()
     await expect(
       validateSystemRolePermissionPolicy(prisma)
@@ -153,25 +158,23 @@ describe('Permissions Foundation persistence', () => {
     }
   })
 
-  it('detects unknown persisted Permissions without deleting them', async () => {
+  it('allows Domain (non-Core) Permissions to coexist without Core catalog drift', async () => {
     const { prisma } = await import('@/lib/prisma')
-    const unknownKey = `test.unknown_${randomUUID().replaceAll('-', '')}`
+    const domainKey = `library.read_test_${randomUUID().replaceAll('-', '')}`
 
     await prisma.permission.create({
-      data: { key: unknownKey, name: 'Unknown test Permission' },
+      data: { key: domainKey, name: 'Domain coexistence test' },
     })
 
     try {
       await expect(
         prisma.$transaction((client) => syncPermissionsFoundation(client))
-      ).rejects.toMatchObject({
-        code: PERMISSION_ERROR_CODES.CATALOG_DRIFT,
-      })
+      ).resolves.toBeUndefined()
       await expect(
-        prisma.permission.findUnique({ where: { key: unknownKey } })
+        prisma.permission.findUnique({ where: { key: domainKey } })
       ).resolves.not.toBeNull()
     } finally {
-      await prisma.permission.delete({ where: { key: unknownKey } })
+      await prisma.permission.delete({ where: { key: domainKey } })
     }
   })
 
@@ -295,6 +298,9 @@ describe('tenant-scoped Permission authorization', () => {
       findRoleById: vi.fn(),
       roleHasPermission: vi.fn(async () => true),
     })
+    const roleHasPermission = vi.fn(async (_roleId: string, key: string) =>
+      key === PERMISSION_KEYS.MEMBERSHIPS_READ,
+    )
     const validTenantServices = createPermissionAuthorizationServices({
       findMembershipById: async () => ({
         id: context.membershipId,
@@ -304,7 +310,7 @@ describe('tenant-scoped Permission authorization', () => {
         status: 'ACTIVE',
       }),
       findRoleById: async () => role,
-      roleHasPermission: vi.fn(async () => true),
+      roleHasPermission,
     })
 
     await expect(
@@ -312,6 +318,13 @@ describe('tenant-scoped Permission authorization', () => {
     ).resolves.toBe(false)
     await expect(
       validTenantServices.hasPermission(context, 'memberships.unknown')
+    ).resolves.toBe(false)
+    expect(roleHasPermission).toHaveBeenCalledWith(
+      context.roleId,
+      'memberships.unknown',
+    )
+    await expect(
+      validTenantServices.hasPermission(context, 'library.manage')
     ).resolves.toBe(false)
   })
 
