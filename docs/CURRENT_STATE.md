@@ -54,7 +54,7 @@ Operational snapshot of Platform Core as of 2026-09-13.
   services. **Not production.**
 - **DJ-STUDIO-001 release pipeline fix** — COMPLETE locally. Phased release:
   Foundation Prisma → Supabase S1–S7 → Foundation seed → Domain Prisma M1–M4 →
-  Supabase M5 → Product seed → key-based validator. Clean install + production-like
+  Supabase M5–M6 → Product seed → key-based validator. Clean install + production-like
   upgrade + rich upgrade PASS on disposable DBs. **Not production.**
 - **DJ-STUDIO-001 FULL FINAL VALIDATION** — **READY FOR STAGING** (local
   disposable DBs only; canonical `migrate-release`). Production NOT MODIFIED.

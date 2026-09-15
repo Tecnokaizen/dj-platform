@@ -9,10 +9,16 @@ import { DJ_STUDIO_SYSTEM_ROLE_PERMISSION_POLICY } from '../../src/domains/dj-st
 export const FOUNDATION_PRISMA_MIGRATION_COUNT = 8
 export const FOUNDATION_SUPABASE_MIGRATION_COUNT = 7
 export const DJ_STUDIO_PRISMA_MIGRATION_COUNT = 4
-export const DJ_STUDIO_SUPABASE_MIGRATION_COUNT = 1
+export const DJ_STUDIO_SUPABASE_MIGRATION_COUNT = 2
 
 /** Foundation Supabase S7 — profiles authenticated PostgREST grants */
 export const FOUNDATION_SUPABASE_S7_VERSION = '20260914230000'
+
+/** DJ Studio Domain Supabase M5 — Domain RLS + runtime DML */
+export const DJ_STUDIO_SUPABASE_M5_VERSION = '20260913240000'
+
+/** DJ Studio Domain Supabase M6 — catalog SELECT for app_runtime */
+export const DJ_STUDIO_SUPABASE_M6_VERSION = '20260915150000'
 
 export type ValidateMode = 'foundation' | 'product'
 
@@ -166,9 +172,18 @@ async function assertDjStudio(client: pg.Client) {
     `SELECT version FROM supabase_migrations.schema_migrations ORDER BY version`,
   )
   const versions = new Set(supabase.rows.map((row) => row.version))
-  const m5 = '20260913240000'
-  if (!versions.has(m5) && ![...versions].some((v) => v.startsWith(m5))) {
-    throw new Error(`Missing DJ Studio Supabase migration in ledger: ${m5}`)
+  for (const version of [
+    DJ_STUDIO_SUPABASE_M5_VERSION,
+    DJ_STUDIO_SUPABASE_M6_VERSION,
+  ]) {
+    if (
+      !versions.has(version) &&
+      ![...versions].some((entry) => entry.startsWith(version))
+    ) {
+      throw new Error(
+        `Missing DJ Studio Supabase migration in ledger: ${version}`,
+      )
+    }
   }
 
   if (versions.size < FOUNDATION_SUPABASE_MIGRATION_COUNT + DJ_STUDIO_SUPABASE_MIGRATION_COUNT) {
@@ -184,6 +199,35 @@ async function assertDjStudio(client: pg.Client) {
   )
   if (!domainTable.rowCount) {
     throw new Error('DJ Studio Domain tables missing (library_items)')
+  }
+
+  const catalogGrants = await client.query<{
+    table_name: string
+    can_select: boolean
+    can_insert: boolean
+    can_update: boolean
+    can_delete: boolean
+  }>(
+    `SELECT
+       t.table_name,
+       has_table_privilege('app_runtime', format('public.%I', t.table_name), 'SELECT') AS can_select,
+       has_table_privilege('app_runtime', format('public.%I', t.table_name), 'INSERT') AS can_insert,
+       has_table_privilege('app_runtime', format('public.%I', t.table_name), 'UPDATE') AS can_update,
+       has_table_privilege('app_runtime', format('public.%I', t.table_name), 'DELETE') AS can_delete
+     FROM (VALUES ('tracks'), ('track_artists'), ('artists')) AS t(table_name)`,
+  )
+
+  for (const row of catalogGrants.rows) {
+    if (
+      !row.can_select ||
+      row.can_insert ||
+      row.can_update ||
+      row.can_delete
+    ) {
+      throw new Error(
+        `app_runtime catalog privilege contract failed for ${row.table_name}: expected SELECT only`,
+      )
+    }
   }
 
   const permissions = await client.query<{ key: string }>(

@@ -8,6 +8,8 @@ import { DJ_STUDIO_PERMISSION_KEYS } from '@/domains/dj-studio/permissions/permi
 import { DJ_STUDIO_SYSTEM_ROLE_PERMISSION_POLICY } from '@/domains/dj-studio/permissions/system-role-permission-policy'
 import { SYSTEM_ROLE_KEYS } from '@/core/modules/roles/constants/system-role-keys'
 import {
+  DJ_STUDIO_SUPABASE_M5_VERSION,
+  DJ_STUDIO_SUPABASE_M6_VERSION,
   DJ_STUDIO_SUPABASE_MIGRATION_COUNT,
   FOUNDATION_SUPABASE_MIGRATION_COUNT,
   FOUNDATION_SUPABASE_S7_VERSION,
@@ -39,21 +41,35 @@ describe('release validation contracts', () => {
     expect(owner).toHaveLength(4)
   })
 
-  it('Foundation Supabase contract is S1–S7 (floor 7) including profiles grants S7', async () => {
+  it('Product Supabase contract is Foundation S1–S7 + Domain M5–M6 (total 9)', async () => {
     expect(FOUNDATION_SUPABASE_MIGRATION_COUNT).toBe(7)
     expect(FOUNDATION_SUPABASE_S7_VERSION).toBe('20260914230000')
-    expect(DJ_STUDIO_SUPABASE_MIGRATION_COUNT).toBe(1)
+    expect(DJ_STUDIO_SUPABASE_MIGRATION_COUNT).toBe(2)
+    expect(DJ_STUDIO_SUPABASE_M5_VERSION).toBe('20260913240000')
+    expect(DJ_STUDIO_SUPABASE_M6_VERSION).toBe('20260915150000')
     expect(
       FOUNDATION_SUPABASE_MIGRATION_COUNT + DJ_STUDIO_SUPABASE_MIGRATION_COUNT,
-    ).toBe(8)
+    ).toBe(9)
 
     const foundationDir = path.join(process.cwd(), 'supabase/migrations')
-    const files = (await readdir(foundationDir)).filter((name) =>
+    const foundationFiles = (await readdir(foundationDir)).filter((name) =>
       name.endsWith('.sql'),
     )
-    expect(files).toHaveLength(FOUNDATION_SUPABASE_MIGRATION_COUNT)
-    expect(files).toContain(
+    expect(foundationFiles).toHaveLength(FOUNDATION_SUPABASE_MIGRATION_COUNT)
+    expect(foundationFiles).toContain(
       `${FOUNDATION_SUPABASE_S7_VERSION}_profiles_authenticated_grants.sql`,
+    )
+
+    const domainDir = path.join(process.cwd(), 'supabase/migrations-dj-studio')
+    const domainFiles = (await readdir(domainDir)).filter((name) =>
+      name.endsWith('.sql'),
+    )
+    expect(domainFiles).toHaveLength(DJ_STUDIO_SUPABASE_MIGRATION_COUNT)
+    expect(domainFiles).toContain(
+      `${DJ_STUDIO_SUPABASE_M5_VERSION}_dj_studio_rls_and_runtime_grants.sql`,
+    )
+    expect(domainFiles).toContain(
+      `${DJ_STUDIO_SUPABASE_M6_VERSION}_dj_studio_catalog_runtime_grants.sql`,
     )
   })
 })

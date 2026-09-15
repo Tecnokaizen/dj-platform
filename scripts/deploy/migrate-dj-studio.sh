@@ -3,7 +3,7 @@ set -eu
 
 # PHASE 2 — DJ Studio Domain / Product
 # Requires Foundation phase complete (OWNER role seeded before M4).
-# Domain Prisma M1–M4 → Domain Supabase M5 → Product seed → Product validate
+# Domain Prisma M1–M4 → Domain Supabase M5–M6 → Product seed → Product validate
 
 : "${MIGRATION_DATABASE_URL:?MIGRATION_DATABASE_URL is required}"
 
@@ -13,7 +13,7 @@ echo "=== PHASE 2: DJ Studio Prisma migrations (M1–M4) ==="
 DATABASE_URL="$MIGRATION_DATABASE_URL" \
   prisma migrate deploy --config "$ROOT_DIR/prisma.dj-studio.config.ts"
 
-echo "=== PHASE 2: DJ Studio Supabase migration (M5) ==="
+echo "=== PHASE 2: DJ Studio Supabase migrations (M5–M6) ==="
 DATABASE_URL="$MIGRATION_DATABASE_URL" \
   MIGRATION_DATABASE_URL="$MIGRATION_DATABASE_URL" \
   node --import tsx "$ROOT_DIR/scripts/deploy/apply-supabase-migrations-dir.ts" \

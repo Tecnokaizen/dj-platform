@@ -5,7 +5,7 @@ set -eu
 #
 # PHASE 0 (caller): bootstrap DB roles — scripts/deploy/bootstrap-postgres-roles.sh
 # PHASE 1: Foundation Prisma + Supabase S1–S7 + Foundation seed + validate
-# PHASE 2: DJ Studio Prisma M1–M4 + Supabase M5 + Product seed + validate
+# PHASE 2: DJ Studio Prisma M1–M4 + Supabase M5–M6 + Product seed + validate
 #
 # Ordering guarantees:
 # - S1–S7 run before Domain Prisma M1 renames legacy tables

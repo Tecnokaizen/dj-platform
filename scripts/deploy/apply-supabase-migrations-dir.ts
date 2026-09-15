@@ -7,7 +7,7 @@
  * Used for:
  * - Foundation S1–S7 (`supabase/migrations`) so Domain M5 can live outside
  *   that folder without breaking idempotent `migrate-release` re-runs
- * - Domain M5 (`supabase/migrations-dj-studio`)
+ * - Domain M5–M6 (`supabase/migrations-dj-studio`)
  *
  * Env: DATABASE_URL (or MIGRATION_DATABASE_URL)
  * Arg: absolute or repo-relative directory path

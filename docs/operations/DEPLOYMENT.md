@@ -27,16 +27,18 @@ The operational release sequence is phased:
 0. idempotent cluster-role bootstrap;
 1. **Foundation** — Prisma Foundation migrations → Supabase S1–S7 →
    Foundation seed (roles + Core permissions) → Foundation validate;
-2. **DJ Studio / Product** — Prisma Domain M1–M4 → Supabase M5 →
+2. **DJ Studio / Product** — Prisma Domain M1–M4 → Supabase M5–M6 →
    Product seed (Foundation + Domain permissions) → Product validate;
 3. web deployment using only `app_runtime` credentials;
 4. readiness verification.
 
 Domain Prisma migrations live in `prisma/migrations-dj-studio/` and are
-deployed via `prisma.dj-studio.config.ts`. Domain Supabase M5 lives in
+deployed via `prisma.dj-studio.config.ts`. Domain Supabase M5–M6 live in
 `supabase/migrations-dj-studio/` so Foundation `db push` never runs after
-M1 renames. This ordering keeps S1–S7 on pre-rename table names and ensures
-OWNER exists before M4 personal-org bootstrap.
+M1 renames. M5 grants Domain DML + RLS; M6 grants `app_runtime` SELECT-only
+on shared catalog (`tracks`, `track_artists`, `artists`). This ordering keeps
+S1–S7 on pre-rename table names and ensures OWNER exists before M4
+personal-org bootstrap.
 
 The web service never receives owner/migration credentials or migration tools.
 See ADR-010 for the complete privilege and topology contract.
