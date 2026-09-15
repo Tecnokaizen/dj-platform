@@ -194,7 +194,6 @@ describe('DJ Studio M7 Product integration (services)', () => {
   it('0 memberships → resolve creates personal org', async () => {
     const { prisma } = await import('@/lib/prisma')
     const profile = await createProfile('zero')
-    let preferred: string | null = null
 
     const resolve = createResolveActiveOrganizationService({
       getCurrentProfileId: async () => profile.id,
@@ -214,10 +213,7 @@ describe('DJ Studio M7 Product integration (services)', () => {
           },
           orderBy: [{ createdAt: 'asc' }, { organizationId: 'asc' }],
         }),
-      readPreferredOrganizationId: async () => preferred,
-      persistPreferredOrganizationId: async (organizationId) => {
-        preferred = organizationId
-      },
+      readPreferredOrganizationId: async () => null,
       ensurePersonalOrganization,
       resolveOrganizationContext: async (organizationId, profileId) => {
         const membershipRepository = createMembershipRepository(prisma)
@@ -233,7 +229,6 @@ describe('DJ Studio M7 Product integration (services)', () => {
 
     const context = await resolve()
     expect(context.profileId).toBe(profile.id)
-    expect(preferred).toBe(context.organizationId)
     const orgs = await prisma.organization.findMany({
       where: { slug: personalOrganizationSlug(profile.id) },
     })
@@ -395,9 +390,6 @@ describe('DJ Studio M7 Product integration (services)', () => {
           orderBy: [{ createdAt: 'asc' }, { organizationId: 'asc' }],
         }),
       readPreferredOrganizationId: async () => preferred,
-      persistPreferredOrganizationId: async (organizationId) => {
-        preferred = organizationId
-      },
       ensurePersonalOrganization,
       resolveOrganizationContext: async (organizationId, profileId) => {
         const membershipRepository = createMembershipRepository(prisma)

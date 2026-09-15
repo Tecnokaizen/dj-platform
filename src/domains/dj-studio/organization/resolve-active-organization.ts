@@ -6,10 +6,7 @@ import { findOrganizationById } from '@/core/modules/organizations/services/find
 import { createResolveOrganizationContextService } from '@/core/modules/organizations/services/switch-active-organization'
 import { findRoleById } from '@/core/modules/roles/services/find-role-by-id'
 import { prisma } from '@/lib/prisma'
-import {
-  readActiveOrganizationCookie,
-  setActiveOrganizationCookie,
-} from '@/domains/dj-studio/organization/active-organization-cookie'
+import { readActiveOrganizationCookie } from '@/domains/dj-studio/organization/active-organization-cookie'
 import {
   ensurePersonalOrganization,
   pickDeterministicMembership,
@@ -32,7 +29,6 @@ export type ResolveActiveOrganizationDependencies = {
     }>
   >
   readPreferredOrganizationId: () => Promise<string | null>
-  persistPreferredOrganizationId: (organizationId: string) => Promise<void>
   ensurePersonalOrganization: (
     profileId: string,
   ) => Promise<ActiveOrganizationContext>
@@ -42,6 +38,11 @@ export type ResolveActiveOrganizationDependencies = {
   ) => Promise<ActiveOrganizationContext>
 }
 
+/**
+ * Passive-only active Organization resolution for RSC / server loaders.
+ * Cookie preference is read only — writes happen exclusively via
+ * `switchActiveOrganization` (Server Action).
+ */
 export function createResolveActiveOrganizationService(
   dependencies: ResolveActiveOrganizationDependencies,
 ) {
@@ -56,19 +57,15 @@ export function createResolveActiveOrganizationService(
       await dependencies.listActiveMembershipsOrdered(profileId)
 
     if (memberships.length === 0) {
-      const context = await dependencies.ensurePersonalOrganization(profileId)
-      await dependencies.persistPreferredOrganizationId(context.organizationId)
-      return context
+      return dependencies.ensurePersonalOrganization(profileId)
     }
 
     if (memberships.length === 1) {
       const only = memberships[0]!
-      const context = await dependencies.resolveOrganizationContext(
+      return dependencies.resolveOrganizationContext(
         only.organizationId,
         profileId,
       )
-      await dependencies.persistPreferredOrganizationId(context.organizationId)
-      return context
     }
 
     const preferred = await dependencies.readPreferredOrganizationId()
@@ -81,12 +78,10 @@ export function createResolveActiveOrganizationService(
     }
 
     const fallback = pickDeterministicMembership(memberships)
-    const context = await dependencies.resolveOrganizationContext(
+    return dependencies.resolveOrganizationContext(
       fallback.organizationId,
       profileId,
     )
-    await dependencies.persistPreferredOrganizationId(context.organizationId)
-    return context
   }
 }
 
@@ -130,7 +125,6 @@ export const resolveActiveOrganization =
     },
     listActiveMembershipsOrdered,
     readPreferredOrganizationId: readActiveOrganizationCookie,
-    persistPreferredOrganizationId: setActiveOrganizationCookie,
     ensurePersonalOrganization,
     resolveOrganizationContext: async (organizationId, profileId) =>
       resolveContextForProfile(profileId)(organizationId),

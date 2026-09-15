@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next/headers', () => ({
@@ -127,17 +130,16 @@ describe('ensurePersonalOrganization (unit)', () => {
 })
 
 describe('resolveActiveOrganization (unit)', () => {
-  it('creates personal org when memberships are empty', async () => {
+  it('creates personal org when memberships are empty without writing cookie', async () => {
     const ensurePersonalOrganization = vi.fn(async () => ({
       ...baseContext,
       organizationId: 'org-new',
     }))
-    const persist = vi.fn()
+    const readPreferredOrganizationId = vi.fn(async () => null)
     const resolve = createResolveActiveOrganizationService({
       getCurrentProfileId: async () => 'p1',
       listActiveMembershipsOrdered: async () => [],
-      readPreferredOrganizationId: async () => null,
-      persistPreferredOrganizationId: persist,
+      readPreferredOrganizationId,
       ensurePersonalOrganization,
       resolveOrganizationContext: async () => baseContext,
     })
@@ -145,10 +147,11 @@ describe('resolveActiveOrganization (unit)', () => {
     const context = await resolve()
     expect(context.organizationId).toBe('org-new')
     expect(ensurePersonalOrganization).toHaveBeenCalledOnce()
-    expect(persist).toHaveBeenCalledWith('org-new')
+    expect(readPreferredOrganizationId).not.toHaveBeenCalled()
   })
 
-  it('auto-selects the single ACTIVE membership', async () => {
+  it('auto-selects the single ACTIVE membership without writing cookie', async () => {
+    const readPreferredOrganizationId = vi.fn(async () => null)
     const resolve = createResolveActiveOrganizationService({
       getCurrentProfileId: async () => 'p1',
       listActiveMembershipsOrdered: async () => [
@@ -160,8 +163,7 @@ describe('resolveActiveOrganization (unit)', () => {
           createdAt: new Date(),
         },
       ],
-      readPreferredOrganizationId: async () => null,
-      persistPreferredOrganizationId: vi.fn(),
+      readPreferredOrganizationId,
       ensurePersonalOrganization: async () => {
         throw new Error('should not ensure')
       },
@@ -173,6 +175,7 @@ describe('resolveActiveOrganization (unit)', () => {
 
     const context = await resolve()
     expect(context.organizationId).toBe('org-only')
+    expect(readPreferredOrganizationId).not.toHaveBeenCalled()
   })
 
   it('uses valid cookie when multiple memberships exist', async () => {
@@ -195,7 +198,6 @@ describe('resolveActiveOrganization (unit)', () => {
         },
       ],
       readPreferredOrganizationId: async () => 'org-b',
-      persistPreferredOrganizationId: vi.fn(),
       ensurePersonalOrganization: async () => baseContext,
       resolveOrganizationContext: async (organizationId) => ({
         ...baseContext,
@@ -207,8 +209,7 @@ describe('resolveActiveOrganization (unit)', () => {
     expect(context.organizationId).toBe('org-b')
   })
 
-  it('falls back deterministically when cookie is invalid', async () => {
-    const persist = vi.fn()
+  it('falls back deterministically when cookie is invalid without writing', async () => {
     const resolve = createResolveActiveOrganizationService({
       getCurrentProfileId: async () => 'p1',
       listActiveMembershipsOrdered: async () => [
@@ -228,7 +229,6 @@ describe('resolveActiveOrganization (unit)', () => {
         },
       ],
       readPreferredOrganizationId: async () => 'org-missing',
-      persistPreferredOrganizationId: persist,
       ensurePersonalOrganization: async () => baseContext,
       resolveOrganizationContext: async (organizationId) => ({
         ...baseContext,
@@ -238,7 +238,69 @@ describe('resolveActiveOrganization (unit)', () => {
 
     const context = await resolve()
     expect(context.organizationId).toBe('org-a')
-    expect(persist).toHaveBeenCalledWith('org-a')
+  })
+
+  it('falls back deterministically when cookie is absent', async () => {
+    const resolve = createResolveActiveOrganizationService({
+      getCurrentProfileId: async () => 'p1',
+      listActiveMembershipsOrdered: async () => [
+        {
+          id: 'm1',
+          organizationId: 'org-z',
+          profileId: 'p1',
+          roleId: 'r1',
+          createdAt: new Date('2026-01-02'),
+        },
+        {
+          id: 'm2',
+          organizationId: 'org-a',
+          profileId: 'p1',
+          roleId: 'r1',
+          createdAt: new Date('2026-01-01'),
+        },
+      ],
+      readPreferredOrganizationId: async () => null,
+      ensurePersonalOrganization: async () => baseContext,
+      resolveOrganizationContext: async (organizationId) => ({
+        ...baseContext,
+        organizationId,
+      }),
+    })
+
+    const context = await resolve()
+    expect(context.organizationId).toBe('org-a')
+  })
+
+  it('ignores cookie for org that is not an ACTIVE membership', async () => {
+    const resolve = createResolveActiveOrganizationService({
+      getCurrentProfileId: async () => 'p1',
+      listActiveMembershipsOrdered: async () => [
+        {
+          id: 'm1',
+          organizationId: 'org-a',
+          profileId: 'p1',
+          roleId: 'r1',
+          createdAt: new Date('2026-01-01'),
+        },
+        {
+          id: 'm2',
+          organizationId: 'org-b',
+          profileId: 'p1',
+          roleId: 'r1',
+          createdAt: new Date('2026-01-02'),
+        },
+      ],
+      // Cookie points at an org the caller is not an ACTIVE member of.
+      readPreferredOrganizationId: async () => 'org-foreign',
+      ensurePersonalOrganization: async () => baseContext,
+      resolveOrganizationContext: async (organizationId) => ({
+        ...baseContext,
+        organizationId,
+      }),
+    })
+
+    const context = await resolve()
+    expect(context.organizationId).toBe('org-a')
   })
 
   it('rejects unauthenticated callers', async () => {
@@ -246,7 +308,6 @@ describe('resolveActiveOrganization (unit)', () => {
       getCurrentProfileId: async () => null,
       listActiveMembershipsOrdered: async () => [],
       readPreferredOrganizationId: async () => null,
-      persistPreferredOrganizationId: vi.fn(),
       ensurePersonalOrganization: async () => baseContext,
       resolveOrganizationContext: async () => baseContext,
     })
@@ -254,5 +315,40 @@ describe('resolveActiveOrganization (unit)', () => {
     await expect(resolve()).rejects.toMatchObject({
       code: DJ_STUDIO_ERROR_CODES.UNAUTHENTICATED,
     })
+  })
+})
+
+describe('organization cookie write boundary', () => {
+  it('keeps cookie writes in switch Server Action path only', async () => {
+    const resolverSource = await readFile(
+      path.join(
+        process.cwd(),
+        'src/domains/dj-studio/organization/resolve-active-organization.ts',
+      ),
+      'utf8',
+    )
+    const switchSource = await readFile(
+      path.join(
+        process.cwd(),
+        'src/domains/dj-studio/organization/switch-active-organization.ts',
+      ),
+      'utf8',
+    )
+    const actionSource = await readFile(
+      path.join(
+        process.cwd(),
+        'src/app/(private)/_lib/organization-actions.ts',
+      ),
+      'utf8',
+    )
+
+    expect(resolverSource).not.toContain('setActiveOrganizationCookie')
+    expect(resolverSource).not.toContain('persistPreferredOrganizationId')
+    expect(resolverSource).toContain('readActiveOrganizationCookie')
+
+    expect(switchSource).toContain('setActiveOrganizationCookie')
+    expect(switchSource).toContain('createResolveOrganizationContextService')
+    expect(actionSource).toContain("'use server'")
+    expect(actionSource).toContain('switchActiveOrganization')
   })
 })
