@@ -165,9 +165,10 @@ Purpose:
 
 Defines business-specific semantics.
 
-Current reference Domain:
+Current Domains:
 
-- DJ
+- DJ (legacy / reference pending review under `docs/domains/dj/`)
+- DJ Studio — `docs/domains/dj-studio/` (ADR-011; DJ-STUDIO-001 closed on staging)
 
 The DJ Domain may describe concepts such as:
 

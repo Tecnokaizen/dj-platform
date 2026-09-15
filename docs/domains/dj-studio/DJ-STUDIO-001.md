@@ -1,11 +1,10 @@
 # DJ-STUDIO-001 — Organization-scoped Music Library + Playlist Foundation
 
-**Status:** Approved for implementation design  
-**Implementation:** Phase 1 scaffold COMPLETE; Phase 2 **M1–M7** COMPLETE locally
-(schema → RLS/RBAC → Domain runtime → minimal Product UI) — **not production**.
-**FULL FINAL VALIDATION: READY FOR STAGING** (local disposable evidence;
-canonical release pipeline). Production NOT DEPLOYED / NOT MODIFIED.  
-**Date:** 2026-09-14  
+**Status:** CLOSED — STAGING MVP READY  
+**Closure:** [DJ-STUDIO-001-CLOSURE.md](./DJ-STUDIO-001-CLOSURE.md)  
+**Implementation:** Phase 1–2 (M1–M7) delivered and validated on staging
+(OWNER Product E2E). Production NOT DEPLOYED / NOT MODIFIED. Main NOT MERGED.  
+**Date:** 2026-09-15  
 **Related:** ADR-011, ADR-001, ADR-002, ADR-004, ADR-006, ADR-010
 
 ## Context

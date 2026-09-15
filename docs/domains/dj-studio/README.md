@@ -1,10 +1,11 @@
 ---
 title: DJ Studio Domain Documentation
 status: Living Document
-updated: 2026-09-14
+updated: 2026-09-15
 related:
   - ../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md
   - DJ-STUDIO-001.md
+  - DJ-STUDIO-001-CLOSURE.md
   - ../dj/
 ---
 
@@ -18,17 +19,16 @@ built on Platform Core.
 | Document | Role |
 |----------|------|
 | [ADR-011](../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md) | Domain boundary, Organization tenancy, Profile extraction intent, RBAC extension |
-| [DJ-STUDIO-001](./DJ-STUDIO-001.md) | Approved milestone design — Organization-scoped Music Library + Playlist Foundation |
+| [DJ-STUDIO-001](./DJ-STUDIO-001.md) | Milestone design — Organization-scoped Music Library + Playlist Foundation |
+| [DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
 
 ## Status
 
 - Architecture boundary: **Accepted** (ADR-011)
-- Milestone 001 design: **Approved for implementation design**
-- Phase 1 Domain scaffold: **COMPLETE**
-- Phase 2 / M1–M6 (schema → RLS/RBAC → Domain runtime): **COMPLETE locally**
-- Phase 2 / M7 (minimal Product API/UI): **COMPLETE locally**
-- Release pipeline fix (phased Foundation → Domain): **COMPLETE locally**
-- Production schema: **NOT DEPLOYED**
+- **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY** (see closure doc)
+- Production schema / Product: **NOT DEPLOYED**
+- Main: **NOT MERGED**
+- Next: **DJ-STUDIO-002** — AI Playlist / Session Builder (direction only)
 
 ## Product routes (M7)
 
@@ -45,13 +45,14 @@ auth → `resolveActiveOrganization` → Domain service → Prisma/`app_runtime`
 
 Active Organization cookie = preference only (validated membership).
 
-## Authorization + runtime (M5/M6/M7)
+## Authorization + runtime
 
 | Layer | Role |
 |-------|------|
 | RLS | Isolation floor |
 | RBAC | Business authorization (`RolePermission`) |
-| Active Organization | Server resolution + optional cookie preference |
+| Active Organization | Server resolution + optional cookie preference (write via Server Action only) |
+| Catalog reads | `app_runtime` SELECT on `tracks` / `track_artists` / `artists` (Domain M6) |
 | Writes | Trusted server → Domain services → Prisma |
 
 ## Legacy Domain docs
@@ -60,5 +61,6 @@ Active Organization cookie = preference only (validated membership).
 
 ## Next
 
-Prepare **staging / dry-run validation** before any production deployment.
-Do **not** deploy without authorization.
+Pre-production gates (cross-tenant + VIEWER smokes) before any production
+rollout. Do **not** deploy without authorization. See
+[DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md).
