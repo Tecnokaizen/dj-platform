@@ -11,6 +11,7 @@ export const DJ_STUDIO_ERROR_CODES = {
   TAG_NAME_CONFLICT: 'DJ_STUDIO_TAG_NAME_CONFLICT',
   VALIDATION_ERROR: 'DJ_STUDIO_VALIDATION_ERROR',
   PROFILE_NOT_FOUND: 'DJ_STUDIO_PROFILE_NOT_FOUND',
+  INSUFFICIENT_SESSION_CANDIDATES: 'DJ_STUDIO_INSUFFICIENT_SESSION_CANDIDATES',
 } as const
 
 export type DjStudioErrorCode =
@@ -18,10 +19,16 @@ export type DjStudioErrorCode =
 
 export class DjStudioError extends Error {
   readonly code: DjStudioErrorCode
+  readonly details?: Readonly<Record<string, unknown>>
 
-  constructor(code: DjStudioErrorCode, message?: string) {
+  constructor(
+    code: DjStudioErrorCode,
+    message?: string,
+    details?: Readonly<Record<string, unknown>>,
+  ) {
     super(message ?? code)
     this.name = 'DjStudioError'
     this.code = code
+    this.details = details
   }
 }

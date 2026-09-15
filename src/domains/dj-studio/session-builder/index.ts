@@ -1,7 +1,7 @@
 /**
  * Session Builder Domain surface (DJ-STUDIO-002).
  *
- * P1 exposes musical-rules only. Candidate engine / provider / UI arrive later.
+ * P1: musical-rules. P2: candidate engine shortlist (library.read, no AI).
  */
 
 export {
@@ -27,3 +27,29 @@ export {
   type DurationAggregation,
   type DurationAggregationMode,
 } from '@/domains/dj-studio/session-builder/musical-rules'
+
+export {
+  SESSION_CANDIDATE_ARTIST_CAP,
+  SESSION_CANDIDATE_MIN_ELIGIBLE,
+  SESSION_CANDIDATE_SCORE_WEIGHTS,
+  SESSION_CANDIDATE_SHORTLIST_MAX,
+  buildSessionCandidateShortlistFromSources,
+  passesHardBpmFilter,
+  scoreBpmComponent,
+  scoreSessionCandidate,
+  scoreTagRelevance,
+} from '@/domains/dj-studio/session-builder/candidate-engine'
+
+export { buildSessionCandidateShortlist } from '@/domains/dj-studio/session-builder/services/build-session-candidate-shortlist'
+export { listSessionLibraryCandidateSources } from '@/domains/dj-studio/session-builder/services/list-session-library-candidates'
+
+export type {
+  CandidateSelectionBpmInput,
+  CandidateSelectionInput,
+  SessionCandidate,
+  SessionCandidateArtist,
+  SessionCandidateScoreBreakdown,
+  SessionCandidateSource,
+  SessionCandidateTag,
+  SessionEnergyCurve,
+} from '@/domains/dj-studio/session-builder/types'

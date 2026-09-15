@@ -227,32 +227,37 @@ Selectable authority is **`libraryItemId` only** (not bare Track IDs).
 - `organizationId = active Organization`
 - `status = LIBRARY`
 - Related Track exists
-- Optional BPM window when `bpm.min` / `bpm.max` provided (using effective BPM;
-  items with null effective BPM pass filter but receive soft penalty)
+- Optional BPM window when `bpm.min` / `bpm.max` provided (using effective BPM).
+  **P2 freeze:** items with `effectiveBpm = null` are **rejected** when a min/max
+  window is present (cannot prove constraint satisfaction).
+- `bpm.start` / `bpm.end` are **not** hard filters (scoring only).
 
-### Soft scores (deterministic, weights MVP)
+### Soft scores (deterministic, weights P2)
 
-Normalize each component to approximately `[0, 1]` then:
+Components are ratios in `[0, 1]` then multiplied by absolute weights summing to
+**100**:
 
-| Component | Weight | Notes |
-|-----------|--------|-------|
-| `bpmFit` | 0.30 | Distance to local target on duration curve; null BPM → 0.15 flat |
-| `energyFit` | 0.15 | Relative fit to energy curve if energy present; else 0.10 |
-| `rating` | 0.15 | `rating/maxObservedInOrg` or 0 if null |
-| `familiarity` | 0.10 | same pattern |
-| `favorite` | 0.15 | 1 if `isFavorite` else 0 |
-| `tagRelevance` | 0.10 | token overlap prompt↔tag names (case-insensitive); 0 if none |
-| `camelotUtility` | 0.05 | reserved for optional soft boost; sequencing owns hard adjacency |
+| Component | Weight | Behaviour (P2) |
+|-----------|--------|----------------|
+| `bpm` | 35 | Envelope from `start`/`end`: `max(0, 1 - distance/6)`; null BPM → 0.25; no start/end → 0.5; min/max-only after hard filter → 1.0 |
+| `rating` | 15 | Relative min/max in eligible set; equal known → 0.5; null → 0 |
+| `familiarity` | 10 | Same relative model as rating |
+| `favorite` | 10 | `isFavorite` true → 1 else 0 |
+| `tags` | 15 | Deterministic phrase match prompt↔tag (normalized); ≥1 match → 1 else 0 |
+| `energy` | 10 | Metadata presence only (`!= null` → 1); no HIGH/LOW preference |
+| `camelot` | 5 | Effective Camelot parseable → 1 else 0 (no inter-track adjacency yet) |
 
-**Tie-break (stable):** higher score → `isFavorite` → higher `rating` nulls last →
-`dateAdded` DESC → `libraryItemId` ASC.
+**Stable sort:** `score` DESC → `libraryItemId` ASC.
+
+**Artist diversity pass:** after sort, first pass caps **4** candidates per Artist
+ID; second pass backfills omitted candidates in score order until
+`min(60, eligibleCount)` so diversity never drops below available inventory.
 
 ### Shortlist size
 
 **Target: 60** (clamp available count).  
-Range acceptable 40–80; fixed **60** for testability.  
-If Library has fewer than 8 LIBRARY items after hard filters → fail with
-`INSUFFICIENT_CANDIDATES` (do not call provider).
+If eligible LIBRARY items after hard filters **&lt; 8** → fail with
+`DJ_STUDIO_INSUFFICIENT_SESSION_CANDIDATES` (do not call provider).
 
 ---
 
