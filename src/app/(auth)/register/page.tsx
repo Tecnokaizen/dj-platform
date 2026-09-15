@@ -20,7 +20,7 @@ export default async function RegisterPage({
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-neutral-900 p-8 shadow-2xl">
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-violet-400">
-            DJ Platform
+            DJ Kaizen Studio
           </p>
 
           <h1 className="text-3xl font-semibold">Crear cuenta</h1>

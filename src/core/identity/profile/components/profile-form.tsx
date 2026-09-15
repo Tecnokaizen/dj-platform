@@ -34,7 +34,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         />
 
         <p className="mt-2 text-xs text-neutral-500">
-          Nombre genérico de cuenta. El nombre artístico vive en Studio Profile.
+          Nombre genérico de cuenta. El nombre artístico vive en Perfil DJ.
         </p>
       </div>
 

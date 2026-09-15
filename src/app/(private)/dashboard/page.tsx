@@ -28,13 +28,12 @@ export default async function DashboardPage() {
 
   return (
     <section>
-      <p className="text-sm font-medium text-violet-400">DJ Studio</p>
+      <p className="text-sm font-medium text-violet-400">DJ Kaizen Studio</p>
 
       <h1 className="mt-2 text-4xl font-bold">Bienvenido, {displayName}</h1>
 
       <p className="mt-4 max-w-2xl text-neutral-400">
-        Organización activa lista. Music Library y Playlists usan Domain
-        services con RBAC.
+        Tu espacio para preparar biblioteca, playlists y sesiones.
       </p>
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -44,7 +43,7 @@ export default async function DashboardPage() {
         >
           <p className="text-sm text-neutral-400">Biblioteca</p>
           <p className="mt-3 text-3xl font-bold">{libraryItems.length}</p>
-          <p className="text-sm text-neutral-500">Library items</p>
+          <p className="text-sm text-neutral-500">Tracks guardados</p>
         </Link>
 
         <Link
@@ -58,7 +57,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="mt-10 rounded-xl border border-white/10 bg-neutral-900 p-6">
-        <h2 className="mb-4 text-xl font-semibold">Sesión</h2>
+        <h2 className="mb-4 text-xl font-semibold">Tu cuenta</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
@@ -72,12 +71,12 @@ export default async function DashboardPage() {
           </div>
 
           <div>
-            <p className="text-sm text-neutral-500">Stage name</p>
+            <p className="text-sm text-neutral-500">Nombre artístico</p>
             <p>{studioProfile?.stageName ?? 'Sin configurar'}</p>
           </div>
 
           <div>
-            <p className="text-sm text-neutral-500">Experience</p>
+            <p className="text-sm text-neutral-500">Experiencia</p>
             <p>{studioProfile?.experienceLevel ?? 'Sin configurar'}</p>
           </div>
         </div>

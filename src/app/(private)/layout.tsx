@@ -43,9 +43,9 @@ export default async function PrivateLayout({
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
           <Link
             href="/dashboard"
-            className="text-xl font-bold text-violet-400"
+            className="text-lg font-bold text-violet-400 sm:text-xl"
           >
-            DJ Platform
+            DJ Kaizen Studio
           </Link>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -99,13 +99,13 @@ export default async function PrivateLayout({
               href="/dashboard"
               className="block rounded-lg px-3 py-2 hover:bg-white/5"
             >
-              Dashboard
+              Inicio
             </Link>
             <Link
               href="/library"
               className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
             >
-              Library
+              Biblioteca
             </Link>
             <Link
               href="/playlists"
@@ -117,13 +117,13 @@ export default async function PrivateLayout({
               href="/studio-profile"
               className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
             >
-              Studio Profile
+              Perfil DJ
             </Link>
             <Link
               href="/profile"
               className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
             >
-              Perfil
+              Cuenta
             </Link>
             <Link
               href="/organizations"

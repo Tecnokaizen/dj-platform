@@ -36,11 +36,11 @@ export default async function ProfilePage({
         Configuración de cuenta
       </p>
 
-      <h1 className="mt-2 text-3xl font-semibold">Mi perfil</h1>
+      <h1 className="mt-2 text-3xl font-semibold">Cuenta</h1>
 
       <p className="mt-3 text-neutral-400">
-        Gestiona la información con la que te identificas dentro de DJ
-        Platform.
+        Gestiona la información con la que te identificas dentro de DJ Kaizen
+        Studio.
       </p>
 
       {successMessage ? (

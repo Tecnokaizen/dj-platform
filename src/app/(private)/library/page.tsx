@@ -48,10 +48,11 @@ export default async function LibraryPage({ searchParams }: LibraryPageProps) {
 
   return (
     <section className="max-w-5xl">
-      <p className="text-sm font-medium text-violet-400">Music Library</p>
+      <p className="text-sm font-medium text-violet-400">Biblioteca</p>
       <h1 className="mt-2 text-3xl font-semibold">Biblioteca</h1>
       <p className="mt-3 text-neutral-400">
-        Tracks de la organización activa. La autorización se aplica en servidor.
+        Tracks de tu organización activa. Añade, etiqueta y organiza tu
+        colección.
       </p>
 
       {successMessage ? (

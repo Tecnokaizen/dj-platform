@@ -25,10 +25,11 @@ export default async function StudioProfilePage({
 
   return (
     <section className="max-w-3xl">
-      <p className="text-sm font-medium text-violet-400">DJ Studio</p>
-      <h1 className="mt-2 text-3xl font-semibold">Studio Profile</h1>
+      <p className="text-sm font-medium text-violet-400">DJ Kaizen Studio</p>
+      <h1 className="mt-2 text-3xl font-semibold">Perfil DJ</h1>
       <p className="mt-3 text-neutral-400">
-        Perfil de estudio (Domain SoT). No escribe campos legacy de Profile.
+        Nombre artístico y preferencias de estudio. Separado de tu cuenta
+        personal.
       </p>
 
       {successMessage ? (
