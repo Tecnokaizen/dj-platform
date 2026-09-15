@@ -52,6 +52,30 @@ export {
 export { searchCatalogTracks } from '@/domains/dj-studio/catalog/index'
 
 export {
+  BPM_TOLERANCE_BPM,
+  analyzeBpmProgression,
+  compareCamelot,
+  effectiveBpm,
+  effectiveCamelotKey,
+  evaluateBpmFit,
+  evaluateBpmTransition,
+  getTargetBpmAtPosition,
+  parseCamelotKey,
+  sumKnownDurations,
+  type BpmDirection,
+  type BpmFitResult,
+  type BpmFitSeverity,
+  type BpmProgressionAnalysis,
+  type BpmProgressionShape,
+  type BpmTransitionResult,
+  type CamelotCompatibility,
+  type CamelotKey,
+  type CamelotLetter,
+  type DurationAggregation,
+  type DurationAggregationMode,
+} from '@/domains/dj-studio/session-builder'
+
+export {
   DJ_STUDIO_ERROR_CODES,
   DjStudioError,
   type DjStudioErrorCode,
