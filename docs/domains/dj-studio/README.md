@@ -6,6 +6,7 @@ related:
   - ../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md
   - DJ-STUDIO-001.md
   - DJ-STUDIO-001-CLOSURE.md
+  - DJ-STUDIO-002.md
   - ../dj/
 ---
 
@@ -21,16 +22,17 @@ built on Platform Core.
 | [ADR-011](../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md) | Domain boundary, Organization tenancy, Profile extraction intent, RBAC extension |
 | [DJ-STUDIO-001](./DJ-STUDIO-001.md) | Milestone design — Organization-scoped Music Library + Playlist Foundation |
 | [DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
+| [DJ-STUDIO-002](./DJ-STUDIO-002.md) | AI Session Builder — **SPEC READY** (not started) |
 
 ## Status
 
 - Architecture boundary: **Accepted** (ADR-011)
-- **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY** (see closure doc)
-- Production schema / Product: **NOT DEPLOYED**
+- **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY**
+- **DJ-STUDIO-002:** **SPEC READY** (implementation not started)
+- Production schema / Product: **NOT DEPLOYED to production**
 - Main: **NOT MERGED**
-- Next: **DJ-STUDIO-002** — AI Playlist / Session Builder (direction only)
 
-## Product routes (M7)
+## Product routes (001)
 
 | Route | Role |
 |-------|------|
@@ -38,6 +40,8 @@ built on Platform Core.
 | `/playlists` | Playlist list + create |
 | `/playlists/[id]` | Detail, items, reorder up/down |
 | `/studio-profile` | DjStudioProfile SoT (`stageName`, `experienceLevel`) |
+
+Planned (002, not implemented): `/session-builder` — Crear sesión
 
 Server write path:
 
@@ -61,6 +65,6 @@ Active Organization cookie = preference only (validated membership).
 
 ## Next
 
-Pre-production gates (cross-tenant + VIEWER smokes) before any production
-rollout. Do **not** deploy without authorization. See
-[DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md).
+1. Authorize DJ-STUDIO-002 **P0** (branding) explicitly when ready.
+2. Keep 001 pre-production gates (cross-tenant + VIEWER) before production.
+3. Do **not** deploy production / merge main without authorization.

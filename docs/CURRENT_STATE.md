@@ -1,6 +1,6 @@
 ---
 title: Current State
-version: 1.1.0
+version: 1.2.0
 status: Living Document
 updated: 2026-09-15
 related:
@@ -8,6 +8,7 @@ related:
   - operations/PLATFORM_CORE_RECOVERY.md
   - PLATFORM_MATURITY.md
   - domains/dj-studio/DJ-STUDIO-001-CLOSURE.md
+  - domains/dj-studio/DJ-STUDIO-002.md
 ---
 
 # Current State
@@ -43,12 +44,17 @@ Operational snapshot as of 2026-09-15.
 |------|--------|
 | Milestone | **CLOSED — STAGING MVP READY** |
 | Closure record | [`docs/domains/dj-studio/DJ-STUDIO-001-CLOSURE.md`](./domains/dj-studio/DJ-STUDIO-001-CLOSURE.md) |
-| Branch | `feature/deployment-readiness` |
-| Latest repo commit | `49cdb0c` — catalog runtime grants (M6) |
-| Staging web artifact | `30d93ab` (cookie RSC fix); SHA divergence accepted — M6 is DB-only for runtime |
-| CI | GREEN |
 | Production | **NOT MODIFIED** |
 | Main | **NOT MERGED** |
+
+## DJ-STUDIO-002
+
+| Item | Status |
+|------|--------|
+| Milestone | **SPEC READY** (implementation **not started**) |
+| Spec | [`docs/domains/dj-studio/DJ-STUDIO-002.md`](./domains/dj-studio/DJ-STUDIO-002.md) |
+| Scope | AI Session Builder — Library-only → ephemeral draft → Save as Playlist |
+| Next authorize | **P0** branding only, when explicitly approved |
 
 Architecture (confirmed):
 
@@ -62,20 +68,22 @@ Architecture (confirmed):
 ## Architecture decisions (Domain)
 
 - **ADR-011** Accepted — DJ Studio Domain boundary and Organization tenancy.
-- **DJ-STUDIO-001** design + staging closure —
-  [`DJ-STUDIO-001.md`](./domains/dj-studio/DJ-STUDIO-001.md),
+- **DJ-STUDIO-001** CLOSED on staging —
   [`DJ-STUDIO-001-CLOSURE.md`](./domains/dj-studio/DJ-STUDIO-001-CLOSURE.md).
+- **DJ-STUDIO-002** SPEC READY —
+  [`DJ-STUDIO-002.md`](./domains/dj-studio/DJ-STUDIO-002.md).
 
 ## Next phases (ordered)
 
-1. Pre-production gates (not staging blockers): cross-tenant Product smoke; VIEWER Product smoke.
-2. Architecture decision: production Kong/PG15 vs staging Envoy/PG17 before prod rollout.
-3. **DJ-STUDIO-002** — AI Playlist / Session Builder (name/direction only; not designed yet).
+1. Authorize DJ-STUDIO-002 **P0** (branding) when ready — do not auto-start.
+2. Pre-production gates (001): cross-tenant Product smoke; VIEWER Product smoke.
+3. Architecture decision: production Kong/PG15 vs staging Envoy/PG17 before prod rollout.
 4. Cleanup / deprecation of `platform-core-bd` (observe → delete later).
 5. Do **not** deploy DJ Studio to production without explicit authorization.
 
 ## Explicit non-goals right now
 
-- No production DB/deploy/main merge from this closure.
+- No DJ-STUDIO-002 implementation until phase authorization.
+- No production DB/deploy/main merge.
 - No speculative Core features (Billing, Storage Core, queues, …).
-- No infra debt resolution in DJ-STUDIO-001 closure (network attach, Mailpit, readiness hairpin, Coolify healthcheck).
+- No infra debt resolution in docs-only milestone work.

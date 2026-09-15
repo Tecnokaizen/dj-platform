@@ -168,7 +168,7 @@ Defines business-specific semantics.
 Current Domains:
 
 - DJ (legacy / reference pending review under `docs/domains/dj/`)
-- DJ Studio — `docs/domains/dj-studio/` (ADR-011; DJ-STUDIO-001 closed on staging)
+- DJ Studio — `docs/domains/dj-studio/` (ADR-011; DJ-STUDIO-001 CLOSED; DJ-STUDIO-002 SPEC READY)
 
 The DJ Domain may describe concepts such as:
 
