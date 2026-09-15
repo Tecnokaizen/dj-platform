@@ -2,6 +2,7 @@
  * Session Builder Domain surface (DJ-STUDIO-002).
  *
  * P1: musical-rules. P2: candidate engine shortlist (library.read, no AI).
+ * P3: PlaylistGenerationProvider contract + untrusted output validation.
  */
 
 export {
@@ -42,6 +43,28 @@ export {
 
 export { buildSessionCandidateShortlist } from '@/domains/dj-studio/session-builder/services/build-session-candidate-shortlist'
 export { listSessionLibraryCandidateSources } from '@/domains/dj-studio/session-builder/services/list-session-library-candidates'
+
+export {
+  PLAYLIST_GENERATION_PROVIDER_ERROR_CODES,
+  PlaylistGenerationProviderError,
+  parsePlaylistGenerationProviderOutput,
+  playlistGenerationProviderOutputSchema,
+  toPlaylistGenerationCandidate,
+  toPlaylistGenerationCandidates,
+  type PlaylistGenerationBpmInput,
+  type PlaylistGenerationBpmProgression,
+  type PlaylistGenerationCandidate,
+  type PlaylistGenerationEnergyCurve,
+  type PlaylistGenerationProvider,
+  type PlaylistGenerationProviderErrorCode,
+  type PlaylistGenerationRequest,
+  type PlaylistGenerationResult,
+  type PlaylistGenerationTrack,
+  type PlaylistGenerationWarning,
+  type PlaylistGenerationWarningSeverity,
+  type RawPlaylistGenerationOutput,
+  type ValidatedPlaylistGenerationProposal,
+} from '@/domains/dj-studio/session-builder/provider'
 
 export type {
   CandidateSelectionBpmInput,

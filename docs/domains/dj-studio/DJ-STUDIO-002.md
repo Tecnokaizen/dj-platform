@@ -317,26 +317,45 @@ AI: **NO** DB, RBAC, tenancy, arbitrary IDs, persistence.
 
 ### Domain contract location
 
-`src/domains/dj-studio/session-builder/`
+`src/domains/dj-studio/session-builder/provider/`
 
 ### Infra adapters
 
-`src/lib/ai/`
+`src/lib/ai/` (`MockPlaylistGenerationProvider`)
 
-### Interface (conceptual)
+**Dependency rule:** Domain → `src/lib/ai` imports = **0**.
+`lib/ai` may import Domain contracts/types.
+
+### Interface
 
 ```ts
 interface PlaylistGenerationProvider {
-  generate(input: {
-    request: SessionBuilderInput
-    candidates: CandidateSnapshot[]
-  }): Promise<unknown> // then Zod-parse to SessionBuilderProposal
+  generate(request: PlaylistGenerationRequest): Promise<unknown>
 }
 ```
+
+`PlaylistGenerationRequest` (no org/profile/permissions/Prisma/secrets):
+
+- `prompt`, `targetDurationMin`, `bpm?`, `energyCurve`, `trackCountHint?`
+- `candidates[]` with `libraryItemId` as selection authority plus display fields
+  (`title`, `artists`, effective BPM/Camelot, `durationMs`, `energy`, `rating`,
+  `familiarity`, `isFavorite`, `tags`, `candidateScore`)
+
+Provider output is **UNTRUSTED**. Domain must call
+`parsePlaylistGenerationProviderOutput(raw, allowedCandidateIds)` before P4 use.
+
+Validated proposal fields:
+
+- `title`, `summary`, `tracks[]`, `energyProgression`, `bpmProgression`, `warnings[]`
+- track: `libraryItemId`, `position` (contiguous 0..N-1), `transitionNote`, `reason`
+- AI MVP: each `libraryItemId` at most once (duplicates → reject entire proposal)
+- unknown IDs → reject entire proposal (no silent drop / substitute / DB lookup)
 
 ### MVP implementations
 
 - `MockPlaylistGenerationProvider` — deterministic / fixture-based for CI
+  Modes: `success` | `timeout` | `unavailable` | `malformed` | `hallucinated_id` |
+  `duplicate_id` | `empty`
 - Live OpenAI (or other) — **later authorized phase**, not this spec task
 
 ### Failure contract (no DB writes)
@@ -345,10 +364,9 @@ interface PlaylistGenerationProvider {
 |-------|------|
 | Timeout | `PROVIDER_TIMEOUT` |
 | Unavailable | `PROVIDER_UNAVAILABLE` |
-| Malformed / non-JSON | `PROVIDER_MALFORMED` |
-| Schema invalid | `PROVIDER_SCHEMA_INVALID` |
-| Hallucinated ID | `INVALID_CANDIDATE_ID` |
-| Empty tracks | `EMPTY_PROPOSAL` |
+| Structural / Zod failure | `INVALID_PROVIDER_RESPONSE` |
+| Semantic proposal failure (IDs, duplicates, positions) | `INVALID_PROVIDER_PROPOSAL` |
+| Empty tracks | `EMPTY_PROVIDER_PROPOSAL` |
 
 Generate path is **read-only** until Save.
 
