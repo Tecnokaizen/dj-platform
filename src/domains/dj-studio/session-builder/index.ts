@@ -3,6 +3,7 @@
  *
  * P1: musical-rules. P2: candidate engine shortlist (library.read, no AI).
  * P3: PlaylistGenerationProvider contract + untrusted output validation.
+ * P4: Generation orchestration (read-only ephemeral draft).
  */
 
 export {
@@ -43,6 +44,23 @@ export {
 
 export { buildSessionCandidateShortlist } from '@/domains/dj-studio/session-builder/services/build-session-candidate-shortlist'
 export { listSessionLibraryCandidateSources } from '@/domains/dj-studio/session-builder/services/list-session-library-candidates'
+export { generateSessionProposal } from '@/domains/dj-studio/session-builder/services/generate-session-proposal'
+
+export {
+  buildDomainDraftWarnings,
+  buildSessionBuilderDraft,
+  computeEstimatedStartMs,
+  generateSessionProposalFromShortlist,
+  mergeDraftWarnings,
+  parseSessionGenerationInput,
+  sessionGenerationInputSchema,
+  toCandidateSelectionInput,
+  type SessionBuilderDraft,
+  type SessionBuilderDraftBpmProgression,
+  type SessionBuilderDraftTrack,
+  type SessionBuilderDraftWarning,
+  type SessionGenerationInput,
+} from '@/domains/dj-studio/session-builder/generation'
 
 export {
   PLAYLIST_GENERATION_PROVIDER_ERROR_CODES,

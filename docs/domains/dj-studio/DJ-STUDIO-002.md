@@ -372,6 +372,48 @@ Generate path is **read-only** until Save.
 
 ---
 
+## 13.1 Generation orchestration (P4)
+
+### Service
+
+`generateSessionProposal({ context, input, provider })` in Domain
+`session-builder/services/`. Provider is **injected** (`PlaylistGenerationProvider`);
+Domain never imports `src/lib/ai/**`.
+
+### Mandatory order
+
+1. Parse/validate `SessionGenerationInput` (includes `source: 'library_only'`).
+2. `require playlists.manage` (**before** shortlist / provider).
+3. Build P2 shortlist (`library.read` inside Candidate Engine).
+4. Map candidates → Provider DTO; call `provider.generate`.
+5. `parsePlaylistGenerationProviderOutput(raw, allowedIds)`.
+6. Pure `buildSessionBuilderDraft` — Domain metadata authority + P1 analysis.
+7. Return ephemeral `SessionBuilderDraft` (no persistence).
+
+### Authorization
+
+Generate needs **both** `playlists.manage` and `library.read`.
+VIEWER (read-only library, no playlist manage) is denied **before** provider call.
+
+### Domain authority
+
+Provider owns narrative fields only (`title`, `summary`, order, `transitionNote`,
+`reason`, textual `energyProgression`, `bpmProgression.notes`, validated warnings).
+Effective BPM / Camelot / energy / duration / estimated starts / BPM classification
+come from Candidate + P1 helpers — never from Provider factual BPM numbers.
+
+### Deterministic warnings (examples)
+
+`BPM_LARGE_JUMP`, `CAMELOT_INCOMPATIBLE`, aggregated missing metadata,
+`DURATION_METADATA_PARTIAL` / `DURATION_METADATA_UNKNOWN`.
+Merge: Domain warnings first, then Provider; dedupe on exact `code + message`.
+
+### Read-only guarantee
+
+P4 performs **no** Playlist / PlaylistItem / Library writes and stores no draft rows.
+
+---
+
 ## 14. Save contract
 
 On “Guardar como Playlist”:
@@ -556,11 +598,11 @@ without renaming Domain module paths.
 ### P4 — Generation orchestration
 
 - **Objective:** End-to-end generate service (read-only)  
-- **Modules:** orchestrator service + errors  
+- **Modules:** `generateSessionProposal` + `generation/*` draft builder  
 - **DB:** none  
-- **Tests:** domain integration  
-- **Gate:** valid draft or structured errors only  
-- **Non-goals:** Save, UI polish
+- **Tests:** input / draft unit + Domain integration (Mock provider)  
+- **Gate:** valid `SessionBuilderDraft` or structured errors only; no persistence  
+- **Non-goals:** Save, UI, OpenAI SDK, staging deploy
 
 ### P5 — `/session-builder` UI
 
