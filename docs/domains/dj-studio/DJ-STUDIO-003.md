@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-003 — Real AI Provider
-status: P3 COMPLETE
+status: P4 COMPLETE
 updated: 2026-09-16
 related:
   - DJ-STUDIO-002.md
@@ -10,10 +10,10 @@ related:
 
 # DJ-STUDIO-003 — Real AI Provider
 
-**Status:** P3 COMPLETE  
+**Status:** P4 COMPLETE  
 **Date:** 2026-09-16  
 **Depends on:** DJ-STUDIO-002 CLOSED — STAGING MVP READY  
-**Implementation:** P1 adapter + P2 config/factory + P3 test hardening (Product still Mock)  
+**Implementation:** P1–P4 complete (Product wired; staging remains Mock; no live AI)  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -161,8 +161,8 @@ integration is blocked, but first implementation attempt must use Responses.
 | Structured Outputs | `zodTextFormat(playlistGenerationProviderOutputSchema, 'dj_studio_session_proposal')` |
 | Persistence | `store: false` (explicit) |
 | SDK retries | request option `maxRetries: 0` (adapter owns ≤1 manual retry) |
-| Product wiring | **not connected** — Product still uses Mock until P4 |
-| Config / env | **not created** — constructor DI (`client`, `model`, …) until P2 |
+| Product wiring | **P4 COMPLETE** — Server Action uses config + factory; no client provider injection |
+| Config / env | P2 helpers; Product resolves on each Generate |
 
 ### Allowed dependencies
 
@@ -674,13 +674,26 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 | **P0.1** | SPEC currentness hardening — model strategy + 429 retry classification | COMPLETE |
 | **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) | COMPLETE |
 | **P2** | Config/factory/env wiring (`mock` default) | COMPLETE |
-| **P3** | Adapter unit/error/timeout tests (mocked SDK) | **COMPLETE** |
-| **P4** | Product Server Action composition via factory + badge behavior | NOT STARTED |
+| **P3** | Adapter unit/error/timeout tests (mocked SDK) | COMPLETE |
+| **P4** | Product Server Action composition via factory + badge behavior | **COMPLETE** |
 | **P5** | Staging opt-in live AI OWNER smoke | NOT STARTED |
 | **P6** | Quality matrix notes + docs closure | NOT STARTED |
 
 No phase auto-starts. Each requires explicit authorization.
-P3 does **not** authorize P4. Product remains Mock until P4.
+P4 does **not** authorize P5. Staging remains Mock until P5.
+
+### P4 Product wiring (implemented)
+
+| Item | Value |
+|---|---|
+| Action | `generateSessionBuilderAction(formData)` — single public arg |
+| Composition | `getSessionBuilderProviderConfig` → `createPlaylistGenerationProvider` → Domain |
+| Client injection | **removed** (no `options.provider`) |
+| Default | `mock` when env absent |
+| Invalid config | `PROVIDER_UNAVAILABLE` Product copy — **no Mock fallback** |
+| UI helper | `getSessionBuilderProviderUiState()` → `{ kind }` only |
+| Badge | mock / Generador IA / Generador no disponible |
+| Live OpenAI | **not enabled** on staging in P4 |
 
 ### P3 test hardening (implemented)
 
@@ -733,9 +746,9 @@ Inherited pre-production gates (not 003 blockers):
 
 ---
 
-## 33. Next step after P3 COMPLETE
+## 33. Next step after P4 COMPLETE
 
-Authorize **DJ-STUDIO-003 P4** explicitly
-(Product Server Action composition via factory + badge behavior).
+Authorize **DJ-STUDIO-003 P5** explicitly
+(staging opt-in live AI OWNER smoke with OpenAI env).
 
-Do **not** auto-start P4. Product remains on Mock until P4 is authorized.
+Do **not** auto-start P5. Staging stays Mock until P5 is authorized.

@@ -34,6 +34,14 @@ export {
 } from '@/lib/ai/config/session-builder-provider-config'
 
 export {
+  getSessionBuilderProviderUiState,
+  getSessionBuilderProviderLabel,
+  SESSION_BUILDER_PROVIDER_LABELS,
+  type SessionBuilderProviderUiKind,
+  type SessionBuilderProviderUiState,
+} from '@/lib/ai/config/session-builder-provider-ui'
+
+export {
   createPlaylistGenerationProvider,
   type CreatePlaylistGenerationProviderOptions,
   type OpenAiClientFactory,

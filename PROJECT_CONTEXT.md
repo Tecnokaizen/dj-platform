@@ -61,8 +61,8 @@ Milestone **DJ-STUDIO-002** (AI Session Builder MVP) is
 **CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-002-CLOSURE.md`).
 Milestone **DJ-STUDIO-003** (Real AI Provider) is in progress on
 `feature/dj-studio-003` (`docs/domains/dj-studio/DJ-STUDIO-003.md`):
-P0/P0.1 SPEC + P1 OpenAI adapter + P2 config/factory + P3 adapter test hardening
-**COMPLETE**; Product runtime still uses Mock (P4 wiring not started).
+P0–P4 **COMPLETE** (adapter, config/factory, test hardening, Product wiring + badge);
+P5 live AI staging smoke **NOT STARTED** — staging remains Mock.
 Production has **not** been deployed or modified. Main is **not** merged.
 
 Staging/production ops readiness continues under ADR-010. Live AI provider

@@ -1,8 +1,14 @@
 import { loadProductStudioContext } from '@/app/(private)/_lib/load-product-studio-context'
 import { SessionBuilderForm } from '@/components/dj-studio/session-builder/session-builder-form'
+import {
+  getSessionBuilderProviderLabel,
+  getSessionBuilderProviderUiState,
+} from '@/lib/ai/config/session-builder-provider-ui'
 
 export default async function SessionBuilderPage() {
   const { canManagePlaylists } = await loadProductStudioContext()
+  const providerUi = getSessionBuilderProviderUiState()
+  const providerLabel = getSessionBuilderProviderLabel(providerUi.kind)
 
   return (
     <section className="max-w-4xl">
@@ -14,7 +20,10 @@ export default async function SessionBuilderPage() {
       </p>
 
       <div className="mt-8">
-        <SessionBuilderForm canGenerate={canManagePlaylists} />
+        <SessionBuilderForm
+          canGenerate={canManagePlaylists}
+          providerLabel={providerLabel}
+        />
       </div>
     </section>
   )

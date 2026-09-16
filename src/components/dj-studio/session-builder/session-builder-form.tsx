@@ -8,9 +8,13 @@ import type { SessionBuilderDraft } from '@/domains/dj-studio/session-builder/ge
 
 type SessionBuilderFormProps = {
   canGenerate: boolean
+  providerLabel: string
 }
 
-export function SessionBuilderForm({ canGenerate }: SessionBuilderFormProps) {
+export function SessionBuilderForm({
+  canGenerate,
+  providerLabel,
+}: SessionBuilderFormProps) {
   const [draft, setDraft] = useState<SessionBuilderDraft | null>(null)
   const [generatedPromptSnapshot, setGeneratedPromptSnapshot] = useState<
     string | null
@@ -50,7 +54,7 @@ export function SessionBuilderForm({ canGenerate }: SessionBuilderFormProps) {
         <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">Parámetros de la sesión</h2>
           <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-400">
-            Generador en modo de prueba
+            {providerLabel}
           </span>
         </div>
 

@@ -9,8 +9,8 @@ import { resolveActiveOrganization } from '@/domains/dj-studio/organization/reso
 import { generateSessionProposal } from '@/domains/dj-studio/session-builder/services/generate-session-proposal'
 import { saveSessionBuilderDraftAsPlaylist } from '@/domains/dj-studio/session-builder/services/save-session-builder-playlist'
 import type { SessionBuilderDraft } from '@/domains/dj-studio/session-builder/generation'
-import type { PlaylistGenerationProvider } from '@/domains/dj-studio/session-builder/provider'
-import { MockPlaylistGenerationProvider } from '@/lib/ai/providers/mock-playlist-generation-provider'
+import { getSessionBuilderProviderConfig } from '@/lib/ai/config/session-builder-provider-config'
+import { createPlaylistGenerationProvider } from '@/lib/ai/playlist-generation-provider-factory'
 
 export type GenerateSessionBuilderActionResult =
   | { ok: true; draft: SessionBuilderDraft }
@@ -21,20 +21,17 @@ export type SaveSessionBuilderPlaylistActionResult =
   | { ok: false; error: string }
 
 /**
- * Product adapter: auth/org server-side + Mock provider + Domain orchestration.
- * Returns a serializable result for Client UI (ephemeral draft).
+ * Product adapter: auth/org + server-only provider config/factory + Domain.
+ * Provider selection is never accepted from the browser.
  */
 export async function generateSessionBuilderAction(
   formData: FormData,
-  options?: {
-    provider?: PlaylistGenerationProvider
-  },
 ): Promise<GenerateSessionBuilderActionResult> {
   try {
     const input = mapSessionBuilderFormData(formData)
     const context = await resolveActiveOrganization()
-    const provider =
-      options?.provider ?? new MockPlaylistGenerationProvider({ mode: 'success' })
+    const config = getSessionBuilderProviderConfig()
+    const provider = createPlaylistGenerationProvider(config)
 
     const draft = await generateSessionProposal({
       context,
