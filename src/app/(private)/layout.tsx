@@ -114,6 +114,12 @@ export default async function PrivateLayout({
               Playlists
             </Link>
             <Link
+              href="/session-builder"
+              className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
+            >
+              Crear sesión
+            </Link>
+            <Link
               href="/studio-profile"
               className="block rounded-lg px-3 py-2 transition hover:bg-white/5"
             >

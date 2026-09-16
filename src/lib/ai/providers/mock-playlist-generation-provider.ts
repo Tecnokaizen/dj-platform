@@ -1,3 +1,5 @@
+import 'server-only'
+
 import type { PlaylistGenerationProvider } from '@/domains/dj-studio/session-builder/provider/playlist-generation-provider'
 import {
   PLAYLIST_GENERATION_PROVIDER_ERROR_CODES,

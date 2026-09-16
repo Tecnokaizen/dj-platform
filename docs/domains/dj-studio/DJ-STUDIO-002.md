@@ -467,25 +467,29 @@ Threat mitigations (spec-level):
 ## 16. UX contract
 
 **Route:** `/session-builder`  
-**Nav:** Crear sesión
+**Nav:** Crear sesión (after Playlists)
 
-### States
+### P5 implemented
 
-`empty` → `configuring` → `generating` → `proposal` → `editing` → `saving` → `success` | `error`
+`empty` / configuring → `generating` → `proposal` (local state) | `error`
 
-### Actions MVP
+- Generar propuesta (Mock provider / modo de prueba)
+- Regenerar (vuelve a generar; sustituye draft local)
+- Limpiar propuesta (estado local only)
+- Review: title, summary, duration/BPM summary, warnings, ordered tracks
 
-- Generar propuesta
-- Regenerar
-- Editar prompt / settings
-- Quitar track
-- Mover arriba / abajo (drag-drop optional, not required)
+### Deferred (P6+)
+
 - Guardar como Playlist
+- Quitar track / mover arriba-abajo
+- OpenAI live provider
 
-### Result display
+### Result display (P5)
 
-Timeline: position, title, artist, BPM effective, Camelot, transition, reason.  
-Summary: duration mode, BPM curve, warnings.
+Timeline: UI position (1-based), title, artists, BPM, Camelot, energy, duration,
+estimated start, transition, reason.  
+Summary: duration mode, BPM classification, warnings.  
+No Save CTA in P5.
 
 ---
 
@@ -606,12 +610,18 @@ without renaming Domain module paths.
 
 ### P5 — `/session-builder` UI
 
-- **Objective:** Product surface + states/actions  
-- **Modules:** `src/app/(private)/session-builder/**`  
+- **Objective:** Product surface for describe → generate → review ephemeral draft  
+- **Modules:** `src/app/(private)/session-builder/**` +
+  `src/components/dj-studio/session-builder/**`  
 - **DB:** none  
-- **Tests:** product flow with mock  
-- **Gate:** generate/edit/reorder/remove/regenerate  
-- **Non-goals:** drag-drop required
+- **Adapter:** Server Action injects `MockPlaylistGenerationProvider` (staging/dev
+  test mode); Domain `generateSessionProposal` remains authority  
+- **Fields:** prompt, targetDurationMin, optional BPM start/end/min/max,
+  energyCurve, optional trackCountHint; source fixed `library_only`  
+- **Nav:** Crear sesión  
+- **Gate:** authenticated form + draft review + regenerate/clear local state  
+- **Non-goals:** Save as Playlist, reorder/edit tracks, OpenAI, persistence,
+  staging data seeding
 
 ### P6 — Save as Playlist
 
