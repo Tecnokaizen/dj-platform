@@ -1,24 +1,71 @@
 'use client'
 
+import Link from 'next/link'
+import { useState, useTransition } from 'react'
+
+import { saveSessionBuilderPlaylistAction } from '@/app/(private)/session-builder/actions'
 import {
   formatBpmClassification,
   formatBpmRange,
   formatDurationMode,
   formatDurationMs,
 } from '@/app/(private)/session-builder/presentation'
+import {
+  buildSessionBuilderSavePayload,
+  shouldShowSessionBuilderSaveCta,
+} from '@/app/(private)/session-builder/save-payload'
 import { SessionBuilderTrackList } from '@/components/dj-studio/session-builder/session-builder-track-list'
 import { SessionBuilderWarnings } from '@/components/dj-studio/session-builder/session-builder-warnings'
 import type { SessionBuilderDraft } from '@/domains/dj-studio/session-builder/generation'
 
 type SessionBuilderDraftViewProps = {
   draft: SessionBuilderDraft
+  generatedPromptSnapshot: string
+  canSave: boolean
   onClear: () => void
 }
 
 export function SessionBuilderDraftView({
   draft,
+  generatedPromptSnapshot,
+  canSave,
   onClear,
 }: SessionBuilderDraftViewProps) {
+  const [savedPlaylistId, setSavedPlaylistId] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [isSaving, startSaveTransition] = useTransition()
+
+  const showSave = shouldShowSessionBuilderSaveCta({
+    hasDraft: true,
+    savedPlaylistId,
+  })
+
+  function handleSave() {
+    if (!canSave || isSaving || savedPlaylistId) {
+      return
+    }
+
+    setSaveError(null)
+    const payload = buildSessionBuilderSavePayload({
+      name: draft.title,
+      prompt: generatedPromptSnapshot,
+      tracks: draft.tracks.map((track) => ({
+        libraryItemId: track.libraryItemId,
+        transitionNote: track.transitionNote,
+      })),
+    })
+
+    startSaveTransition(async () => {
+      const result = await saveSessionBuilderPlaylistAction(payload)
+      if (result.ok) {
+        setSavedPlaylistId(result.playlistId)
+        setSaveError(null)
+      } else {
+        setSaveError(result.error)
+      }
+    })
+  }
+
   return (
     <section className="space-y-6" aria-label="Propuesta de sesión">
       <div className="rounded-xl border border-white/10 bg-neutral-900 p-6">
@@ -93,6 +140,43 @@ export function SessionBuilderDraftView({
             </dd>
           </div>
         </dl>
+
+        {showSave && canSave ? (
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSaving}
+              className="rounded-lg bg-violet-600 px-5 py-3 font-medium text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isSaving ? 'Guardando…' : 'Guardar como Playlist'}
+            </button>
+          </div>
+        ) : null}
+
+        {!canSave && showSave ? (
+          <p className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+            No tienes permisos para guardar playlists en esta organización.
+          </p>
+        ) : null}
+
+        {saveError ? (
+          <p className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200">
+            {saveError}
+          </p>
+        ) : null}
+
+        {savedPlaylistId ? (
+          <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm text-emerald-100">
+            <p>Playlist guardada correctamente.</p>
+            <Link
+              href={`/playlists/${savedPlaylistId}`}
+              className="mt-2 inline-block font-medium text-emerald-200 underline underline-offset-2 hover:text-white"
+            >
+              Ver playlist
+            </Link>
+          </div>
+        ) : null}
       </div>
 
       <SessionBuilderWarnings warnings={draft.warnings} />

@@ -12,6 +12,9 @@ type SessionBuilderFormProps = {
 
 export function SessionBuilderForm({ canGenerate }: SessionBuilderFormProps) {
   const [draft, setDraft] = useState<SessionBuilderDraft | null>(null)
+  const [generatedPromptSnapshot, setGeneratedPromptSnapshot] = useState<
+    string | null
+  >(null)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -20,11 +23,17 @@ export function SessionBuilderForm({ canGenerate }: SessionBuilderFormProps) {
       return
     }
 
+    const promptSnapshot =
+      typeof formData.get('prompt') === 'string'
+        ? String(formData.get('prompt')).trim()
+        : ''
+
     setError(null)
     startTransition(async () => {
       const result = await generateSessionBuilderAction(formData)
       if (result.ok) {
         setDraft(result.draft)
+        setGeneratedPromptSnapshot(promptSnapshot)
         setError(null)
       } else {
         setError(result.error)
@@ -173,11 +182,14 @@ export function SessionBuilderForm({ canGenerate }: SessionBuilderFormProps) {
         </div>
       </form>
 
-      {draft ? (
+      {draft && generatedPromptSnapshot ? (
         <SessionBuilderDraftView
           draft={draft}
+          generatedPromptSnapshot={generatedPromptSnapshot}
+          canSave={canGenerate}
           onClear={() => {
             setDraft(null)
+            setGeneratedPromptSnapshot(null)
             setError(null)
           }}
         />

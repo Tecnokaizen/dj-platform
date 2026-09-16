@@ -45,6 +45,16 @@ export {
 export { buildSessionCandidateShortlist } from '@/domains/dj-studio/session-builder/services/build-session-candidate-shortlist'
 export { listSessionLibraryCandidateSources } from '@/domains/dj-studio/session-builder/services/list-session-library-candidates'
 export { generateSessionProposal } from '@/domains/dj-studio/session-builder/services/generate-session-proposal'
+export {
+  SESSION_BUILDER_GENERATED_BY,
+  SESSION_BUILDER_GENERATION_VERSION,
+  saveSessionBuilderDraftAsPlaylist,
+} from '@/domains/dj-studio/session-builder/services/save-session-builder-playlist'
+export {
+  parseSessionBuilderSaveInput,
+  sessionBuilderSaveInputSchema,
+  type SessionBuilderSaveInput,
+} from '@/domains/dj-studio/session-builder/services/save-session-builder-playlist-input'
 
 export {
   buildDomainDraftWarnings,

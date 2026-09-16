@@ -21,8 +21,18 @@ export const SESSION_BUILDER_PRODUCT_ERRORS = {
   GENERIC: 'No se ha podido completar la operación.',
 } as const
 
+export const SESSION_BUILDER_SAVE_PRODUCT_ERRORS = {
+  VALIDATION:
+    'No se ha podido guardar la propuesta. Revisa los datos.',
+  FORBIDDEN:
+    'No tienes permisos para guardar playlists en esta organización.',
+  STALE:
+    'Uno o más temas de la propuesta ya no están disponibles en tu biblioteca. Regenera la sesión antes de guardarla.',
+  GENERIC: 'No se ha podido guardar la playlist. Inténtalo de nuevo.',
+} as const
+
 /**
- * Map Domain / Provider errors to safe Product copy (no stacks / internals).
+ * Map Domain / Provider errors to safe Product copy for generation.
  */
 export function mapSessionBuilderError(error: unknown): string {
   if (error instanceof DjStudioError) {
@@ -55,4 +65,25 @@ export function mapSessionBuilderError(error: unknown): string {
   }
 
   return SESSION_BUILDER_PRODUCT_ERRORS.GENERIC
+}
+
+/**
+ * Map Domain errors to safe Product copy for Save as Playlist.
+ */
+export function mapSessionBuilderSaveError(error: unknown): string {
+  if (error instanceof DjStudioError) {
+    switch (error.code) {
+      case DJ_STUDIO_ERROR_CODES.VALIDATION_ERROR:
+        return SESSION_BUILDER_SAVE_PRODUCT_ERRORS.VALIDATION
+      case DJ_STUDIO_ERROR_CODES.FORBIDDEN:
+      case DJ_STUDIO_ERROR_CODES.UNAUTHENTICATED:
+        return SESSION_BUILDER_SAVE_PRODUCT_ERRORS.FORBIDDEN
+      case DJ_STUDIO_ERROR_CODES.SESSION_BUILDER_STALE_DRAFT:
+        return SESSION_BUILDER_SAVE_PRODUCT_ERRORS.STALE
+      default:
+        return SESSION_BUILDER_SAVE_PRODUCT_ERRORS.GENERIC
+    }
+  }
+
+  return SESSION_BUILDER_SAVE_PRODUCT_ERRORS.GENERIC
 }

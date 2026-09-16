@@ -480,16 +480,17 @@ Threat mitigations (spec-level):
 
 ### Deferred (P6+)
 
-- Guardar como Playlist
+~~- Guardar como Playlist~~ → **P6 implemented** (atomic AI_GENERATED save)
 - Quitar track / mover arriba-abajo
 - OpenAI live provider
+- Persistent idempotency key for Save
 
 ### Result display (P5)
 
 Timeline: UI position (1-based), title, artists, BPM, Camelot, energy, duration,
 estimated start, transition, reason.  
 Summary: duration mode, BPM classification, warnings.  
-No Save CTA in P5.
+P6: Save CTA when draft exists → success link to `/playlists/{id}`.
 
 ---
 
@@ -625,12 +626,17 @@ without renaming Domain module paths.
 
 ### P6 — Save as Playlist
 
-- **Objective:** Persist proposal safely  
-- **Modules:** compose playlist services  
-- **DB:** none required  
-- **Tests:** save + rollback + AI_GENERATED + provenance  
-- **Gate:** Playlist visible under org  
-- **Non-goals:** draft persistence
+- **Objective:** Persist ephemeral proposal as Organization Playlist  
+- **Modules:** `saveSessionBuilderDraftAsPlaylist` + Product Save CTA/action  
+- **DB schema:** none (reuse Playlist / PlaylistItem)  
+- **Save DTO (minimal, untrusted from browser):** `{ name, prompt, tracks[{ libraryItemId, transitionNote }] }`  
+- **Gates:** re-resolve active org; re-require `playlists.manage`; revalidate
+  every `libraryItemId` as org + `LIBRARY` in one query; reject duplicates;
+  atomic Prisma transaction; server-owned `AI_GENERATED` + `PRIVATE` + provenance
+  metadata; `transitionNote → transitionNotes`; `reason` not persisted  
+- **Success:** Product returns `playlistId` → `/playlists/[id]`  
+- **MVP note:** no persistent idempotency key (disable CTA while saving + success state)  
+- **Non-goals:** draft persistence, OpenAI, Session entity, schema migration
 
 ### P7 — Staging smoke + docs alignment
 
