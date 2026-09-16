@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-003 — Real AI Provider
-status: SPEC READY
+status: P1 COMPLETE
 updated: 2026-09-16
 related:
   - DJ-STUDIO-002.md
@@ -10,10 +10,10 @@ related:
 
 # DJ-STUDIO-003 — Real AI Provider
 
-**Status:** SPEC READY  
+**Status:** P1 COMPLETE  
 **Date:** 2026-09-16  
 **Depends on:** DJ-STUDIO-002 CLOSED — STAGING MVP READY  
-**Implementation:** NOT STARTED  
+**Implementation:** P1 adapter implemented (not Product-wired)  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -149,17 +149,27 @@ integration is blocked, but first implementation attempt must use Responses.
 
 ## 6. Provider boundary
 
-### Suggested adapter name
+### Adapter (P1 implemented)
 
-`OpenAiPlaylistGenerationProvider` in `src/lib/ai/providers/`
-implementing `PlaylistGenerationProvider`.
+| Item | Value |
+|---|---|
+| Path | `src/lib/ai/providers/openai-playlist-generation-provider.ts` |
+| Class | `OpenAiPlaylistGenerationProvider` |
+| Contract | `PlaylistGenerationProvider` |
+| SDK | `openai` **7.16.0** (official Node/TypeScript SDK) |
+| API | `client.responses.parse(...)` |
+| Structured Outputs | `zodTextFormat(playlistGenerationProviderOutputSchema, 'dj_studio_session_proposal')` |
+| Persistence | `store: false` (explicit) |
+| SDK retries | request option `maxRetries: 0` (adapter owns ≤1 manual retry) |
+| Product wiring | **not connected** — Product still uses Mock until P4 |
+| Config / env | **not created** — constructor DI (`client`, `model`, …) until P2 |
 
 ### Allowed dependencies
 
 ```
 src/lib/ai/providers/openai-playlist-generation-provider.ts
   → openai SDK (server-only)
-  → Domain provider types / errors (contracts only)
+  → Domain provider types / errors / output schema (contracts only)
 ```
 
 ### Forbidden
@@ -168,8 +178,9 @@ src/lib/ai/providers/openai-playlist-generation-provider.ts
 - Adapter importing Prisma / Supabase Auth / Organization services
 - Adapter calling Save / writing Playlist rows
 - Exposing API key to Client Components / `NEXT_PUBLIC_*`
+- Adapter reading `process.env` for keys/model/provider (P2)
 
-### Composition
+### Composition (future P2/P4)
 
 ```
 Product factory (server-only)
@@ -641,19 +652,19 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 
 ## 30. Phase plan
 
-| Phase | Objective |
-|---|---|
-| **P0** | Design audit + SPEC (this document) |
-| **P0.1** | SPEC currentness hardening — model strategy (`gpt-5.6-terra`) + 429 retry classification (docs only) |
-| **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) |
-| **P2** | Config/factory/env wiring (`mock` default) |
-| **P3** | Adapter unit/error/timeout tests (mocked SDK) |
-| **P4** | Product Server Action composition via factory + badge behavior |
-| **P5** | Staging opt-in live AI OWNER smoke |
-| **P6** | Quality matrix notes + docs closure |
+| Phase | Objective | Status |
+|---|---|---|
+| **P0** | Design audit + SPEC | COMPLETE |
+| **P0.1** | SPEC currentness hardening — model strategy + 429 retry classification | COMPLETE |
+| **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) | **COMPLETE** |
+| **P2** | Config/factory/env wiring (`mock` default) | NOT STARTED |
+| **P3** | Adapter unit/error/timeout tests (mocked SDK) | NOT STARTED |
+| **P4** | Product Server Action composition via factory + badge behavior | NOT STARTED |
+| **P5** | Staging opt-in live AI OWNER smoke | NOT STARTED |
+| **P6** | Quality matrix notes + docs closure | NOT STARTED |
 
 No phase auto-starts. Each requires explicit authorization.
-P0.1 does **not** authorize P1.
+P1 does **not** authorize P2.
 
 ---
 
@@ -687,9 +698,9 @@ Inherited pre-production gates (not 003 blockers):
 
 ---
 
-## 33. Next step after SPEC READY
+## 33. Next step after P1 COMPLETE
 
-Authorize **DJ-STUDIO-003 P1** explicitly
-(`OpenAiPlaylistGenerationProvider` implementation).
+Authorize **DJ-STUDIO-003 P2** explicitly
+(config/factory/env wiring; `SESSION_BUILDER_PROVIDER` default `mock`).
 
-Do **not** auto-start implementation.
+Do **not** auto-start P2. Product remains on Mock until P4.
