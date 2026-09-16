@@ -9,6 +9,10 @@ import {
   PermissionDeniedError,
   RateLimitError,
 } from 'openai'
+import {
+  ContentFilterFinishReasonError,
+  LengthFinishReasonError,
+} from 'openai/error'
 import type OpenAI from 'openai'
 import { zodTextFormat } from 'openai/helpers/zod'
 import type { ParsedResponse } from 'openai/resources/responses/responses'
@@ -107,6 +111,33 @@ function responseContainsRefusal(
   return false
 }
 
+/**
+ * SDK 7.16.0 `responses.parse` + `zodTextFormat` can throw:
+ * - ZodError when `$parseRaw` / schema validation fails
+ * - SyntaxError for invalid JSON structured output
+ * - LengthFinishReasonError / ContentFilterFinishReasonError from `openai/error`
+ *   (finish-reason helpers; treated as non-usable structured proposal)
+ *
+ * Avoid `instanceof ZodError` — Zod dual-package / bundler edges can make the
+ * constructor non-object under Vitest. Name-based detection is stable.
+ */
+function isStructuredParseFailure(error: unknown): boolean {
+  if (error instanceof SyntaxError) {
+    return true
+  }
+  if (
+    error instanceof LengthFinishReasonError ||
+    error instanceof ContentFilterFinishReasonError
+  ) {
+    return true
+  }
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    (error as { name?: string }).name === 'ZodError'
+  )
+}
+
 function isRetryableUpstreamError(error: unknown): boolean {
   if (error instanceof RateLimitError) {
     const code = error.code ?? undefined
@@ -137,6 +168,14 @@ function mapUpstreamError(error: unknown): PlaylistGenerationProviderError {
       PLAYLIST_GENERATION_PROVIDER_ERROR_CODES.PROVIDER_TIMEOUT,
       'OpenAI provider timed out',
       safeDetails('timeout'),
+    )
+  }
+
+  if (isStructuredParseFailure(error)) {
+    return new PlaylistGenerationProviderError(
+      PLAYLIST_GENERATION_PROVIDER_ERROR_CODES.INVALID_PROVIDER_RESPONSE,
+      'OpenAI provider returned an invalid structured response',
+      safeDetails('invalid_response'),
     )
   }
 
@@ -211,6 +250,19 @@ export class OpenAiPlaylistGenerationProvider
       throw new Error('OpenAiPlaylistGenerationProvider requires a non-empty model')
     }
 
+    if (options.timeoutMs !== undefined && options.timeoutMs <= 0) {
+      throw new Error('OpenAiPlaylistGenerationProvider requires timeoutMs > 0')
+    }
+
+    if (
+      options.maxOutputTokens !== undefined &&
+      options.maxOutputTokens <= 0
+    ) {
+      throw new Error(
+        'OpenAiPlaylistGenerationProvider requires maxOutputTokens > 0',
+      )
+    }
+
     this.client = options.client
     this.model = options.model
     this.timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS
@@ -235,7 +287,11 @@ export class OpenAiPlaylistGenerationProvider
             maxMs: MAX_RETRY_DELAY_MS,
           })
           attempt += 1
-          await this.sleep(delayMs)
+          try {
+            await this.sleep(delayMs)
+          } catch (sleepError) {
+            throw mapUpstreamError(sleepError)
+          }
           continue
         }
 

@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-003 — Real AI Provider
-status: P2 COMPLETE
+status: P3 COMPLETE
 updated: 2026-09-16
 related:
   - DJ-STUDIO-002.md
@@ -10,10 +10,10 @@ related:
 
 # DJ-STUDIO-003 — Real AI Provider
 
-**Status:** P2 COMPLETE  
+**Status:** P3 COMPLETE  
 **Date:** 2026-09-16  
 **Depends on:** DJ-STUDIO-002 CLOSED — STAGING MVP READY  
-**Implementation:** P1 adapter + P2 config/factory (Product still Mock)  
+**Implementation:** P1 adapter + P2 config/factory + P3 test hardening (Product still Mock)  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -673,14 +673,33 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 | **P0** | Design audit + SPEC | COMPLETE |
 | **P0.1** | SPEC currentness hardening — model strategy + 429 retry classification | COMPLETE |
 | **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) | COMPLETE |
-| **P2** | Config/factory/env wiring (`mock` default) | **COMPLETE** |
-| **P3** | Adapter unit/error/timeout tests (mocked SDK) | NOT STARTED |
+| **P2** | Config/factory/env wiring (`mock` default) | COMPLETE |
+| **P3** | Adapter unit/error/timeout tests (mocked SDK) | **COMPLETE** |
 | **P4** | Product Server Action composition via factory + badge behavior | NOT STARTED |
 | **P5** | Staging opt-in live AI OWNER smoke | NOT STARTED |
 | **P6** | Quality matrix notes + docs closure | NOT STARTED |
 
 No phase auto-starts. Each requires explicit authorization.
-P2 does **not** authorize P3.
+P3 does **not** authorize P4. Product remains Mock until P4.
+
+### P3 test hardening (implemented)
+
+| Suite | Path | Cases |
+|---|---|---:|
+| Error / retry / Domain boundary | `src/lib/ai/providers/tests/openai-playlist-generation-provider-errors.test.ts` | 36 |
+| Retry-After helper | `src/lib/ai/providers/tests/openai-retry-delay.test.ts` | 7 |
+| **P3 total** | | **43** |
+
+Coverage includes real SDK classes (`APIConnectionTimeoutError`, `AuthenticationError`,
+`PermissionDeniedError`, `APIConnectionError`, `RateLimitError`, `InternalServerError`),
+max upstream attempts ≤ 2 with `maxRetries: 0`, refusal/incomplete/null parsed,
+structured parse failures, Domain semantic boundary (unknown/duplicate/gap/empty/valid),
+and secret/raw leakage guards.
+
+**SDK structured-parse behavior (7.16.0):** `responses.parse` + `zodTextFormat` throws
+`ZodError` (schema), `SyntaxError` (invalid JSON), or finish-reason helpers from
+`openai/error` (`LengthFinishReasonError`, `ContentFilterFinishReasonError`).
+Adapter maps these to `INVALID_PROVIDER_RESPONSE` (not `PROVIDER_UNAVAILABLE`).
 
 ---
 
@@ -714,9 +733,9 @@ Inherited pre-production gates (not 003 blockers):
 
 ---
 
-## 33. Next step after P2 COMPLETE
+## 33. Next step after P3 COMPLETE
 
-Authorize **DJ-STUDIO-003 P3** explicitly
-(adapter unit/error/timeout test hardening with mocked SDK).
+Authorize **DJ-STUDIO-003 P4** explicitly
+(Product Server Action composition via factory + badge behavior).
 
-Do **not** auto-start P3. Product remains on Mock until P4.
+Do **not** auto-start P4. Product remains on Mock until P4 is authorized.
