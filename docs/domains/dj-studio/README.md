@@ -1,12 +1,13 @@
 ---
 title: DJ Studio Domain Documentation
 status: Living Document
-updated: 2026-09-15
+updated: 2026-09-16
 related:
   - ../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md
   - DJ-STUDIO-001.md
   - DJ-STUDIO-001-CLOSURE.md
   - DJ-STUDIO-002.md
+  - DJ-STUDIO-002-CLOSURE.md
   - ../dj/
 ---
 
@@ -22,17 +23,18 @@ built on Platform Core.
 | [ADR-011](../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md) | Domain boundary, Organization tenancy, Profile extraction intent, RBAC extension |
 | [DJ-STUDIO-001](./DJ-STUDIO-001.md) | Milestone design — Organization-scoped Music Library + Playlist Foundation |
 | [DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
-| [DJ-STUDIO-002](./DJ-STUDIO-002.md) | AI Session Builder — **SPEC READY** (not started) |
+| [DJ-STUDIO-002](./DJ-STUDIO-002.md) | AI Session Builder MVP specification |
+| [DJ-STUDIO-002-CLOSURE](./DJ-STUDIO-002-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
 
 ## Status
 
 - Architecture boundary: **Accepted** (ADR-011)
 - **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY**
-- **DJ-STUDIO-002:** **SPEC READY** (implementation not started)
+- **DJ-STUDIO-002:** **CLOSED — STAGING MVP READY**
 - Production schema / Product: **NOT DEPLOYED to production**
 - Main: **NOT MERGED**
 
-## Product routes (001)
+## Product routes
 
 | Route | Role |
 |-------|------|
@@ -40,8 +42,7 @@ built on Platform Core.
 | `/playlists` | Playlist list + create |
 | `/playlists/[id]` | Detail, items, reorder up/down |
 | `/studio-profile` | DjStudioProfile SoT (`stageName`, `experienceLevel`) |
-
-Planned (002, not implemented): `/session-builder` — Crear sesión
+| `/session-builder` | AI Session Builder — generate / review / save |
 
 Server write path:
 
@@ -58,6 +59,7 @@ Active Organization cookie = preference only (validated membership).
 | Active Organization | Server resolution + optional cookie preference (write via Server Action only) |
 | Catalog reads | `app_runtime` SELECT on `tracks` / `track_artists` / `artists` (Domain M6) |
 | Writes | Trusted server → Domain services → Prisma |
+| Session Builder provider (002) | MockPlaylistGenerationProvider (live AI deferred) |
 
 ## Legacy Domain docs
 
@@ -65,6 +67,6 @@ Active Organization cookie = preference only (validated membership).
 
 ## Next
 
-1. Authorize DJ-STUDIO-002 **P0** (branding) explicitly when ready.
-2. Keep 001 pre-production gates (cross-tenant + VIEWER) before production.
+1. Next Domain work is **not automatically authorized**. Candidate: DJ-STUDIO-003 (real AI provider design/spec).
+2. Keep 001 pre-production gates (cross-tenant + VIEWER + topology) before production.
 3. Do **not** deploy production / merge main without authorization.

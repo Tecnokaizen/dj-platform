@@ -1,24 +1,26 @@
 ---
 title: DJ-STUDIO-002 — AI Playlist / Session Builder
-status: SPEC READY
-updated: 2026-09-15
+status: STAGING MVP READY / MILESTONE CLOSED
+updated: 2026-09-16
 related:
   - DJ-STUDIO-001-CLOSURE.md
   - DJ-STUDIO-001.md
+  - DJ-STUDIO-002-CLOSURE.md
   - ../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md
 ---
 
 # DJ-STUDIO-002 — AI Playlist / Session Builder
 
-**Status:** SPEC READY (not started)  
-**Date:** 2026-09-15  
+**Status:** STAGING MVP READY / MILESTONE CLOSED  
+**Date:** 2026-09-16  
 **Depends on:** DJ-STUDIO-001 CLOSED — STAGING MVP READY  
-**Production:** NOT AUTHORIZED  
-**Main merge:** NOT AUTHORIZED
+**Phases:** P0–P7 COMPLETE  
+**Production:** NOT MODIFIED / NOT AUTHORIZED  
+**Main merge:** NOT MERGED / NOT AUTHORIZED
 
 This document is the **source of truth** for DJ-STUDIO-002. Product decisions
-below are **frozen**. Implementation must not begin until an explicit phase
-authorization (starting with P0).
+below remain **frozen**. Formal closure evidence:
+[DJ-STUDIO-002-CLOSURE.md](./DJ-STUDIO-002-CLOSURE.md).
 
 ---
 
@@ -26,7 +28,8 @@ authorization (starting with P0).
 
 Allow a DJ to describe a session in natural language and receive a musically
 coherent ordered playlist proposal from their Organization Library, then review,
-edit, and save it as a real Organization-scoped Playlist.
+regenerate or clear the ephemeral draft, and save it as a real Organization-scoped
+Playlist.
 
 Example prompt:
 
@@ -478,11 +481,11 @@ Threat mitigations (spec-level):
 - Limpiar propuesta (estado local only)
 - Review: title, summary, duration/BPM summary, warnings, ordered tracks
 
-### Deferred (P6+)
+### Deferred / Future (not in 002 MVP)
 
 ~~- Guardar como Playlist~~ → **P6 implemented** (atomic AI_GENERATED save)
-- Quitar track / mover arriba-abajo
-- OpenAI live provider
+- Edit / reorder / remove tracks on the ephemeral proposal
+- OpenAI / live AI provider (next milestone: DJ-STUDIO-003 design/spec)
 - Persistent idempotency key for Save
 
 ### Result display (P5)
@@ -638,12 +641,13 @@ without renaming Domain module paths.
 - **MVP note:** no persistent idempotency key (disable CTA while saving + success state)  
 - **Non-goals:** draft persistence, OpenAI, Session entity, schema migration
 
-### P7 — Staging smoke + docs alignment
+### P7 — Staging smoke + docs alignment — COMPLETE
 
 - **Objective:** Staging OWNER smoke; docs status update  
-- **DB:** none expected  
-- **Tests:** staging checklist  
-- **Gate:** staging PASS for 002 scope  
+- **DB schema:** none (data writes for synthetic smoke only)  
+- **Evidence:** OWNER Generate → Review → Save → `/playlists/[id]` + DB
+  provenance validation on staging  
+- **Gate:** staging PASS for 002 scope; docs aligned; CI GREEN  
 - **Non-goals:** production, VIEWER/cross-tenant (remain 001 pre-prod gates)
 
 ---
@@ -658,17 +662,20 @@ BPM/Camelot metadata, when the user submits a sunset Afro House 90-minute
 2. BPM progression is reasonable or emits warnings (no silent fiction).  
 3. Camelot adjacency is coherent when keys exist; unknown keys warn.  
 4. No hallucinated IDs.  
-5. User can edit/reorder/remove and regenerate.  
+5. User can review, regenerate, clear, and save the ephemeral proposal.  
 6. Save creates Organization Playlist with `AI_GENERATED` and items/transitions.  
 7. VIEWER / missing `playlists.manage` cannot generate or save.  
 8. Provider failures never write DB rows.  
 9. Visible branding is DJ Kaizen Studio; nav uses approved Spanish labels.
 
+Edit / reorder / remove of proposal tracks remains **Deferred / Future**
+(not part of 002 MVP).
+
 ---
 
 ## 21. Pre-existing gates (unchanged from 001)
 
-Still required before **production** (not blockers for starting 002 P0):
+Still required before **production** (not blockers for 002 staging closure):
 
 - Cross-tenant Product smoke  
 - VIEWER Product smoke  
@@ -676,6 +683,9 @@ Still required before **production** (not blockers for starting 002 P0):
 
 ---
 
-## 22. Next step after SPEC READY
+## 22. Next step after milestone closure
 
-Authorize **P0 only** explicitly. Do not auto-start implementation.
+DJ-STUDIO-003 — REAL AI PROVIDER DESIGN AUDIT / SPEC  
+
+Do **not** auto-start. Requires explicit authorization.  
+Production deploy and main merge remain unauthorized.

@@ -56,13 +56,13 @@ DJ Platform remains the historical validation consumer. Product/Domain naming
 toward DJ Studio is frozen by ADR-011 (Domain boundary, Organization tenancy for
 Domain data, Profile field extraction intent). Milestone
 **DJ-STUDIO-001** (Organization-scoped Music Library + Playlist Foundation) is
-specified at `docs/domains/dj-studio/DJ-STUDIO-001.md`. Phase 2 **M1–M7** is
-implemented locally (schema → RLS/RBAC → Domain runtime → minimal Product UI)
-with **FULL FINAL VALIDATION PASS** and **READY FOR STAGING**. Production has
-**not** been deployed or modified.
+**CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-001-CLOSURE.md`).
+Milestone **DJ-STUDIO-002** (AI Session Builder MVP) is
+**CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-002-CLOSURE.md`).
+Production has **not** been deployed or modified. Main is **not** merged.
 
-Staging/production ops readiness continues under ADR-010. Real staging
-provisioning (Phase B) remains a separate authorization after review.
+Staging/production ops readiness continues under ADR-010. Live AI provider work
+is a separate milestone (DJ-STUDIO-003) and is not automatically authorized.
 
 ---
 
