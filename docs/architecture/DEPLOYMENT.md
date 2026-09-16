@@ -3,10 +3,25 @@ title: Deployment Architecture
 version: 2.0.0
 status: Living Document
 owner: Platform Architecture
-updated: 2026-08-09
+updated: 2026-08-13
 ---
 
 # Deployment Architecture
+
+## Approved staging-readiness baseline
+
+ADR-010 defines the executable baseline for the next deployment milestone.
+Phase A produces reproducible images, migration tooling, CI, health/readiness
+contracts and backup/restore tooling. It does not provision staging.
+
+The baseline uses a pinned official Supabase self-hosting release. PostgreSQL,
+Auth, PostgREST and the gateway are Product-required. Operational services from
+the official topology are evaluated separately before any removal. The Next.js
+runtime is standalone, non-root and migration-free.
+
+Database release order is role bootstrap, Prisma migrations, Supabase
+migrations, canonical seed, validation, then application deployment. One
+release job preserves both migration ledgers. Production remains unauthorized.
 
 ## Initial model
 

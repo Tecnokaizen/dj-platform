@@ -1,0 +1,18 @@
+services:
+  backup:
+    profiles: ["operations"]
+    build:
+      context: .
+      dockerfile: Dockerfile.backup
+    command: /opt/platform/backup/backup-postgres.sh
+    environment:
+      BACKUP_DATABASE_URL: ${BACKUP_DATABASE_URL:?required}
+      BACKUP_HOST: ${BACKUP_HOST:-platform-staging}
+      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY:?required}
+      RESTIC_PASSWORD: ${RESTIC_PASSWORD:?required}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?required}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?required}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+    tmpfs:
+      - /tmp:size=1g,mode=0700
+    restart: "no"

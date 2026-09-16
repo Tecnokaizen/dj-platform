@@ -22,11 +22,11 @@ export default async function OrganizationsPage({
 
   return (
     <section className="max-w-4xl">
-      <p className="text-sm font-medium text-violet-400">Platform Core</p>
+      <p className="text-sm font-medium text-violet-400">DJ Kaizen Studio</p>
       <h1 className="mt-2 text-3xl font-semibold">Organizaciones</h1>
       <p className="mt-3 text-neutral-400">
-        Consulta las organizaciones activas a las que perteneces. La edición
-        solo aparece cuando tu rol incluye el permiso correspondiente.
+        Consulta las organizaciones a las que perteneces. Puedes editar solo
+        aquellas en las que tengas permiso.
       </p>
 
       {successMessage ? (

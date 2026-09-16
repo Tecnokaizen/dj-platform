@@ -259,6 +259,21 @@ Monitoring must not log sensitive authentication material.
 
 Health checks should reflect real dependencies.
 
+## Staging minimum signals
+
+Before a staging-ready claim, Operations must be able to observe:
+
+- immutable deployment SHA/image digest and deployment result;
+- `/api/health` liveness and `/api/ready` dependency readiness;
+- application stdout/stderr without secrets;
+- container state, restart count and SIGTERM behavior;
+- PostgreSQL availability, connections, disk pressure and migration failure;
+- Supabase Auth and PostgREST availability;
+- backup result, latest successful snapshot and restore-drill result.
+
+Phase A supplies signals and runbooks but does not provision an alerting vendor.
+Phase B must record where each signal is collected and who receives failures.
+
 Possible checks may include:
 
 - application response;

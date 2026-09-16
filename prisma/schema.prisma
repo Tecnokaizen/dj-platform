@@ -197,15 +197,152 @@ model Profile {
   createdAt           DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  memberships         OrganizationMembership[]
-  acceptedInvitations OrganizationInvitation[] @relation("InvitationAcceptedByProfile")
-  userTracks          UserTrack[]
-  tags                Tag[]
-  playlists           Playlist[]
-  ingestionJobs       IngestionJob[]           @relation("IngestionRequestedBy")
-  playlistTracksAdded PlaylistTrack[]          @relation("PlaylistTrackAddedBy")
+  memberships              OrganizationMembership[]
+  acceptedInvitations      OrganizationInvitation[] @relation("InvitationAcceptedByProfile")
+  djStudioProfile          DjStudioProfile?
+  addedLibraryItems         LibraryItem[]            @relation("LibraryItemAddedBy")
+  addedPlaylistItems        PlaylistItem[]           @relation("PlaylistItemAddedBy")
+  legacyUserTracks          LegacyUserTrack[]
+  legacyProfileTags         LegacyProfileTag[]
+  legacyProfilePlaylists    LegacyProfilePlaylist[]
+  ingestionJobs             IngestionJob[]           @relation("IngestionRequestedBy")
+  legacyPlaylistTracksAdded LegacyPlaylistTrack[]    @relation("LegacyPlaylistTrackAddedBy")
 
   @@map("profiles")
+}
+
+model DjStudioProfile {
+  profileId       String           @id @map("profile_id") @db.Uuid
+  stageName       String?          @map("stage_name") @db.VarChar(120)
+  experienceLevel ExperienceLevel? @map("experience_level")
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@map("dj_studio_profiles")
+}
+
+model LibraryItem {
+  id               String          @id @default(uuid()) @db.Uuid
+  organizationId   String          @map("organization_id") @db.Uuid
+  trackId          String          @map("track_id") @db.Uuid
+  addedByProfileId String?         @map("added_by_profile_id") @db.Uuid
+  status           UserTrackStatus @default(LIBRARY)
+  rating           Int?            @db.SmallInt
+  energy           Int?            @db.SmallInt
+  familiarity      Int?            @db.SmallInt
+  notes            String?         @db.Text
+  customBpm        Decimal?        @map("custom_bpm") @db.Decimal(7, 3)
+  customKey        String?         @map("custom_key") @db.VarChar(20)
+  isFavorite       Boolean         @default(false) @map("is_favorite")
+  playCount        Int             @default(0) @map("play_count")
+  dateAdded        DateTime        @default(now()) @map("date_added") @db.Timestamptz(6)
+  lastPlayedAt     DateTime?       @map("last_played_at") @db.Timestamptz(6)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization  Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  track         Track             @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  addedBy       Profile?          @relation("LibraryItemAddedBy", fields: [addedByProfileId], references: [id], onDelete: SetNull)
+  tags          LibraryItemTag[]
+  playlistItems PlaylistItem[]
+
+  @@unique([organizationId, trackId], map: "library_items_organization_track_unique")
+  @@unique([organizationId, id], map: "library_items_organization_id_unique")
+  @@index([organizationId, dateAdded(sort: Desc)], map: "library_items_organization_date_added_idx")
+  @@index([organizationId, status], map: "library_items_organization_status_idx")
+  @@index([organizationId, isFavorite], map: "library_items_organization_is_favorite_idx")
+  @@index([trackId], map: "library_items_track_idx")
+  @@map("library_items")
+}
+
+model Tag {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String   @db.VarChar(80)
+  normalizedName String   @map("normalized_name") @db.VarChar(80)
+  color          String?  @db.VarChar(20)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  libraryItems LibraryItemTag[]
+
+  @@unique([organizationId, normalizedName], map: "tags_organization_normalized_name_unique")
+  @@unique([organizationId, id], map: "tags_organization_id_unique")
+  @@index([organizationId], map: "tags_organization_idx")
+  @@map("tags")
+}
+
+model LibraryItemTag {
+  organizationId String @map("organization_id") @db.Uuid
+  libraryItemId  String @map("library_item_id") @db.Uuid
+  tagId          String @map("tag_id") @db.Uuid
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  libraryItem  LibraryItem  @relation(fields: [organizationId, libraryItemId], references: [organizationId, id], onDelete: Cascade)
+  tag          Tag          @relation(fields: [organizationId, tagId], references: [organizationId, id], onDelete: Cascade)
+
+  @@id([libraryItemId, tagId], map: "library_item_tags_pkey")
+  @@index([organizationId], map: "library_item_tags_organization_idx")
+  @@index([tagId], map: "library_item_tags_tag_idx")
+  @@map("library_item_tags")
+}
+
+// TENANT INTEGRITY (M4): composite FKs enforce
+// library_item_tags / playlist_items organizationId matches parent rows.
+// Parent UNIQUE (organizationId, id) on LibraryItem, Tag, and Playlist required.
+
+model Playlist {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String       @db.VarChar(255)
+  slug           String?      @db.VarChar(255)
+  description    String?      @db.Text
+  playlistType   PlaylistType @map("playlist_type")
+  visibility     Visibility   @default(PRIVATE)
+  artworkUrl     String?      @map("artwork_url")
+  sourceUrl      String?      @map("source_url")
+  metadata       Json         @default("{}")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  items        PlaylistItem[]
+
+  @@unique([organizationId, slug], map: "playlists_organization_slug_unique")
+  @@unique([organizationId, id], map: "playlists_organization_id_unique")
+  @@index([organizationId, updatedAt(sort: Desc)], map: "playlists_organization_updated_at_idx")
+  @@index([visibility], map: "playlists_visibility_idx")
+  @@index([playlistType], map: "playlists_playlist_type_idx")
+  @@map("playlists")
+}
+
+model PlaylistItem {
+  id                String   @id @default(uuid()) @db.Uuid
+  organizationId    String   @map("organization_id") @db.Uuid
+  playlistId        String   @map("playlist_id") @db.Uuid
+  libraryItemId     String   @map("library_item_id") @db.Uuid
+  position          Int
+  addedByProfileId  String?  @map("added_by_profile_id") @db.Uuid
+  notes             String?  @db.Text
+  transitionNotes   String?  @map("transition_notes") @db.Text
+  sourceTimestampMs Int?     @map("source_timestamp_ms")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  playlist     Playlist     @relation(fields: [organizationId, playlistId], references: [organizationId, id], onDelete: Cascade)
+  libraryItem  LibraryItem  @relation(fields: [organizationId, libraryItemId], references: [organizationId, id], onDelete: Restrict)
+  addedBy      Profile?     @relation("PlaylistItemAddedBy", fields: [addedByProfileId], references: [id], onDelete: SetNull)
+
+  // Repeated LibraryItem in one Playlist is allowed (no unique on libraryItemId).
+  @@unique([playlistId, position], map: "playlist_items_playlist_position_unique")
+  @@index([organizationId], map: "playlist_items_organization_idx")
+  @@index([playlistId, position], map: "playlist_items_playlist_position_idx")
+  @@index([libraryItemId], map: "playlist_items_library_item_idx")
+  @@index([addedByProfileId], map: "playlist_items_added_by_idx")
+  @@map("playlist_items")
 }
 
 model Organization {
@@ -220,8 +357,13 @@ model Organization {
   updatedAt  DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
   archivedAt DateTime?          @map("archived_at") @db.Timestamptz(6)
 
-  memberships OrganizationMembership[]
-  invitations OrganizationInvitation[]
+  memberships      OrganizationMembership[]
+  invitations      OrganizationInvitation[]
+  libraryItems     LibraryItem[]
+  tags             Tag[]
+  libraryItemTags  LibraryItemTag[]
+  playlists        Playlist[]
+  playlistItems    PlaylistItem[]
 
   @@index([status])
   @@map("organizations")
@@ -358,12 +500,13 @@ model Track {
   createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  artists        TrackArtist[]
-  genres         TrackGenre[]
-  releases       ReleaseTrack[]
-  userTracks     UserTrack[]
-  playlistTracks PlaylistTrack[]
-  ingestionItems IngestionItem[]
+  artists              TrackArtist[]
+  genres               TrackGenre[]
+  releases             ReleaseTrack[]
+  libraryItems         LibraryItem[]
+  legacyUserTracks     LegacyUserTrack[]
+  legacyPlaylistTracks LegacyPlaylistTrack[]
+  ingestionItems       IngestionItem[]
 
   @@index([normalizedTitle])
   @@index([isrc])
@@ -654,7 +797,7 @@ model EnrichmentJob {
   @@map("enrichment_jobs")
 }
 
-model UserTrack {
+model LegacyUserTrack {
   id           String          @id @default(uuid()) @db.Uuid
   userId       String          @map("user_id") @db.Uuid
   trackId      String          @map("track_id") @db.Uuid
@@ -672,19 +815,19 @@ model UserTrack {
   createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user  Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  track Track          @relation(fields: [trackId], references: [id], onDelete: Restrict)
-  tags  UserTrackTag[]
+  user Profile             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track Track              @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  tags  LegacyUserTrackTag[]
 
   @@unique([userId, trackId])
   @@index([userId, dateAdded(sort: Desc)])
   @@index([userId, isFavorite])
   @@index([userId, status])
   @@index([trackId])
-  @@map("user_tracks")
+  @@map("legacy_user_tracks")
 }
 
-model Tag {
+model LegacyProfileTag {
   id             String   @id @default(uuid()) @db.Uuid
   userId         String   @map("user_id") @db.Uuid
   name           String   @db.VarChar(80)
@@ -693,27 +836,27 @@ model Tag {
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user       Profile        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userTracks UserTrackTag[]
+  user       Profile             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userTracks LegacyUserTrackTag[]
 
   @@unique([userId, normalizedName])
   @@index([userId])
   @@index([normalizedName])
-  @@map("tags")
+  @@map("legacy_profile_tags")
 }
 
-model UserTrackTag {
+model LegacyUserTrackTag {
   userTrackId String @map("user_track_id") @db.Uuid
   tagId       String @map("tag_id") @db.Uuid
 
-  userTrack UserTrack @relation(fields: [userTrackId], references: [id], onDelete: Cascade)
-  tag       Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  userTrack LegacyUserTrack  @relation(fields: [userTrackId], references: [id], onDelete: Cascade)
+  tag       LegacyProfileTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@id([userTrackId, tagId])
-  @@map("user_track_tags")
+  @@map("legacy_user_track_tags")
 }
 
-model Playlist {
+model LegacyProfilePlaylist {
   id           String       @id @default(uuid()) @db.Uuid
   userId       String       @map("user_id") @db.Uuid
   name         String       @db.VarChar(255)
@@ -727,17 +870,17 @@ model Playlist {
   createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user   Profile         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tracks PlaylistTrack[]
+  user   Profile               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tracks LegacyPlaylistTrack[]
 
   @@unique([userId, slug])
   @@index([userId, updatedAt(sort: Desc)])
   @@index([visibility])
   @@index([playlistType])
-  @@map("playlists")
+  @@map("legacy_profile_playlists")
 }
 
-model PlaylistTrack {
+model LegacyPlaylistTrack {
   id                String   @id @default(uuid()) @db.Uuid
   playlistId        String   @map("playlist_id") @db.Uuid
   trackId           String   @map("track_id") @db.Uuid
@@ -748,13 +891,13 @@ model PlaylistTrack {
   sourceTimestampMs Int?     @map("source_timestamp_ms")
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
-  track    Track    @relation(fields: [trackId], references: [id], onDelete: Restrict)
-  addedBy  Profile? @relation("PlaylistTrackAddedBy", fields: [addedById], references: [id], onDelete: SetNull)
+  playlist LegacyProfilePlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  track    Track                 @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  addedBy  Profile?              @relation("LegacyPlaylistTrackAddedBy", fields: [addedById], references: [id], onDelete: SetNull)
 
   @@unique([playlistId, position])
   @@index([playlistId, position])
   @@index([trackId])
   @@index([addedById])
-  @@map("playlist_tracks")
+  @@map("legacy_playlist_tracks")
 }

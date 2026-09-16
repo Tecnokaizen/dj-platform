@@ -42,14 +42,27 @@ Identity, Organizations, Roles, Memberships, Tenancy Integration, Permissions,
 ownership enforcement and the minimum authorized Organization composition are
 implemented and reviewed. Milestone 2 is not authorized pending respecification.
 
+**Production (2026-09-13):** Foundation recovered on the canonical Coolify
+`supabase-db` (Prisma 8 finished / 0 rolled_back; Supabase SQL ledger 6;
+`validate-database` PASS). See `docs/CURRENT_STATE.md` and
+`docs/operations/PLATFORM_CORE_RECOVERY.md`. Legacy `platform-core-bd` remains
+empty and pending deprecation.
+
 Post-closeout audit remediation on Draft PR #1 is recorded in
 `docs/reviews/ARCHITECTURE_REVIEW_V2_ADDENDUM.md` and
-`docs/reviews/SECURITY_REVIEW_V1_ADDENDUM.md`. Claude focused re-audit remains
-pending and is not claimed here.
+`docs/reviews/SECURITY_REVIEW_V1_ADDENDUM.md`.
 
-DJ Platform remains the current validation consumer.
+DJ Platform remains the historical validation consumer. Product/Domain naming
+toward DJ Studio is frozen by ADR-011 (Domain boundary, Organization tenancy for
+Domain data, Profile field extraction intent). Milestone
+**DJ-STUDIO-001** (Organization-scoped Music Library + Playlist Foundation) is
+**CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-001-CLOSURE.md`).
+Milestone **DJ-STUDIO-002** (AI Session Builder MVP) is
+**CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-002-CLOSURE.md`).
+Production has **not** been deployed or modified. Main is **not** merged.
 
-Production readiness not established.
+Staging/production ops readiness continues under ADR-010. Live AI provider work
+is a separate milestone (DJ-STUDIO-003) and is not automatically authorized.
 
 ---
 
@@ -680,7 +693,7 @@ Defined.
 
 Foundation ADRs:
 
-ADR-001 through ADR-009 accepted.
+ADR-001 through ADR-011 accepted.
 
 Domain documentation:
 
@@ -929,18 +942,19 @@ Documentation must not be followed blindly when repository evidence proves it st
 
 Current post-Foundation priorities:
 
-1. respecify Milestone 2 before authorization;
-2. plan deployment and rollback validation;
-3. verify backups and restore procedures;
-4. establish monitoring, runbooks and Product E2E coverage;
-5. authorize the next bounded Core or Product milestone explicitly.
+1. complete ADR-010 deployment-readiness Phase A and review its Draft PR;
+2. keep real staging provisioning blocked pending explicit Phase B approval;
+3. respecify Milestone 2 before authorization;
+4. retain Product E2E and production operations as explicit future gates.
 
 ---
 
 # Foundation ADRs
 
 ADR-001 through ADR-008 establish the original Foundation baseline. ADR-009
-records ownership transfer and database enforcement. Future ADRs should be
+records ownership transfer and database enforcement. ADR-010 defines the
+deployment runtime and staging-readiness contract. ADR-011 freezes DJ Studio
+Domain boundary and Organization tenancy for Domain data. Future ADRs should be
 created only when real decisions require them.
 
 ---

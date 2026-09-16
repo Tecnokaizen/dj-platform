@@ -3,7 +3,7 @@ title: Architecture Decisions
 version: 2.0.0
 status: Living Document
 owner: Platform Architecture
-updated: 2026-08-09
+updated: 2026-09-13
 related:
   - ARCHITECTURE.md
   - CORE.md
@@ -36,15 +36,30 @@ The canonical ADR directory is:
 
 # Current Formal ADR Status
 
-No ADR files currently exist under `docs/adr/`.
+Accepted ADRs under `docs/adr/`:
 
-Therefore no decision has yet been formally recorded as an Accepted ADR.
+| ADR | Title |
+|-----|--------|
+| ADR-001 | Platform Core and Domain Boundary |
+| ADR-002 | Identity Source of Truth |
+| ADR-003 | Internal Identifier Strategy |
+| ADR-004 | Tenancy and Organization Model |
+| ADR-005 | Roles, Memberships and Ownership Model |
+| ADR-006 | Authorization Permission Model |
+| ADR-007 | Prisma Data Access Conventions |
+| ADR-008 | Deployment Infrastructure Strategy |
+| ADR-009 | Ownership Transfer Database Enforcement |
+| ADR-010 | Deployment Runtime and Staging Contract |
+| ADR-011 | DJ Studio Domain Boundary and Organization Tenancy |
 
-However, several foundational architectural decisions are already established across the Living Architecture documents and current implementation.
+ADR-011 freezes DJ Studio Domain ownership, Organization tenancy for Domain
+operational data, Profile field extraction intent, RBAC extension boundary and
+forward-only schema direction. It does not authorize migrations or code moves.
 
-Those decisions require ADR backfill so that the architecture baseline records not only what was decided, but also why.
+Approved Domain milestone design (not an ADR):
 
-Backfilling an ADR does not automatically reopen an already established architectural decision.
+- [DJ-STUDIO-001](../domains/dj-studio/DJ-STUDIO-001.md) — Organization-scoped
+  Music Library + Playlist Foundation (`docs/domains/dj-studio/`)
 
 ---
 
@@ -222,9 +237,10 @@ The ADR must distinguish architecture targets from infrastructure that is actual
 
 # Future ADR Candidates
 
-The following subjects may require ADRs when implementation requirements become concrete.
+The following subjects may require ADRs when implementation requirements become
+concrete. Numbers ADR-001 through ADR-011 are already assigned in `docs/adr/`.
 
-## ADR-009 — Storage Strategy
+## Storage Strategy
 
 Potential topics:
 
@@ -240,7 +256,7 @@ No storage provider should be treated as selected until this decision is made.
 
 ---
 
-## ADR-010 — AI Provider Abstraction
+## AI Provider Abstraction
 
 Potential topics:
 
@@ -257,7 +273,7 @@ Development AI tools are separate from application runtime AI providers.
 
 ---
 
-## ADR-011 — Search Strategy
+## Search Strategy
 
 Potential topics:
 
@@ -272,7 +288,7 @@ No dedicated search infrastructure should be introduced without demonstrated nee
 
 ---
 
-## ADR-012 — Background Jobs and Queue Strategy
+## Background Jobs and Queue Strategy
 
 Potential topics:
 
@@ -288,7 +304,7 @@ Long-running tasks do not automatically justify introducing a queue system.
 
 ---
 
-## ADR-013 — Event Architecture
+## Event Architecture
 
 Potential topics:
 
@@ -302,7 +318,7 @@ Do not introduce an event architecture speculatively.
 
 ---
 
-## ADR-014 — Billing Strategy
+## Billing Strategy
 
 Potential topics:
 

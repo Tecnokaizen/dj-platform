@@ -89,9 +89,12 @@ Current evidence includes:
 - self-hosted Supabase infrastructure under validation
 - lint and typecheck validation
 
-The platform is not yet production-ready.
+The Platform Core Foundation is CLOSED / PASS within scope. Deployment-
+readiness Phase A is authorized under ADR-010, but staging is not yet
+provisioned and the platform is not production-ready.
 
-Several documentation areas still require consolidation, and most Platform Core functional modules remain to be implemented.
+The remaining maturity work is operational: reproducible deployment, staging
+evidence, recovery drills, observability and Product end-to-end validation.
 
 ---
 
@@ -150,30 +153,16 @@ Forbidden dependencies include:
 
 Status:
 
-**Backfill Required**
+**Consolidated through ADR-010**
 
 The architecture decision registry has been consolidated.
 
-No formal ADR files currently exist under:
+ADR-001 through ADR-009 record the Foundation baseline and ownership
+enforcement. ADR-010 records the approved deployment runtime, database role,
+migration, Supabase topology, staging email and recovery contracts.
 
-`docs/adr/`
-
-Several already-established architectural decisions require ADR backfill.
-
-These include:
-
-- Platform Core / Domain boundary
-- Identity source of truth
-- UUID identifier strategy
-- tenancy and Organization model
-- Roles, Memberships and ownership model
-- Permission architecture
-- Prisma and data-access conventions
-- deployment and infrastructure strategy
-
-Future ADR candidates are also documented.
-
-ADR backfill should be completed before declaring the next formal architecture baseline complete.
+Implementation and runtime evidence are still required; an accepted ADR is not
+proof that staging or production exists.
 
 ---
 
