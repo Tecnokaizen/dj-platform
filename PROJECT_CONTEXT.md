@@ -59,10 +59,12 @@ Domain data, Profile field extraction intent). Milestone
 **CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-001-CLOSURE.md`).
 Milestone **DJ-STUDIO-002** (AI Session Builder MVP) is
 **CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-002-CLOSURE.md`).
+Milestone **DJ-STUDIO-003** (Real AI Provider) is
+**SPEC READY** (`docs/domains/dj-studio/DJ-STUDIO-003.md`) — implementation not started.
 Production has **not** been deployed or modified. Main is **not** merged.
 
-Staging/production ops readiness continues under ADR-010. Live AI provider work
-is a separate milestone (DJ-STUDIO-003) and is not automatically authorized.
+Staging/production ops readiness continues under ADR-010. Live AI provider
+implementation requires explicit DJ-STUDIO-003 P1 authorization.
 
 ---
 

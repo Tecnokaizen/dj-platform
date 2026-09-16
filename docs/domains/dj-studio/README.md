@@ -8,6 +8,7 @@ related:
   - DJ-STUDIO-001-CLOSURE.md
   - DJ-STUDIO-002.md
   - DJ-STUDIO-002-CLOSURE.md
+  - DJ-STUDIO-003.md
   - ../dj/
 ---
 
@@ -25,12 +26,14 @@ built on Platform Core.
 | [DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
 | [DJ-STUDIO-002](./DJ-STUDIO-002.md) | AI Session Builder MVP specification |
 | [DJ-STUDIO-002-CLOSURE](./DJ-STUDIO-002-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
+| [DJ-STUDIO-003](./DJ-STUDIO-003.md) | Real AI provider — **SPEC READY** |
 
 ## Status
 
 - Architecture boundary: **Accepted** (ADR-011)
 - **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY**
 - **DJ-STUDIO-002:** **CLOSED — STAGING MVP READY**
+- **DJ-STUDIO-003:** **SPEC READY** (implementation not started)
 - Production schema / Product: **NOT DEPLOYED to production**
 - Main: **NOT MERGED**
 
@@ -59,7 +62,8 @@ Active Organization cookie = preference only (validated membership).
 | Active Organization | Server resolution + optional cookie preference (write via Server Action only) |
 | Catalog reads | `app_runtime` SELECT on `tracks` / `track_artists` / `artists` (Domain M6) |
 | Writes | Trusted server → Domain services → Prisma |
-| Session Builder provider (002) | MockPlaylistGenerationProvider (live AI deferred) |
+| Session Builder provider (002) | MockPlaylistGenerationProvider (default) |
+| Real AI provider (003) | SPEC READY — OpenAI adapter deferred until P1 authorization |
 
 ## Legacy Domain docs
 
@@ -67,6 +71,6 @@ Active Organization cookie = preference only (validated membership).
 
 ## Next
 
-1. Next Domain work is **not automatically authorized**. Candidate: DJ-STUDIO-003 (real AI provider design/spec).
+1. Authorize DJ-STUDIO-003 **P1** (OpenAI adapter implementation) explicitly when ready.
 2. Keep 001 pre-production gates (cross-tenant + VIEWER + topology) before production.
 3. Do **not** deploy production / merge main without authorization.
