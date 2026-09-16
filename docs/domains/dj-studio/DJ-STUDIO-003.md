@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-003 — Real AI Provider
-status: P1 COMPLETE
+status: P2 COMPLETE
 updated: 2026-09-16
 related:
   - DJ-STUDIO-002.md
@@ -10,10 +10,10 @@ related:
 
 # DJ-STUDIO-003 — Real AI Provider
 
-**Status:** P1 COMPLETE  
+**Status:** P2 COMPLETE  
 **Date:** 2026-09-16  
 **Depends on:** DJ-STUDIO-002 CLOSED — STAGING MVP READY  
-**Implementation:** P1 adapter implemented (not Product-wired)  
+**Implementation:** P1 adapter + P2 config/factory (Product still Mock)  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -497,15 +497,31 @@ Session Builder.
 
 ## 20. Provider selection / config
 
-Proposed server-only env (not created in this SPEC phase):
+### Implemented (P2)
+
+| Item | Value |
+|---|---|
+| Config path | `src/lib/ai/config/session-builder-provider-config.ts` |
+| Config function | `getSessionBuilderProviderConfig(environment?)` |
+| Factory path | `src/lib/ai/playlist-generation-provider-factory.ts` |
+| Factory function | `createPlaylistGenerationProvider(config, options?)` |
+| Default provider | `mock` when `SESSION_BUILDER_PROVIDER` absent/blank |
+| Default model constant | `DEFAULT_SESSION_BUILDER_OPENAI_MODEL = 'gpt-5.6-terra'` (config only) |
+| API key | required **only** when `provider=openai` |
+| Client construction | lazy — OpenAI client created only for openai config |
+| Product wiring | **not connected** — Server Action still hardcodes Mock |
 
 | Variable | Values | Default |
 |---|---|---|
-| `SESSION_BUILDER_PROVIDER` | `mock` \| `openai` | `mock` (until P4/P5 authorize openai) |
-| `SESSION_BUILDER_OPENAI_MODEL` | model id/snapshot | conceptual default `gpt-5.6-terra` |
-| `OPENAI_API_KEY` | secret | unset |
+| `SESSION_BUILDER_PROVIDER` | `mock` \| `openai` | `mock` |
+| `SESSION_BUILDER_OPENAI_MODEL` | model id/snapshot | `gpt-5.6-terra` when openai and unset |
+| `OPENAI_API_KEY` | secret | unset (required for openai) |
 
-No env vars are created in P0/P0.1 — config names are SPEC only.
+Invalid provider strings (e.g. typos) → `PROVIDER_UNAVAILABLE` with
+`{ category: 'configuration' }` — **no silent Mock fallback**.
+
+Parse happens on function call only (not module load). CI/build work without
+`OPENAI_API_KEY`.
 
 Factory lives under `src/lib/ai/` (or thin Product helper). Avoid registry
 frameworks. Product Server Action stops hardcoding Mock once factory exists.
@@ -656,15 +672,15 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 |---|---|---|
 | **P0** | Design audit + SPEC | COMPLETE |
 | **P0.1** | SPEC currentness hardening — model strategy + 429 retry classification | COMPLETE |
-| **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) | **COMPLETE** |
-| **P2** | Config/factory/env wiring (`mock` default) | NOT STARTED |
+| **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) | COMPLETE |
+| **P2** | Config/factory/env wiring (`mock` default) | **COMPLETE** |
 | **P3** | Adapter unit/error/timeout tests (mocked SDK) | NOT STARTED |
 | **P4** | Product Server Action composition via factory + badge behavior | NOT STARTED |
 | **P5** | Staging opt-in live AI OWNER smoke | NOT STARTED |
 | **P6** | Quality matrix notes + docs closure | NOT STARTED |
 
 No phase auto-starts. Each requires explicit authorization.
-P1 does **not** authorize P2.
+P2 does **not** authorize P3.
 
 ---
 
@@ -698,9 +714,9 @@ Inherited pre-production gates (not 003 blockers):
 
 ---
 
-## 33. Next step after P1 COMPLETE
+## 33. Next step after P2 COMPLETE
 
-Authorize **DJ-STUDIO-003 P2** explicitly
-(config/factory/env wiring; `SESSION_BUILDER_PROVIDER` default `mock`).
+Authorize **DJ-STUDIO-003 P3** explicitly
+(adapter unit/error/timeout test hardening with mocked SDK).
 
-Do **not** auto-start P2. Product remains on Mock until P4.
+Do **not** auto-start P3. Product remains on Mock until P4.

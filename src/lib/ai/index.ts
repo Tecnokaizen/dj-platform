@@ -26,3 +26,15 @@ export {
   DEFAULT_RETRY_FALLBACK_MS,
   MAX_RETRY_DELAY_MS,
 } from '@/lib/ai/providers/openai-retry-delay'
+
+export {
+  DEFAULT_SESSION_BUILDER_OPENAI_MODEL,
+  getSessionBuilderProviderConfig,
+  type SessionBuilderProviderConfig,
+} from '@/lib/ai/config/session-builder-provider-config'
+
+export {
+  createPlaylistGenerationProvider,
+  type CreatePlaylistGenerationProviderOptions,
+  type OpenAiClientFactory,
+} from '@/lib/ai/playlist-generation-provider-factory'
