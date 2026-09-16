@@ -112,12 +112,11 @@ Consultation date: **2026-09-16**. Official OpenAI Platform docs only.
 |---|---|---|
 | Migrate to Responses | https://platform.openai.com/docs/guides/migrate-to-responses | Responses API is recommended for new projects; Structured Outputs shape uses `text.format` instead of Chat Completions `response_format`. |
 | Structured Outputs | https://platform.openai.com/docs/guides/structured-outputs | JSON Schema + `strict: true` constrains shape; JS SDK helpers (`zodTextFormat` / `zodResponseFormat`) exist; still not a substitute for Domain semantic validation. |
-| Error codes | https://platform.openai.com/docs/guides/error-codes | Auth 401, rate/spend 429 (+ `Retry-After`), 500/503 overload; billing/quota retries do not restore access. |
-| Model guidance (latest) | https://platform.openai.com/docs/guides/latest-model | Current flagship guidance centers on `gpt-6-astra` via Responses; parameter surface differs (e.g. reasoning effort; temperature removed for Astra). |
-| GPT-5 | https://platform.openai.com/docs/models/gpt-5 | Structured Outputs supported; Responses + Chat Completions endpoints; pricing/context time-sensitive. |
-| GPT-5 Mini | https://platform.openai.com/docs/models/gpt-5-mini | Structured Outputs supported; positioned for well-defined / precise tasks; lower cost/latency than GPT-5. |
+| Error codes | https://platform.openai.com/docs/guides/error-codes | Auth 401; distinguish 429 rate_limit / slow_down (retryable, honor `Retry-After`) from billing/spend/credits/usage 429s (non-retryable); 500/503 overload. |
+| Model guidance (latest) | https://platform.openai.com/docs/guides/latest-model | Current catalog: GPT-6 Astra = flagship; GPT-5.6 Terra = balance intelligence + cost; GPT-5.6 Luna = cost-sensitive / high-volume. |
+| GPT-5 Mini (legacy page) | https://platform.openai.com/docs/models/gpt-5-mini | Legacy mini page itself recommends starting most new low-latency/high-volume workloads with GPT-5.6 Terra — do **not** keep mini as preferred baseline. |
 
-**Capability note:** Model names, prices, and parameter surfaces change. Spec treats them as **time-sensitive**. Implementation must pin a concrete model snapshot via config, not hardcode “latest forever”.
+**Capability note:** Model names, prices, and parameter surfaces change. Spec treats them as **time-sensitive**. Implementation must pin a concrete model via server config (`SESSION_BUILDER_OPENAI_MODEL`), prefer a stable snapshot when the API documents one, and **never** hardcode a model inside Domain.
 
 ---
 
@@ -342,16 +341,19 @@ or Playlist writes.
 
 ## 13. Recommended model strategy
 
-Capabilities/prices are **time-sensitive** (reviewed 2026-09-16).
+Capabilities/prices are **time-sensitive** (revalidated 2026-09-16 for P0.1).
+There is **no permanent model winner**.
 
 | Role | Model | Why |
 |---|---|---|
-| **Preferred start** | `gpt-5-mini` | Officially positioned for well-defined / precise tasks; Structured Outputs + Responses supported; better cost/latency for constrained JSON sequencing |
-| **Quality alternative** | `gpt-5` | Higher capability if mini underperforms on ordering/narrative quality smoke |
-| **Optional future eval** | `gpt-6-astra` | Current flagship guidance; different parameter surface (reasoning effort; no temperature); evaluate only after mini/5 baseline |
+| **Preferred baseline** | `gpt-5.6-terra` | Current balance of intelligence + cost; Responses + Structured Outputs; sufficient for constrained ≤60-candidate sequencing; recommended family starting point for balanced workloads (legacy mini page also points here) |
+| **Quality escalation** | `gpt-5.6-sol` | Use only if Terra fails quality validation on ordering/narrative usefulness |
+| **Frontier evaluation** | `gpt-6-astra` | Current flagship / hardest end-to-end work; **not** the default for this Product workload; optional quality benchmark only |
+| **Cost-sensitive candidate** | `gpt-5.6-luna` | Future option only after Terra/Sol quality bar is proven and Luna maintains enough quality |
 
 **Do not hardcode** the model in Domain. Pin via server config
-(`SESSION_BUILDER_OPENAI_MODEL`) with snapshot-capable values when available.
+(`SESSION_BUILDER_OPENAI_MODEL`), prefer an API-documented stable snapshot when
+available, and treat catalog changes as expected.
 
 Selection criteria (frozen):
 
@@ -369,17 +371,18 @@ Selection criteria (frozen):
 
 | Setting | Proposal | Notes |
 |---|---|---|
-| API | Responses | Official new-project recommendation |
-| Structured Outputs | `strict: true` JSON Schema aligned to P3 | Map Domain Zod → JSON Schema in adapter |
-| `store` | `false` | Privacy default |
+| API | Responses | Official new-project recommendation — **unchanged** |
+| Structured Outputs | `text.format` JSON Schema `strict: true` aligned to P3 | Map Domain Zod → JSON Schema in adapter |
+| `store` | `false` (**explicit**) | Do not rely on endpoint default; no Conversations/state persistence |
 | Tools | none | Reduce injection / side effects |
 | Timeout | 45_000 ms AbortSignal | See §15 |
 | Streaming | off | See §19 |
-| Temperature | omit unless model supports + benefit proven | Astra guidance removes temperature; do not assume universal |
-| Reasoning effort | omit / `low` if required by selected model | Only when model requires it |
+| Temperature | **omit by default** | Do not assume universal support; avoid unnecessary knobs |
+| Reasoning effort | Terra supports `reasoning.effort`; start minimal in P1 | Candidate values `low` or `none` only after fixture comparison — **not frozen in P0.1** |
 | Max output tokens | enough for ≤60 tracks proposal (~4–8k) | Cap to avoid runaway cost |
 
-Exact knobs finalized against the pinned model card during P1.
+P1 begins with **minimal** configuration against Terra and evaluates fixtures
+before adding knobs. Astra needs no special support code in P1.
 
 ---
 
@@ -402,22 +405,25 @@ rate. Adjust only with staging evidence.
 
 ## 16. Error mapping
 
-Prefer **existing** provider error codes; do not expand taxonomy unless
-implementation proves a user-visible gap.
+Prefer **existing** provider error codes; **do not expand** Domain taxonomy.
+
+Product-facing mapping stays:
 
 | Upstream condition | Map to |
 |---|---|
-| Missing/invalid API key, 401/403 config | `PROVIDER_UNAVAILABLE` (safe Product copy; log detail server-side) |
+| Missing/invalid API key, 401/403 config | `PROVIDER_UNAVAILABLE` |
 | Network failure / DNS / connection reset | `PROVIDER_UNAVAILABLE` |
 | Abort / deadline exceeded | `PROVIDER_TIMEOUT` |
-| 429 rate/spend/credits (after limited retry policy) | `PROVIDER_UNAVAILABLE` |
-| 500 / 503 overload (after limited retry) | `PROVIDER_UNAVAILABLE` |
+| Retryable 429 / 500 / 503 after limited retry still failing | `PROVIDER_UNAVAILABLE` |
+| Non-retryable 429 billing/spend/credits/usage | `PROVIDER_UNAVAILABLE` |
 | Non-JSON / schema parse failure | `INVALID_PROVIDER_RESPONSE` |
 | Valid JSON but semantic contract fail | `INVALID_PROVIDER_PROPOSAL` |
 | Empty tracks | `EMPTY_PROVIDER_PROPOSAL` |
 | Safety refusal with empty usable proposal | `INVALID_PROVIDER_PROPOSAL` or `PROVIDER_UNAVAILABLE` (choose in P1; prefer proposal-invalid if refusal payload is structured) |
 
-Never expose HTTP status, OpenAI request IDs, or raw error bodies to UI.
+Retryable vs non-retryable classification is an **adapter** responsibility.
+Server logs may keep a safe internal category. Never expose HTTP status,
+OpenAI request IDs, or raw error bodies to UI.
 
 ---
 
@@ -425,15 +431,33 @@ Never expose HTTP status, OpenAI request IDs, or raw error bodies to UI.
 
 Generate is read-only → retries cannot create Playlists.
 
-| Condition | Retry? | Max |
-|---|---|---|
-| 429 with `Retry-After` | Yes, honor header (capped) | 1 |
-| 500 / 503 | Yes, short backoff | 1 |
-| Timeout / abort | No (or single optional retry only if staging proves benefit) | 0 default |
-| 401 / 403 / billing exhausted | No | 0 |
-| `INVALID_*` / empty proposal | No automatic retry in MVP | 0 |
+### Retryable (max 1 retry)
 
-No hidden loops. Total upstream attempts ≤ 2 per Generate click.
+| Condition | Behavior |
+|---|---|
+| `429` `rate_limit_error` | Honor `Retry-After` when present |
+| `429` `slow_down` | Honor `Retry-After` when present |
+| `500` | Short backoff |
+| `503` | Honor `Retry-After` when present; short backoff otherwise |
+
+### Non-retryable (0 retries)
+
+| Condition | Notes |
+|---|---|
+| `401` auth | Config/secret problem |
+| `403` permission/config | Config/secret problem |
+| `429` `credit_balance_exhausted` | Billing — retry will not help |
+| `429` `organization_spend_limit_exceeded` | Spend limit |
+| `429` `project_spend_limit_exceeded` | Spend limit |
+| `429` `organization_usage_limit_exceeded` | Usage limit |
+| Other billing / quota / spend errors | Non-retryable |
+| Timeout / abort | **0 retries by default** |
+| `INVALID_PROVIDER_RESPONSE` | No automatic retry |
+| `INVALID_PROVIDER_PROPOSAL` | No automatic retry |
+| `EMPTY_PROVIDER_PROPOSAL` | No automatic retry |
+
+No hidden loops. Total upstream attempts ≤ 2 per Generate click when a
+retryable condition applies.
 
 ---
 
@@ -466,9 +490,11 @@ Proposed server-only env (not created in this SPEC phase):
 
 | Variable | Values | Default |
 |---|---|---|
-| `SESSION_BUILDER_PROVIDER` | `mock` \| `openai` | `mock` |
-| `SESSION_BUILDER_OPENAI_MODEL` | model id/snapshot | implementation default (`gpt-5-mini` initially) |
+| `SESSION_BUILDER_PROVIDER` | `mock` \| `openai` | `mock` (until P4/P5 authorize openai) |
+| `SESSION_BUILDER_OPENAI_MODEL` | model id/snapshot | conceptual default `gpt-5.6-terra` |
 | `OPENAI_API_KEY` | secret | unset |
+
+No env vars are created in P0/P0.1 — config names are SPEC only.
 
 Factory lives under `src/lib/ai/` (or thin Product helper). Avoid registry
 frameworks. Product Server Action stops hardcoding Mock once factory exists.
@@ -618,6 +644,7 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 | Phase | Objective |
 |---|---|
 | **P0** | Design audit + SPEC (this document) |
+| **P0.1** | SPEC currentness hardening — model strategy (`gpt-5.6-terra`) + 429 retry classification (docs only) |
 | **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) |
 | **P2** | Config/factory/env wiring (`mock` default) |
 | **P3** | Adapter unit/error/timeout tests (mocked SDK) |
@@ -626,6 +653,7 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 | **P6** | Quality matrix notes + docs closure |
 
 No phase auto-starts. Each requires explicit authorization.
+P0.1 does **not** authorize P1.
 
 ---
 
