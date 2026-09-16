@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { mapSessionBuilderFormData } from '@/app/(private)/session-builder/map-form-data'
+import { parseSessionGenerationInput } from '@/domains/dj-studio/session-builder/generation'
+import { DJ_STUDIO_ERROR_CODES } from '@/domains/dj-studio/shared/errors'
 
 function form(entries: Record<string, string>): FormData {
   const data = new FormData()
@@ -8,6 +10,15 @@ function form(entries: Record<string, string>): FormData {
     data.set(key, value)
   }
   return data
+}
+
+function expectDomainReject(raw: unknown) {
+  try {
+    parseSessionGenerationInput(raw)
+    expect.unreachable('expected Domain VALIDATION_ERROR')
+  } catch (error) {
+    expect(error).toMatchObject({ code: DJ_STUDIO_ERROR_CODES.VALIDATION_ERROR })
+  }
 }
 
 describe('mapSessionBuilderFormData', () => {
@@ -36,6 +47,7 @@ describe('mapSessionBuilderFormData', () => {
       source: 'library_only',
     })
     expect(mapped).not.toHaveProperty('organizationId')
+    expect(parseSessionGenerationInput(mapped).source).toBe('library_only')
   })
 
   it('omits blank optional BPM and trackCountHint as undefined', () => {
@@ -57,20 +69,99 @@ describe('mapSessionBuilderFormData', () => {
     expect(mapped.source).toBe('library_only')
   })
 
-  it('converts FormData numeric strings and rejects zero BPM/hint', () => {
+  it('preserves invalid coerced numbers for Domain rejection', () => {
+    expect(mapSessionBuilderFormData(form({
+      prompt: 'set',
+      targetDurationMin: '90',
+      energyCurve: 'gradual_rise',
+      bpmStart: '',
+    })).bpm).toBeUndefined()
+
+    const bpm999 = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '90',
+        energyCurve: 'gradual_rise',
+        bpmStart: '999',
+      }),
+    )
+    expect(bpm999.bpm).toEqual({ start: 999 })
+    expectDomainReject(bpm999)
+
+    const bpmNeg = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '90',
+        energyCurve: 'gradual_rise',
+        bpmStart: '-4',
+      }),
+    )
+    expect(bpmNeg.bpm).toEqual({ start: -4 })
+    expectDomainReject(bpmNeg)
+
+    const bpmAbc = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '90',
+        energyCurve: 'gradual_rise',
+        bpmStart: 'abc',
+      }),
+    )
+    expect(Number.isNaN(bpmAbc.bpm?.start)).toBe(true)
+    expectDomainReject(bpmAbc)
+
+    const hint61 = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '90',
+        energyCurve: 'gradual_rise',
+        trackCountHint: '61',
+      }),
+    )
+    expect(hint61.trackCountHint).toBe(61)
+    expectDomainReject(hint61)
+
+    const hintFloat = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '90',
+        energyCurve: 'gradual_rise',
+        trackCountHint: '2.5',
+      }),
+    )
+    expect(hintFloat.trackCountHint).toBe(2.5)
+    expectDomainReject(hintFloat)
+
+    const energyHacked = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '90',
+        energyCurve: 'hacked',
+      }),
+    )
+    expect(energyHacked.energyCurve).toBe('hacked')
+    expectDomainReject(energyHacked)
+
+    const duration999 = mapSessionBuilderFormData(
+      form({
+        prompt: 'set',
+        targetDurationMin: '999',
+        energyCurve: 'gradual_rise',
+      }),
+    )
+    expect(duration999.targetDurationMin).toBe(999)
+    expectDomainReject(duration999)
+  })
+
+  it('forces source library_only even when client sends another value', () => {
     const mapped = mapSessionBuilderFormData(
       form({
         prompt: 'set',
-        targetDurationMin: '45',
-        energyCurve: 'gradual_rise',
-        bpmStart: '0',
-        bpmEnd: '120',
-        trackCountHint: '0',
+        targetDurationMin: '90',
+        energyCurve: 'steady',
+        source: 'anything',
       }),
     )
-
-    expect(mapped.targetDurationMin).toBe(45)
-    expect(mapped.bpm).toEqual({ end: 120 })
-    expect(mapped.trackCountHint).toBeUndefined()
+    expect(mapped.source).toBe('library_only')
   })
 })
