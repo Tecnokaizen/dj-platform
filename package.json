@@ -70,6 +70,7 @@
     "test:tenancy:rls": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenant-rls.test.ts",
     "test:permissions:foundation": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/permissions/tests/permissions-foundation.test.ts",
     "dj-studio:library-import": "tsx scripts/dj-studio/library-manifest-import.ts",
+    "dj-studio:library-adapter": "tsx scripts/dj-studio/library-adapter.ts",
     "test:dj-studio:library-import": "vitest run --config vitest.config.ts src/domains/dj-studio/library-import/tests"
   },
   "dependencies": {

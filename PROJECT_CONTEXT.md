@@ -66,10 +66,11 @@ Real OpenAI provider validated on staging (`SESSION_BUILDER_PROVIDER=openai`,
 model via `SESSION_BUILDER_OPENAI_MODEL`). Runtime SHA
 `a9889fe83642fd5987de83c3dfb5bb361b621147`.
 Milestone **DJ-STUDIO-004** (Real Library + Musical Validation) is
-**P1 COMPLETE — P2 NOT STARTED** on `feature/dj-studio-004`
-(`docs/domains/dj-studio/DJ-STUDIO-004.md`). Manifest importer
-(`dj-studio-library-manifest.v1`) is implemented with preview/apply/rollback;
-no real staging library import yet.
+**P1.1 COMPLETE — P2 NOT STARTED** on `feature/dj-studio-004`
+(`docs/domains/dj-studio/DJ-STUDIO-004.md`). Manifest importer +
+Engine DJ / Mixed In Key pilot adapter are ready; MIK is optional pilot
+enrichment only (not a commercial product dependency). No real staging
+library import yet.
 Production has **not** been deployed or modified. Main is **not** merged.
 
 Staging/production ops readiness continues under ADR-010. DJ-STUDIO-004 P2

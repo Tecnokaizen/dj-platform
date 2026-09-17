@@ -30,7 +30,7 @@ built on Platform Core.
 | [DJ-STUDIO-002-CLOSURE](./DJ-STUDIO-002-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
 | [DJ-STUDIO-003](./DJ-STUDIO-003.md) | Real AI provider specification |
 | [DJ-STUDIO-003-CLOSURE](./DJ-STUDIO-003-CLOSURE.md) | Formal staging closure — STAGING LIVE AI VALIDATED |
-| [DJ-STUDIO-004](./DJ-STUDIO-004.md) | Real library + musical validation — **P1 COMPLETE** |
+| [DJ-STUDIO-004](./DJ-STUDIO-004.md) | Real library + musical validation — **P1.1 COMPLETE** |
 
 ## Status
 
@@ -38,7 +38,7 @@ built on Platform Core.
 - **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY**
 - **DJ-STUDIO-002:** **CLOSED — STAGING MVP READY**
 - **DJ-STUDIO-003:** **CLOSED — STAGING LIVE AI VALIDATED**
-- **DJ-STUDIO-004:** **P1 COMPLETE — P2 NOT STARTED** (manifest importer ready; no real staging import yet)
+- **DJ-STUDIO-004:** **P1.1 COMPLETE — P2 NOT STARTED** (Engine+MIK pilot adapter ready; no real staging import yet)
 - Production schema / Product: **NOT DEPLOYED to production**
 - Main: **NOT MERGED**
 
