@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: P3 COMPLETE — P4 NOT STARTED
+status: P4 COMPLETE — P5 NOT STARTED
 updated: 2026-09-17
 related:
   - DJ-STUDIO-003-CLOSURE.md
@@ -11,12 +11,12 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** P3 COMPLETE — P4 NOT STARTED  
+**Status:** P4 COMPLETE — P5 NOT STARTED  
 **Date:** 2026-09-17  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
 **Branch:** `feature/dj-studio-004`  
 **Base SHA (P0):** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
-**Staging runtime (unchanged by P0–P3):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
+**Staging runtime (unchanged by P0–P4):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -30,7 +30,8 @@ P1 = manifest importer infrastructure (code + tests). **No real library import.*
 P1.1 = Engine DJ + Mixed In Key **pilot adapter** → canonical manifest.  
 P2 = first controlled staging Real Library pilot apply (**COMPLETE**).  
 P3 = real library data quality (read-only) (**COMPLETE**).  
-**P4 owns Session Builder matrix on the Real Library (provider openai).**
+P4 = Session Builder matrix A–H on Real Library + live OpenAI (**COMPLETE**).  
+**P5 owns HUMAN DJ musical review (no auto-tuning).**
 
 ---
 
@@ -477,7 +478,7 @@ If validation finds musical problems:
 | **P1.1.1** | Audio-extension-aware filename stem (preserve dotted titles) | **COMPLETE** |
 | **P2** | Staging Real Library org + controlled pilot import (`latin-afrohouse-pilot-001`, 18 tracks) | **COMPLETE** |
 | **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | **COMPLETE** |
-| **P4** | Session Builder matrix A–H on Real Library (provider openai) | NOT STARTED |
+| **P4** | Session Builder matrix A–H on Real Library (provider openai) | **COMPLETE** |
 | **P5** | Human musical review + findings (no silent tuning) | NOT STARTED |
 | **P6** | Closure **or** follow-up tuning decision | NOT STARTED |
 
@@ -694,9 +695,51 @@ Manifest parity: **18/18** (year stored as UTC Jan 1 of imported year).
 
 ---
 
-## 23. Next step after P3
+## 20.5 P4 real library Session Builder matrix A–H
 
-Authorize **DJ-STUDIO-004 P4** (Session Builder matrix A–H on Real Library,
-provider=`openai`) explicitly.
+**Runtime:** staging web `a9889fe…` (no redeploy) — `/api/health` 200, `/api/ready` 200  
+**Provider:** `OpenAiPlaylistGenerationProvider` / `SESSION_BUILDER_PROVIDER=openai`  
+**Model:** `gpt-5.6-terra` — Mock fallback: NO  
+**Org:** DJ Kaizen Real Library — eligible candidates **18/18**  
+**Composition:** same Product path (`getSessionBuilderProviderConfig` → factory → `generateSessionProposal`)  
+**Writes:** GENERATE ONLY — Save not used — DB write delta **0**
 
-Do **not** auto-start P4.
+### Matrix technical outcomes
+
+| Case | Intent | Attempts | Retry | Result | Tracks | Duration | Latency |
+|---|---|---|---|---|---|---|---|
+| A | Sunset Afro House 90m 118→123 | 1 | no | PASS | 16 | 91.1 min (±10%) | ~33s |
+| B | House warm-up 60m | 1 | no | PASS | 10 | 61.2 min (±10%) | ~20s |
+| C | Peak-time House 75m | 1 | no | PASS | 11 | 75.2 min (±10%) | ~39s |
+| D | Latin/Afro crossover 75m | 2 | yes (timeout→PASS) | PASS WITH LIMITATION | 13 | 74.4 min (±10%) | ~90s |
+| E | Disco/Nu Disco 60m (stress) | 1 | no | PASS WITH LIMITATION | 10 | 60.5 min (±10%) | ~25s |
+| F | Long session 120m | 1 | no | PASS WITH LIMITATION | 18 | 101.5 min SHORTFALL | ~39s |
+| G | Vague afternoon | 1 | no | PASS WITH LIMITATION | 15 | 87.3 min (±10%) | ~30s |
+| H | Harmonic-focused 60m | 1 | no | PASS | 11 | 67.1 min OVERAGE | ~35s |
+
+### Contract
+
+- Unknown libraryItemIds: **0**  
+- Duplicate libraryItemIds: **0**  
+- Domain validation held; no Mock fallback  
+- Privacy: no org/profile/path/batch egress beyond opaque `libraryItemId` + candidate musical fields  
+
+### Objective notes (not musical verdicts)
+
+- A: first BPM 118; last 129 (Domain `BPM_END_EXCEEDS_REQUEST`); Makeba 156.7 **not** selected  
+- D/F: Makeba 156.7 selected at position 0 (opening); Domain tempo warnings present  
+- F: `TARGET_DURATION_UNREACHABLE` — unique library ≈101.5 min &lt; 120; **no duplicates**  
+- E: `GENRE_FIT_LIMITED` warning — genre source tags absent  
+- H: harmonic relations denser (same key 4 / adjacent 4 / relative 1 / other 1)  
+
+Human musical judgment: **P5**.
+
+---
+
+## 23. Next step after P4
+
+Authorize **DJ-STUDIO-004 P5** (human DJ musical review of matrix A–H evidence)
+explicitly.
+
+Do **not** auto-start P5. Do **not** tune prompts/models/Domain from P4 evidence
+without a follow-up phase.
