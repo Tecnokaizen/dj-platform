@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: P2 COMPLETE — P3 NOT STARTED
+status: P3 COMPLETE — P4 NOT STARTED
 updated: 2026-09-17
 related:
   - DJ-STUDIO-003-CLOSURE.md
@@ -11,12 +11,12 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** P2 COMPLETE — P3 NOT STARTED  
+**Status:** P3 COMPLETE — P4 NOT STARTED  
 **Date:** 2026-09-17  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
 **Branch:** `feature/dj-studio-004`  
 **Base SHA (P0):** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
-**Staging runtime (unchanged by P0–P2):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
+**Staging runtime (unchanged by P0–P3):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -29,7 +29,8 @@ P0 = audit + design + SPEC + phase plan.
 P1 = manifest importer infrastructure (code + tests). **No real library import.**  
 P1.1 = Engine DJ + Mixed In Key **pilot adapter** → canonical manifest.  
 P2 = first controlled staging Real Library pilot apply (**COMPLETE**).  
-**P3 owns real library data quality reporting.**
+P3 = real library data quality (read-only) (**COMPLETE**).  
+**P4 owns Session Builder matrix on the Real Library (provider openai).**
 
 ---
 
@@ -475,7 +476,7 @@ If validation finds musical problems:
 | **P1.1** | Engine DJ + Mixed In Key pilot adapter → canonical manifest | **COMPLETE** |
 | **P1.1.1** | Audio-extension-aware filename stem (preserve dotted titles) | **COMPLETE** |
 | **P2** | Staging Real Library org + controlled pilot import (`latin-afrohouse-pilot-001`, 18 tracks) | **COMPLETE** |
-| **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | NOT STARTED |
+| **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | **COMPLETE** |
 | **P4** | Session Builder matrix A–H on Real Library (provider openai) | NOT STARTED |
 | **P5** | Human musical review + findings (no silent tuning) | NOT STARTED |
 | **P6** | Closure **or** follow-up tuning decision | NOT STARTED |
@@ -636,9 +637,66 @@ string (no heuristic artist splitting).
 
 ---
 
-## 23. Next step after P2
+## 20.4 P3 real library data quality (read-only)
 
-Authorize **DJ-STUDIO-004 P3** (real library data quality report on the staging
-pilot library) explicitly.
+**Scope:** staging org **DJ Kaizen Real Library**, batch `latin-afrohouse-pilot-001`  
+**Mode:** READ-ONLY (0 DB writes; no OpenAI; no Session Builder provider; no deploy)
 
-Do **not** auto-start P3.
+### Integrity / markers / provenance
+
+| Check | Result |
+|---|---|
+| LibraryItems / distinct Tracks / PRIMARY TrackArtists | 18 / 18 / 18 |
+| status LIBRARY / org correct | 18/18 / 18/18 |
+| `import:` + `import-created:` markers | 18/18 each; LibraryItemTags 36 |
+| `Track.metadata.djStudioImport` (v1, batch, engine-dj+mixed-in-key, emk-*) | 18/18 |
+| Absolute paths / secrets | 0 |
+| Cross-org LibraryItem refs on pilot Tracks | 18 inside / 0 outside |
+
+### Metadata coverage
+
+| Field | Coverage | Classification |
+|---|---|---|
+| title / artist / duration / BPM / Camelot / Energy | 18/18 | COMPLETE |
+| year | 6/18 | PARTIAL (Engine `0` years treated blank) |
+| genre source tags / ISRC / notes / musicalKey | 0/18 | ABSENT BY SOURCE |
+
+Validity: BPM / Camelot / Energy / duration invalid = **0**.  
+Manifest parity: **18/18** (year stored as UTC Jan 1 of imported year).
+
+### Distributions (descriptive)
+
+- BPM min/median/mean/max: 118 / 124.6 / 126.5 / 156.7  
+- Duration ms: 159000 / 334500 / 338278 / 572000  
+- Energy: 4–8 (counts 4:1, 5:1, 6:7, 7:8, 8:1)  
+- Camelot: 2A×4, 8A×4, 5A×3, 7A×2, plus 1A/3A/6A/8B/11A  
+- Years present: 2002, 2004, 2008, 2015, 2019, 2023 (12 missing)
+
+### Review candidates (not corrected)
+
+| Title | Field | Value | Reason |
+|---|---|---|---|
+| Remix (Makeba ft. Jorge Ben) | BPM | 156.7 | IQR + MAD outlier; batch-high vs afrohouse cluster; source-consistent |
+| Buena Vista Social Club - Chan Chan (Bletter Latin Afro House Remix) | BPM | 118 | IQR low-side outlier |
+
+### Limitations (accepted)
+
+- Genre: Engine Genre empty **0/18** → SOURCE LIMITATION (not import loss)  
+- Compound primary credits (e.g. `A y B`, `A & B`): **4/18** → CATALOG QUALITY LIMITATION  
+- No artist splitting / no genre inference
+
+### Product runtime + Session Builder readiness
+
+- `app_runtime` `listLibraryItems`: **18** with Track / primary artist / BPM / Camelot / Energy  
+- Catalog DML still denied (`42501`); M6 unchanged  
+- `listSessionLibraryCandidateSources` (no provider): **18/18** eligible; missing candidate metadata **0**  
+- OpenAI: **not** invoked
+
+---
+
+## 23. Next step after P3
+
+Authorize **DJ-STUDIO-004 P4** (Session Builder matrix A–H on Real Library,
+provider=`openai`) explicitly.
+
+Do **not** auto-start P4.
