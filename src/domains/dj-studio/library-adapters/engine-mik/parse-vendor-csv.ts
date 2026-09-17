@@ -50,11 +50,37 @@ export function toBasename(value: string): string | null {
   return base.length > 0 ? base : null
 }
 
+/**
+ * Recognized audio extensions only. Dots inside titles (ft., Dr., 2.0) are preserved.
+ * Extensionless MIK values remain unchanged.
+ */
+export const RECOGNIZED_AUDIO_EXTENSIONS = [
+  'mp3',
+  'wav',
+  'flac',
+  'm4a',
+  'aac',
+  'aif',
+  'aiff',
+  'ogg',
+  'opus',
+  'wma',
+] as const
+
+const AUDIO_EXTENSION_PATTERN = new RegExp(
+  `\\.(${RECOGNIZED_AUDIO_EXTENSIONS.join('|')})$`,
+  'i',
+)
+
+/**
+ * Strip only a recognized audio extension from the basename end.
+ * Does NOT treat arbitrary trailing `.something` as an extension.
+ */
 export function toFileStem(basename: string | null): string | null {
   if (!basename) {
     return null
   }
-  const stem = basename.replace(/\.[^.]+$/, '')
+  const stem = basename.replace(AUDIO_EXTENSION_PATTERN, '')
   return stem.length > 0 ? stem : null
 }
 

@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: P1.1 COMPLETE — P2 NOT STARTED
+status: P1.1.1 COMPLETE — P2 NOT STARTED
 updated: 2026-09-17
 related:
   - DJ-STUDIO-003-CLOSURE.md
@@ -11,7 +11,7 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** P1.1 COMPLETE — P2 NOT STARTED  
+**Status:** P1.1.1 COMPLETE — P2 NOT STARTED  
 **Date:** 2026-09-17  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
 **Branch:** `feature/dj-studio-004`  
@@ -472,6 +472,7 @@ If validation finds musical problems:
 | **P0** | Audit + SPEC (this document) | **COMPLETE** |
 | **P1** | Manifest schema + normalize/validate + preview/apply CLI; Track/Artist/LibraryItem upsert; idempotency | **COMPLETE** |
 | **P1.1** | Engine DJ + Mixed In Key pilot adapter → canonical manifest | **COMPLETE** |
+| **P1.1.1** | Audio-extension-aware filename stem (preserve dotted titles) | **COMPLETE** |
 | **P2** | Staging Real Library org + controlled import (50–100 tracks) | NOT STARTED |
 | **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | NOT STARTED |
 | **P4** | Session Builder matrix A–H on Real Library (provider openai) | NOT STARTED |
@@ -539,6 +540,10 @@ separate milestone — not designed here.
 3. Duplicate titles: artist / duration / stem discriminators; else AMBIGUOUS  
 Unmatched / ambiguous → **fail generation** (no apply-ready manifest).  
 Pilot batch target: `latin-afrohouse-pilot-001` (18 tracks). P1.1 does **not** apply.
+
+**P1.1.1:** `toFileStem` strips only recognized audio extensions
+(`.mp3`, `.wav`, `.flac`, `.m4a`, `.aac`, `.aif`, `.aiff`, `.ogg`, `.opus`, `.wma`).
+Dots inside titles (e.g. `ft.`, `Dr.`, `2.0`) and extensionless MIK values are preserved.
 
 ### Privacy
 

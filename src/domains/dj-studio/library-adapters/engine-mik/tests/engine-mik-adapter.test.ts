@@ -13,6 +13,7 @@ import {
   parseEngineDurationToMs,
   parseMikCsv,
   toBasename,
+  toFileStem,
 } from '@/domains/dj-studio/library-adapters/engine-mik'
 import {
   markDuplicateIdentities,
@@ -42,6 +43,25 @@ describe('Engine DJ + MIK pilot adapter', () => {
     expect(toBasename('/Volumes/DJ/Music/Track.mp3')).toBe('Track.mp3')
     expect(toBasename('C:\\Music\\Track.mp3')).toBe('Track.mp3')
     expect(toBasename('Track.mp3')).toBe('Track.mp3')
+  })
+
+  it('strips only recognized audio extensions from stems', () => {
+    expect(toFileStem('Remix (Makeba ft. Jorge Ben)')).toBe(
+      'Remix (Makeba ft. Jorge Ben)',
+    )
+    expect(toFileStem('Remix (Makeba ft. Jorge Ben).mp3')).toBe(
+      'Remix (Makeba ft. Jorge Ben)',
+    )
+    expect(toFileStem('Dr. Beat.wav')).toBe('Dr. Beat')
+    expect(toFileStem('Version 2.0')).toBe('Version 2.0')
+    expect(toFileStem('Track.MP3')).toBe('Track')
+    expect(toFileStem('Track.extended')).toBe('Track.extended')
+    expect(toFileStem('Track (Extended Mix).flac')).toBe(
+      'Track (Extended Mix)',
+    )
+    expect(toFileStem('Artist - Mr. Brightside')).toBe(
+      'Artist - Mr. Brightside',
+    )
   })
 
   it('treats Engine BPM 0 as unavailable and prefers MIK BPM', () => {
