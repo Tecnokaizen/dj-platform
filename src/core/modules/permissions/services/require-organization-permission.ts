@@ -6,7 +6,6 @@ import {
 } from '@/core/identity/profile/errors/profile-error'
 import { getCurrentProfile } from '@/core/identity/profile/services/get-current-profile'
 import { createMembershipRepository } from '@/core/modules/memberships/repositories/membership-repository'
-import type { PermissionKey } from '@/core/modules/permissions/constants/permission-keys'
 import { createRolePermissionRepository } from '@/core/modules/permissions/repositories/role-permission-repository'
 import { createPermissionAuthorizationServices } from '@/core/modules/permissions/services/permission-authorization'
 import type { AuthorizationContext } from '@/core/modules/permissions/types/authorization-context'
@@ -17,7 +16,8 @@ import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 export type AuthorizedOrganizationOperation<Client, Result> = {
-  permissionKey: PermissionKey
+  /** Core or Domain permission key; authorization source of truth is RolePermission. */
+  permissionKey: string
   resolveOrganizationId: (client: Client) => Promise<string>
   /**
    * Server-controlled statuses accepted while resolving Organization context.
@@ -41,7 +41,7 @@ export type OrganizationPermissionTransactionDependencies<Client> = {
   requirePermission: (
     client: Client,
     context: AuthorizationContext,
-    permissionKey: PermissionKey
+    permissionKey: string
   ) => Promise<AuthorizationContext>
 }
 
@@ -128,7 +128,7 @@ async function resolveTransactionOrganizationContext(
 async function requireTransactionPermission(
   client: Prisma.TransactionClient,
   context: AuthorizationContext,
-  permissionKey: PermissionKey
+  permissionKey: string
 ): Promise<AuthorizationContext> {
   const membershipRepository = createMembershipRepository(client)
   const rolePermissionRepository = createRolePermissionRepository(client)

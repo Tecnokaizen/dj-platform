@@ -1,10 +1,6 @@
 import 'server-only'
 
 import {
-  PERMISSION_KEYS,
-  type PermissionKey,
-} from '@/core/modules/permissions/constants/permission-keys'
-import {
   PERMISSION_ERROR_CODES,
   PermissionError,
 } from '@/core/modules/permissions/errors/permission-error'
@@ -17,7 +13,6 @@ import type { Role } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 
 const SYSTEM_ROLE_KEY_SET = new Set<string>(Object.values(SYSTEM_ROLE_KEYS))
-const PERMISSION_KEY_SET = new Set<string>(Object.values(PERMISSION_KEYS))
 
 export type PermissionAuthorizationDependencies = {
   findMembershipById: (
@@ -39,13 +34,22 @@ export type PermissionAuthorizationDependencies = {
 export function createPermissionAuthorizationServices(
   dependencies: PermissionAuthorizationDependencies,
 ) {
+  /**
+   * Tenant-scoped capability check.
+   * Source of truth is RolePermission in DB — Core does not hardcode Domain keys.
+   * Unknown / ungranted keys deny safely via roleHasPermission === false.
+   */
   async function hasPermission(
     context: AuthorizationContext,
     permissionKey: string,
   ): Promise<boolean> {
+    if (!SYSTEM_ROLE_KEY_SET.has(context.roleKey)) {
+      return false
+    }
+
     if (
-      !SYSTEM_ROLE_KEY_SET.has(context.roleKey) ||
-      !PERMISSION_KEY_SET.has(permissionKey)
+      typeof permissionKey !== 'string' ||
+      permissionKey.trim().length === 0
     ) {
       return false
     }
@@ -75,7 +79,7 @@ export function createPermissionAuthorizationServices(
 
   async function requirePermission(
     context: AuthorizationContext,
-    permissionKey: PermissionKey,
+    permissionKey: string,
   ): Promise<AuthorizationContext> {
     if (!(await hasPermission(context, permissionKey))) {
       throw new PermissionError(PERMISSION_ERROR_CODES.DENIED)

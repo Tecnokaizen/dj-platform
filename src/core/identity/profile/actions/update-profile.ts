@@ -13,7 +13,6 @@ const ALLOWED_LANGUAGES = ['es', 'en'] as const
 
 export async function updateProfile(formData: FormData) {
   const displayName = String(formData.get('displayName') ?? '').trim()
-  const djName = String(formData.get('djName') ?? '').trim()
   const bio = String(formData.get('bio') ?? '').trim()
   const preferredLanguage = String(
     formData.get('preferredLanguage') ?? 'es'
@@ -28,12 +27,6 @@ export async function updateProfile(formData: FormData) {
   if (displayName.length > 120) {
     redirect(
       `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_DISPLAY_NAME_TOO_LONG}`
-    )
-  }
-
-  if (djName.length > 120) {
-    redirect(
-      `/profile?error=${AUTH_PUBLIC_ERROR_CODES.PROFILE_DJ_NAME_TOO_LONG}`
     )
   }
 
@@ -54,7 +47,6 @@ export async function updateProfile(formData: FormData) {
   try {
     await updateCurrentProfile({
       displayName,
-      djName: djName || null,
       bio: bio || null,
       preferredLanguage,
     })

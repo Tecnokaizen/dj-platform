@@ -248,11 +248,14 @@ export type ProfileWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
   memberships?: Prisma.OrganizationMembershipListRelationFilter
   acceptedInvitations?: Prisma.OrganizationInvitationListRelationFilter
-  userTracks?: Prisma.UserTrackListRelationFilter
-  tags?: Prisma.TagListRelationFilter
-  playlists?: Prisma.PlaylistListRelationFilter
+  djStudioProfile?: Prisma.XOR<Prisma.DjStudioProfileNullableScalarRelationFilter, Prisma.DjStudioProfileWhereInput> | null
+  addedLibraryItems?: Prisma.LibraryItemListRelationFilter
+  addedPlaylistItems?: Prisma.PlaylistItemListRelationFilter
+  legacyUserTracks?: Prisma.LegacyUserTrackListRelationFilter
+  legacyProfileTags?: Prisma.LegacyProfileTagListRelationFilter
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistListRelationFilter
   ingestionJobs?: Prisma.IngestionJobListRelationFilter
-  playlistTracksAdded?: Prisma.PlaylistTrackListRelationFilter
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackListRelationFilter
 }
 
 export type ProfileOrderByWithRelationInput = {
@@ -271,11 +274,14 @@ export type ProfileOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   memberships?: Prisma.OrganizationMembershipOrderByRelationAggregateInput
   acceptedInvitations?: Prisma.OrganizationInvitationOrderByRelationAggregateInput
-  userTracks?: Prisma.UserTrackOrderByRelationAggregateInput
-  tags?: Prisma.TagOrderByRelationAggregateInput
-  playlists?: Prisma.PlaylistOrderByRelationAggregateInput
+  djStudioProfile?: Prisma.DjStudioProfileOrderByWithRelationInput
+  addedLibraryItems?: Prisma.LibraryItemOrderByRelationAggregateInput
+  addedPlaylistItems?: Prisma.PlaylistItemOrderByRelationAggregateInput
+  legacyUserTracks?: Prisma.LegacyUserTrackOrderByRelationAggregateInput
+  legacyProfileTags?: Prisma.LegacyProfileTagOrderByRelationAggregateInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistOrderByRelationAggregateInput
   ingestionJobs?: Prisma.IngestionJobOrderByRelationAggregateInput
-  playlistTracksAdded?: Prisma.PlaylistTrackOrderByRelationAggregateInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackOrderByRelationAggregateInput
 }
 
 export type ProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -297,11 +303,14 @@ export type ProfileWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Profile"> | Date | string
   memberships?: Prisma.OrganizationMembershipListRelationFilter
   acceptedInvitations?: Prisma.OrganizationInvitationListRelationFilter
-  userTracks?: Prisma.UserTrackListRelationFilter
-  tags?: Prisma.TagListRelationFilter
-  playlists?: Prisma.PlaylistListRelationFilter
+  djStudioProfile?: Prisma.XOR<Prisma.DjStudioProfileNullableScalarRelationFilter, Prisma.DjStudioProfileWhereInput> | null
+  addedLibraryItems?: Prisma.LibraryItemListRelationFilter
+  addedPlaylistItems?: Prisma.PlaylistItemListRelationFilter
+  legacyUserTracks?: Prisma.LegacyUserTrackListRelationFilter
+  legacyProfileTags?: Prisma.LegacyProfileTagListRelationFilter
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistListRelationFilter
   ingestionJobs?: Prisma.IngestionJobListRelationFilter
-  playlistTracksAdded?: Prisma.PlaylistTrackListRelationFilter
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackListRelationFilter
 }, "id" | "username" | "authEmailNormalized">
 
 export type ProfileOrderByWithAggregationInput = {
@@ -358,11 +367,14 @@ export type ProfileCreateInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileUncheckedCreateInput = {
@@ -381,11 +393,14 @@ export type ProfileUncheckedCreateInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileUpdateInput = {
@@ -404,11 +419,14 @@ export type ProfileUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileUncheckedUpdateInput = {
@@ -427,11 +445,14 @@ export type ProfileUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileCreateManyInput = {
@@ -560,6 +581,52 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type ProfileCreateNestedOneWithoutDjStudioProfileInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutDjStudioProfileInput, Prisma.ProfileUncheckedCreateWithoutDjStudioProfileInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutDjStudioProfileInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneRequiredWithoutDjStudioProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutDjStudioProfileInput, Prisma.ProfileUncheckedCreateWithoutDjStudioProfileInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutDjStudioProfileInput
+  upsert?: Prisma.ProfileUpsertWithoutDjStudioProfileInput
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutDjStudioProfileInput, Prisma.ProfileUpdateWithoutDjStudioProfileInput>, Prisma.ProfileUncheckedUpdateWithoutDjStudioProfileInput>
+}
+
+export type ProfileCreateNestedOneWithoutAddedLibraryItemsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutAddedLibraryItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedLibraryItemsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutAddedLibraryItemsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneWithoutAddedLibraryItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutAddedLibraryItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedLibraryItemsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutAddedLibraryItemsInput
+  upsert?: Prisma.ProfileUpsertWithoutAddedLibraryItemsInput
+  disconnect?: Prisma.ProfileWhereInput | boolean
+  delete?: Prisma.ProfileWhereInput | boolean
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutAddedLibraryItemsInput, Prisma.ProfileUpdateWithoutAddedLibraryItemsInput>, Prisma.ProfileUncheckedUpdateWithoutAddedLibraryItemsInput>
+}
+
+export type ProfileCreateNestedOneWithoutAddedPlaylistItemsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutAddedPlaylistItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedPlaylistItemsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutAddedPlaylistItemsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneWithoutAddedPlaylistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutAddedPlaylistItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedPlaylistItemsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutAddedPlaylistItemsInput
+  upsert?: Prisma.ProfileUpsertWithoutAddedPlaylistItemsInput
+  disconnect?: Prisma.ProfileWhereInput | boolean
+  delete?: Prisma.ProfileWhereInput | boolean
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutAddedPlaylistItemsInput, Prisma.ProfileUpdateWithoutAddedPlaylistItemsInput>, Prisma.ProfileUncheckedUpdateWithoutAddedPlaylistItemsInput>
+}
+
 export type ProfileCreateNestedOneWithoutMembershipsInput = {
   create?: Prisma.XOR<Prisma.ProfileCreateWithoutMembershipsInput, Prisma.ProfileUncheckedCreateWithoutMembershipsInput>
   connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutMembershipsInput
@@ -606,62 +673,410 @@ export type ProfileUpdateOneWithoutIngestionJobsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutIngestionJobsInput, Prisma.ProfileUpdateWithoutIngestionJobsInput>, Prisma.ProfileUncheckedUpdateWithoutIngestionJobsInput>
 }
 
-export type ProfileCreateNestedOneWithoutUserTracksInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutUserTracksInput, Prisma.ProfileUncheckedCreateWithoutUserTracksInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutUserTracksInput
+export type ProfileCreateNestedOneWithoutLegacyUserTracksInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyUserTracksInput, Prisma.ProfileUncheckedCreateWithoutLegacyUserTracksInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyUserTracksInput
   connect?: Prisma.ProfileWhereUniqueInput
 }
 
-export type ProfileUpdateOneRequiredWithoutUserTracksNestedInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutUserTracksInput, Prisma.ProfileUncheckedCreateWithoutUserTracksInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutUserTracksInput
-  upsert?: Prisma.ProfileUpsertWithoutUserTracksInput
+export type ProfileUpdateOneRequiredWithoutLegacyUserTracksNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyUserTracksInput, Prisma.ProfileUncheckedCreateWithoutLegacyUserTracksInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyUserTracksInput
+  upsert?: Prisma.ProfileUpsertWithoutLegacyUserTracksInput
   connect?: Prisma.ProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutUserTracksInput, Prisma.ProfileUpdateWithoutUserTracksInput>, Prisma.ProfileUncheckedUpdateWithoutUserTracksInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutLegacyUserTracksInput, Prisma.ProfileUpdateWithoutLegacyUserTracksInput>, Prisma.ProfileUncheckedUpdateWithoutLegacyUserTracksInput>
 }
 
-export type ProfileCreateNestedOneWithoutTagsInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutTagsInput, Prisma.ProfileUncheckedCreateWithoutTagsInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutTagsInput
-  connect?: Prisma.ProfileWhereUniqueInput
-}
-
-export type ProfileUpdateOneRequiredWithoutTagsNestedInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutTagsInput, Prisma.ProfileUncheckedCreateWithoutTagsInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutTagsInput
-  upsert?: Prisma.ProfileUpsertWithoutTagsInput
-  connect?: Prisma.ProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutTagsInput, Prisma.ProfileUpdateWithoutTagsInput>, Prisma.ProfileUncheckedUpdateWithoutTagsInput>
-}
-
-export type ProfileCreateNestedOneWithoutPlaylistsInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistsInput, Prisma.ProfileUncheckedCreateWithoutPlaylistsInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutPlaylistsInput
+export type ProfileCreateNestedOneWithoutLegacyProfileTagsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfileTagsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfileTagsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyProfileTagsInput
   connect?: Prisma.ProfileWhereUniqueInput
 }
 
-export type ProfileUpdateOneRequiredWithoutPlaylistsNestedInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistsInput, Prisma.ProfileUncheckedCreateWithoutPlaylistsInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutPlaylistsInput
-  upsert?: Prisma.ProfileUpsertWithoutPlaylistsInput
+export type ProfileUpdateOneRequiredWithoutLegacyProfileTagsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfileTagsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfileTagsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyProfileTagsInput
+  upsert?: Prisma.ProfileUpsertWithoutLegacyProfileTagsInput
   connect?: Prisma.ProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutPlaylistsInput, Prisma.ProfileUpdateWithoutPlaylistsInput>, Prisma.ProfileUncheckedUpdateWithoutPlaylistsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutLegacyProfileTagsInput, Prisma.ProfileUpdateWithoutLegacyProfileTagsInput>, Prisma.ProfileUncheckedUpdateWithoutLegacyProfileTagsInput>
 }
 
-export type ProfileCreateNestedOneWithoutPlaylistTracksAddedInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutPlaylistTracksAddedInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutPlaylistTracksAddedInput
+export type ProfileCreateNestedOneWithoutLegacyProfilePlaylistsInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfilePlaylistsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyProfilePlaylistsInput
   connect?: Prisma.ProfileWhereUniqueInput
 }
 
-export type ProfileUpdateOneWithoutPlaylistTracksAddedNestedInput = {
-  create?: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutPlaylistTracksAddedInput>
-  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutPlaylistTracksAddedInput
-  upsert?: Prisma.ProfileUpsertWithoutPlaylistTracksAddedInput
+export type ProfileUpdateOneRequiredWithoutLegacyProfilePlaylistsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfilePlaylistsInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyProfilePlaylistsInput
+  upsert?: Prisma.ProfileUpsertWithoutLegacyProfilePlaylistsInput
+  connect?: Prisma.ProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUpdateWithoutLegacyProfilePlaylistsInput>, Prisma.ProfileUncheckedUpdateWithoutLegacyProfilePlaylistsInput>
+}
+
+export type ProfileCreateNestedOneWithoutLegacyPlaylistTracksAddedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutLegacyPlaylistTracksAddedInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyPlaylistTracksAddedInput
+  connect?: Prisma.ProfileWhereUniqueInput
+}
+
+export type ProfileUpdateOneWithoutLegacyPlaylistTracksAddedNestedInput = {
+  create?: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutLegacyPlaylistTracksAddedInput>
+  connectOrCreate?: Prisma.ProfileCreateOrConnectWithoutLegacyPlaylistTracksAddedInput
+  upsert?: Prisma.ProfileUpsertWithoutLegacyPlaylistTracksAddedInput
   disconnect?: Prisma.ProfileWhereInput | boolean
   delete?: Prisma.ProfileWhereInput | boolean
   connect?: Prisma.ProfileWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutPlaylistTracksAddedInput, Prisma.ProfileUpdateWithoutPlaylistTracksAddedInput>, Prisma.ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProfileUpdateToOneWithWhereWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUpdateWithoutLegacyPlaylistTracksAddedInput>, Prisma.ProfileUncheckedUpdateWithoutLegacyPlaylistTracksAddedInput>
+}
+
+export type ProfileCreateWithoutDjStudioProfileInput = {
+  id: string
+  username?: string | null
+  authEmailNormalized?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileUncheckedCreateWithoutDjStudioProfileInput = {
+  id: string
+  username?: string | null
+  authEmailNormalized?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileCreateOrConnectWithoutDjStudioProfileInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutDjStudioProfileInput, Prisma.ProfileUncheckedCreateWithoutDjStudioProfileInput>
+}
+
+export type ProfileUpsertWithoutDjStudioProfileInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutDjStudioProfileInput, Prisma.ProfileUncheckedUpdateWithoutDjStudioProfileInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutDjStudioProfileInput, Prisma.ProfileUncheckedCreateWithoutDjStudioProfileInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutDjStudioProfileInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutDjStudioProfileInput, Prisma.ProfileUncheckedUpdateWithoutDjStudioProfileInput>
+}
+
+export type ProfileUpdateWithoutDjStudioProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutDjStudioProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileCreateWithoutAddedLibraryItemsInput = {
+  id: string
+  username?: string | null
+  authEmailNormalized?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileUncheckedCreateWithoutAddedLibraryItemsInput = {
+  id: string
+  username?: string | null
+  authEmailNormalized?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileCreateOrConnectWithoutAddedLibraryItemsInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutAddedLibraryItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedLibraryItemsInput>
+}
+
+export type ProfileUpsertWithoutAddedLibraryItemsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutAddedLibraryItemsInput, Prisma.ProfileUncheckedUpdateWithoutAddedLibraryItemsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutAddedLibraryItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedLibraryItemsInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutAddedLibraryItemsInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutAddedLibraryItemsInput, Prisma.ProfileUncheckedUpdateWithoutAddedLibraryItemsInput>
+}
+
+export type ProfileUpdateWithoutAddedLibraryItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutAddedLibraryItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileCreateWithoutAddedPlaylistItemsInput = {
+  id: string
+  username?: string | null
+  authEmailNormalized?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileUncheckedCreateWithoutAddedPlaylistItemsInput = {
+  id: string
+  username?: string | null
+  authEmailNormalized?: string | null
+  displayName?: string | null
+  djName?: string | null
+  avatarUrl?: string | null
+  bio?: string | null
+  countryCode?: string | null
+  preferredLanguage?: string
+  experienceLevel?: $Enums.ExperienceLevel | null
+  isAdmin?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+}
+
+export type ProfileCreateOrConnectWithoutAddedPlaylistItemsInput = {
+  where: Prisma.ProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutAddedPlaylistItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedPlaylistItemsInput>
+}
+
+export type ProfileUpsertWithoutAddedPlaylistItemsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutAddedPlaylistItemsInput, Prisma.ProfileUncheckedUpdateWithoutAddedPlaylistItemsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutAddedPlaylistItemsInput, Prisma.ProfileUncheckedCreateWithoutAddedPlaylistItemsInput>
+  where?: Prisma.ProfileWhereInput
+}
+
+export type ProfileUpdateToOneWithWhereWithoutAddedPlaylistItemsInput = {
+  where?: Prisma.ProfileWhereInput
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutAddedPlaylistItemsInput, Prisma.ProfileUncheckedUpdateWithoutAddedPlaylistItemsInput>
+}
+
+export type ProfileUpdateWithoutAddedPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
+}
+
+export type ProfileUncheckedUpdateWithoutAddedPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  displayName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  djName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceLevel?: Prisma.NullableEnumExperienceLevelFieldUpdateOperationsInput | $Enums.ExperienceLevel | null
+  isAdmin?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
+  acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
+  ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileCreateWithoutMembershipsInput = {
@@ -679,11 +1094,14 @@ export type ProfileCreateWithoutMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileUncheckedCreateWithoutMembershipsInput = {
@@ -701,11 +1119,14 @@ export type ProfileUncheckedCreateWithoutMembershipsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileCreateOrConnectWithoutMembershipsInput = {
@@ -739,11 +1160,14 @@ export type ProfileUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutMembershipsInput = {
@@ -761,11 +1185,14 @@ export type ProfileUncheckedUpdateWithoutMembershipsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileCreateWithoutAcceptedInvitationsInput = {
@@ -783,11 +1210,14 @@ export type ProfileCreateWithoutAcceptedInvitationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileUncheckedCreateWithoutAcceptedInvitationsInput = {
@@ -805,11 +1235,14 @@ export type ProfileUncheckedCreateWithoutAcceptedInvitationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileCreateOrConnectWithoutAcceptedInvitationsInput = {
@@ -843,11 +1276,14 @@ export type ProfileUpdateWithoutAcceptedInvitationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutAcceptedInvitationsInput = {
@@ -865,11 +1301,14 @@ export type ProfileUncheckedUpdateWithoutAcceptedInvitationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileCreateWithoutIngestionJobsInput = {
@@ -888,10 +1327,13 @@ export type ProfileCreateWithoutIngestionJobsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileUncheckedCreateWithoutIngestionJobsInput = {
@@ -910,10 +1352,13 @@ export type ProfileUncheckedCreateWithoutIngestionJobsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
 export type ProfileCreateOrConnectWithoutIngestionJobsInput = {
@@ -948,10 +1393,13 @@ export type ProfileUpdateWithoutIngestionJobsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
 export type ProfileUncheckedUpdateWithoutIngestionJobsInput = {
@@ -970,13 +1418,16 @@ export type ProfileUncheckedUpdateWithoutIngestionJobsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileCreateWithoutUserTracksInput = {
+export type ProfileCreateWithoutLegacyUserTracksInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -992,13 +1443,16 @@ export type ProfileCreateWithoutUserTracksInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
-export type ProfileUncheckedCreateWithoutUserTracksInput = {
+export type ProfileUncheckedCreateWithoutLegacyUserTracksInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1014,29 +1468,32 @@ export type ProfileUncheckedCreateWithoutUserTracksInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
-export type ProfileCreateOrConnectWithoutUserTracksInput = {
+export type ProfileCreateOrConnectWithoutLegacyUserTracksInput = {
   where: Prisma.ProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutUserTracksInput, Prisma.ProfileUncheckedCreateWithoutUserTracksInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyUserTracksInput, Prisma.ProfileUncheckedCreateWithoutLegacyUserTracksInput>
 }
 
-export type ProfileUpsertWithoutUserTracksInput = {
-  update: Prisma.XOR<Prisma.ProfileUpdateWithoutUserTracksInput, Prisma.ProfileUncheckedUpdateWithoutUserTracksInput>
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutUserTracksInput, Prisma.ProfileUncheckedCreateWithoutUserTracksInput>
+export type ProfileUpsertWithoutLegacyUserTracksInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyUserTracksInput, Prisma.ProfileUncheckedUpdateWithoutLegacyUserTracksInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyUserTracksInput, Prisma.ProfileUncheckedCreateWithoutLegacyUserTracksInput>
   where?: Prisma.ProfileWhereInput
 }
 
-export type ProfileUpdateToOneWithWhereWithoutUserTracksInput = {
+export type ProfileUpdateToOneWithWhereWithoutLegacyUserTracksInput = {
   where?: Prisma.ProfileWhereInput
-  data: Prisma.XOR<Prisma.ProfileUpdateWithoutUserTracksInput, Prisma.ProfileUncheckedUpdateWithoutUserTracksInput>
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyUserTracksInput, Prisma.ProfileUncheckedUpdateWithoutLegacyUserTracksInput>
 }
 
-export type ProfileUpdateWithoutUserTracksInput = {
+export type ProfileUpdateWithoutLegacyUserTracksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1052,13 +1509,16 @@ export type ProfileUpdateWithoutUserTracksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileUncheckedUpdateWithoutUserTracksInput = {
+export type ProfileUncheckedUpdateWithoutLegacyUserTracksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1074,13 +1534,16 @@ export type ProfileUncheckedUpdateWithoutUserTracksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileCreateWithoutTagsInput = {
+export type ProfileCreateWithoutLegacyProfileTagsInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1096,13 +1559,16 @@ export type ProfileCreateWithoutTagsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
-export type ProfileUncheckedCreateWithoutTagsInput = {
+export type ProfileUncheckedCreateWithoutLegacyProfileTagsInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1118,29 +1584,32 @@ export type ProfileUncheckedCreateWithoutTagsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
-export type ProfileCreateOrConnectWithoutTagsInput = {
+export type ProfileCreateOrConnectWithoutLegacyProfileTagsInput = {
   where: Prisma.ProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutTagsInput, Prisma.ProfileUncheckedCreateWithoutTagsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfileTagsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfileTagsInput>
 }
 
-export type ProfileUpsertWithoutTagsInput = {
-  update: Prisma.XOR<Prisma.ProfileUpdateWithoutTagsInput, Prisma.ProfileUncheckedUpdateWithoutTagsInput>
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutTagsInput, Prisma.ProfileUncheckedCreateWithoutTagsInput>
+export type ProfileUpsertWithoutLegacyProfileTagsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyProfileTagsInput, Prisma.ProfileUncheckedUpdateWithoutLegacyProfileTagsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfileTagsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfileTagsInput>
   where?: Prisma.ProfileWhereInput
 }
 
-export type ProfileUpdateToOneWithWhereWithoutTagsInput = {
+export type ProfileUpdateToOneWithWhereWithoutLegacyProfileTagsInput = {
   where?: Prisma.ProfileWhereInput
-  data: Prisma.XOR<Prisma.ProfileUpdateWithoutTagsInput, Prisma.ProfileUncheckedUpdateWithoutTagsInput>
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyProfileTagsInput, Prisma.ProfileUncheckedUpdateWithoutLegacyProfileTagsInput>
 }
 
-export type ProfileUpdateWithoutTagsInput = {
+export type ProfileUpdateWithoutLegacyProfileTagsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1156,13 +1625,16 @@ export type ProfileUpdateWithoutTagsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileUncheckedUpdateWithoutTagsInput = {
+export type ProfileUncheckedUpdateWithoutLegacyProfileTagsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1178,13 +1650,16 @@ export type ProfileUncheckedUpdateWithoutTagsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileCreateWithoutPlaylistsInput = {
+export type ProfileCreateWithoutLegacyProfilePlaylistsInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1200,13 +1675,16 @@ export type ProfileCreateWithoutPlaylistsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackCreateNestedManyWithoutAddedByInput
 }
 
-export type ProfileUncheckedCreateWithoutPlaylistsInput = {
+export type ProfileUncheckedCreateWithoutLegacyProfilePlaylistsInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1222,29 +1700,32 @@ export type ProfileUncheckedCreateWithoutPlaylistsInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedCreateNestedManyWithoutAddedByInput
 }
 
-export type ProfileCreateOrConnectWithoutPlaylistsInput = {
+export type ProfileCreateOrConnectWithoutLegacyProfilePlaylistsInput = {
   where: Prisma.ProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistsInput, Prisma.ProfileUncheckedCreateWithoutPlaylistsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfilePlaylistsInput>
 }
 
-export type ProfileUpsertWithoutPlaylistsInput = {
-  update: Prisma.XOR<Prisma.ProfileUpdateWithoutPlaylistsInput, Prisma.ProfileUncheckedUpdateWithoutPlaylistsInput>
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistsInput, Prisma.ProfileUncheckedCreateWithoutPlaylistsInput>
+export type ProfileUpsertWithoutLegacyProfilePlaylistsInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUncheckedUpdateWithoutLegacyProfilePlaylistsInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUncheckedCreateWithoutLegacyProfilePlaylistsInput>
   where?: Prisma.ProfileWhereInput
 }
 
-export type ProfileUpdateToOneWithWhereWithoutPlaylistsInput = {
+export type ProfileUpdateToOneWithWhereWithoutLegacyProfilePlaylistsInput = {
   where?: Prisma.ProfileWhereInput
-  data: Prisma.XOR<Prisma.ProfileUpdateWithoutPlaylistsInput, Prisma.ProfileUncheckedUpdateWithoutPlaylistsInput>
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyProfilePlaylistsInput, Prisma.ProfileUncheckedUpdateWithoutLegacyProfilePlaylistsInput>
 }
 
-export type ProfileUpdateWithoutPlaylistsInput = {
+export type ProfileUpdateWithoutLegacyProfilePlaylistsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1260,13 +1741,16 @@ export type ProfileUpdateWithoutPlaylistsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileUncheckedUpdateWithoutPlaylistsInput = {
+export type ProfileUncheckedUpdateWithoutLegacyProfilePlaylistsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1282,13 +1766,16 @@ export type ProfileUncheckedUpdateWithoutPlaylistsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
-  playlistTracksAdded?: Prisma.PlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyPlaylistTracksAdded?: Prisma.LegacyPlaylistTrackUncheckedUpdateManyWithoutAddedByNestedInput
 }
 
-export type ProfileCreateWithoutPlaylistTracksAddedInput = {
+export type ProfileCreateWithoutLegacyPlaylistTracksAddedInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1304,13 +1791,16 @@ export type ProfileCreateWithoutPlaylistTracksAddedInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobCreateNestedManyWithoutRequestedByInput
 }
 
-export type ProfileUncheckedCreateWithoutPlaylistTracksAddedInput = {
+export type ProfileUncheckedCreateWithoutLegacyPlaylistTracksAddedInput = {
   id: string
   username?: string | null
   authEmailNormalized?: string | null
@@ -1326,29 +1816,32 @@ export type ProfileUncheckedCreateWithoutPlaylistTracksAddedInput = {
   updatedAt?: Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedCreateNestedManyWithoutProfileInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedCreateNestedManyWithoutAcceptedByProfileInput
-  userTracks?: Prisma.UserTrackUncheckedCreateNestedManyWithoutUserInput
-  tags?: Prisma.TagUncheckedCreateNestedManyWithoutUserInput
-  playlists?: Prisma.PlaylistUncheckedCreateNestedManyWithoutUserInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedCreateNestedOneWithoutProfileInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedCreateNestedManyWithoutAddedByInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedCreateNestedManyWithoutAddedByInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedCreateNestedManyWithoutUserInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedCreateNestedManyWithoutUserInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedCreateNestedManyWithoutUserInput
   ingestionJobs?: Prisma.IngestionJobUncheckedCreateNestedManyWithoutRequestedByInput
 }
 
-export type ProfileCreateOrConnectWithoutPlaylistTracksAddedInput = {
+export type ProfileCreateOrConnectWithoutLegacyPlaylistTracksAddedInput = {
   where: Prisma.ProfileWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutPlaylistTracksAddedInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutLegacyPlaylistTracksAddedInput>
 }
 
-export type ProfileUpsertWithoutPlaylistTracksAddedInput = {
-  update: Prisma.XOR<Prisma.ProfileUpdateWithoutPlaylistTracksAddedInput, Prisma.ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput>
-  create: Prisma.XOR<Prisma.ProfileCreateWithoutPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutPlaylistTracksAddedInput>
+export type ProfileUpsertWithoutLegacyPlaylistTracksAddedInput = {
+  update: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUncheckedUpdateWithoutLegacyPlaylistTracksAddedInput>
+  create: Prisma.XOR<Prisma.ProfileCreateWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUncheckedCreateWithoutLegacyPlaylistTracksAddedInput>
   where?: Prisma.ProfileWhereInput
 }
 
-export type ProfileUpdateToOneWithWhereWithoutPlaylistTracksAddedInput = {
+export type ProfileUpdateToOneWithWhereWithoutLegacyPlaylistTracksAddedInput = {
   where?: Prisma.ProfileWhereInput
-  data: Prisma.XOR<Prisma.ProfileUpdateWithoutPlaylistTracksAddedInput, Prisma.ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput>
+  data: Prisma.XOR<Prisma.ProfileUpdateWithoutLegacyPlaylistTracksAddedInput, Prisma.ProfileUncheckedUpdateWithoutLegacyPlaylistTracksAddedInput>
 }
 
-export type ProfileUpdateWithoutPlaylistTracksAddedInput = {
+export type ProfileUpdateWithoutLegacyPlaylistTracksAddedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1364,13 +1857,16 @@ export type ProfileUpdateWithoutPlaylistTracksAddedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUpdateManyWithoutRequestedByNestedInput
 }
 
-export type ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput = {
+export type ProfileUncheckedUpdateWithoutLegacyPlaylistTracksAddedInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authEmailNormalized?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1386,9 +1882,12 @@ export type ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   memberships?: Prisma.OrganizationMembershipUncheckedUpdateManyWithoutProfileNestedInput
   acceptedInvitations?: Prisma.OrganizationInvitationUncheckedUpdateManyWithoutAcceptedByProfileNestedInput
-  userTracks?: Prisma.UserTrackUncheckedUpdateManyWithoutUserNestedInput
-  tags?: Prisma.TagUncheckedUpdateManyWithoutUserNestedInput
-  playlists?: Prisma.PlaylistUncheckedUpdateManyWithoutUserNestedInput
+  djStudioProfile?: Prisma.DjStudioProfileUncheckedUpdateOneWithoutProfileNestedInput
+  addedLibraryItems?: Prisma.LibraryItemUncheckedUpdateManyWithoutAddedByNestedInput
+  addedPlaylistItems?: Prisma.PlaylistItemUncheckedUpdateManyWithoutAddedByNestedInput
+  legacyUserTracks?: Prisma.LegacyUserTrackUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfileTags?: Prisma.LegacyProfileTagUncheckedUpdateManyWithoutUserNestedInput
+  legacyProfilePlaylists?: Prisma.LegacyProfilePlaylistUncheckedUpdateManyWithoutUserNestedInput
   ingestionJobs?: Prisma.IngestionJobUncheckedUpdateManyWithoutRequestedByNestedInput
 }
 
@@ -1400,21 +1899,25 @@ export type ProfileUncheckedUpdateWithoutPlaylistTracksAddedInput = {
 export type ProfileCountOutputType = {
   memberships: number
   acceptedInvitations: number
-  userTracks: number
-  tags: number
-  playlists: number
+  addedLibraryItems: number
+  addedPlaylistItems: number
+  legacyUserTracks: number
+  legacyProfileTags: number
+  legacyProfilePlaylists: number
   ingestionJobs: number
-  playlistTracksAdded: number
+  legacyPlaylistTracksAdded: number
 }
 
 export type ProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | ProfileCountOutputTypeCountMembershipsArgs
   acceptedInvitations?: boolean | ProfileCountOutputTypeCountAcceptedInvitationsArgs
-  userTracks?: boolean | ProfileCountOutputTypeCountUserTracksArgs
-  tags?: boolean | ProfileCountOutputTypeCountTagsArgs
-  playlists?: boolean | ProfileCountOutputTypeCountPlaylistsArgs
+  addedLibraryItems?: boolean | ProfileCountOutputTypeCountAddedLibraryItemsArgs
+  addedPlaylistItems?: boolean | ProfileCountOutputTypeCountAddedPlaylistItemsArgs
+  legacyUserTracks?: boolean | ProfileCountOutputTypeCountLegacyUserTracksArgs
+  legacyProfileTags?: boolean | ProfileCountOutputTypeCountLegacyProfileTagsArgs
+  legacyProfilePlaylists?: boolean | ProfileCountOutputTypeCountLegacyProfilePlaylistsArgs
   ingestionJobs?: boolean | ProfileCountOutputTypeCountIngestionJobsArgs
-  playlistTracksAdded?: boolean | ProfileCountOutputTypeCountPlaylistTracksAddedArgs
+  legacyPlaylistTracksAdded?: boolean | ProfileCountOutputTypeCountLegacyPlaylistTracksAddedArgs
 }
 
 /**
@@ -1444,22 +1947,36 @@ export type ProfileCountOutputTypeCountAcceptedInvitationsArgs<ExtArgs extends r
 /**
  * ProfileCountOutputType without action
  */
-export type ProfileCountOutputTypeCountUserTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserTrackWhereInput
+export type ProfileCountOutputTypeCountAddedLibraryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LibraryItemWhereInput
 }
 
 /**
  * ProfileCountOutputType without action
  */
-export type ProfileCountOutputTypeCountTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TagWhereInput
+export type ProfileCountOutputTypeCountAddedPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PlaylistItemWhereInput
 }
 
 /**
  * ProfileCountOutputType without action
  */
-export type ProfileCountOutputTypeCountPlaylistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PlaylistWhereInput
+export type ProfileCountOutputTypeCountLegacyUserTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LegacyUserTrackWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountLegacyProfileTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LegacyProfileTagWhereInput
+}
+
+/**
+ * ProfileCountOutputType without action
+ */
+export type ProfileCountOutputTypeCountLegacyProfilePlaylistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LegacyProfilePlaylistWhereInput
 }
 
 /**
@@ -1472,8 +1989,8 @@ export type ProfileCountOutputTypeCountIngestionJobsArgs<ExtArgs extends runtime
 /**
  * ProfileCountOutputType without action
  */
-export type ProfileCountOutputTypeCountPlaylistTracksAddedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PlaylistTrackWhereInput
+export type ProfileCountOutputTypeCountLegacyPlaylistTracksAddedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LegacyPlaylistTrackWhereInput
 }
 
 
@@ -1493,11 +2010,14 @@ export type ProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   memberships?: boolean | Prisma.Profile$membershipsArgs<ExtArgs>
   acceptedInvitations?: boolean | Prisma.Profile$acceptedInvitationsArgs<ExtArgs>
-  userTracks?: boolean | Prisma.Profile$userTracksArgs<ExtArgs>
-  tags?: boolean | Prisma.Profile$tagsArgs<ExtArgs>
-  playlists?: boolean | Prisma.Profile$playlistsArgs<ExtArgs>
+  djStudioProfile?: boolean | Prisma.Profile$djStudioProfileArgs<ExtArgs>
+  addedLibraryItems?: boolean | Prisma.Profile$addedLibraryItemsArgs<ExtArgs>
+  addedPlaylistItems?: boolean | Prisma.Profile$addedPlaylistItemsArgs<ExtArgs>
+  legacyUserTracks?: boolean | Prisma.Profile$legacyUserTracksArgs<ExtArgs>
+  legacyProfileTags?: boolean | Prisma.Profile$legacyProfileTagsArgs<ExtArgs>
+  legacyProfilePlaylists?: boolean | Prisma.Profile$legacyProfilePlaylistsArgs<ExtArgs>
   ingestionJobs?: boolean | Prisma.Profile$ingestionJobsArgs<ExtArgs>
-  playlistTracksAdded?: boolean | Prisma.Profile$playlistTracksAddedArgs<ExtArgs>
+  legacyPlaylistTracksAdded?: boolean | Prisma.Profile$legacyPlaylistTracksAddedArgs<ExtArgs>
   _count?: boolean | Prisma.ProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["profile"]>
 
@@ -1553,11 +2073,14 @@ export type ProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   memberships?: boolean | Prisma.Profile$membershipsArgs<ExtArgs>
   acceptedInvitations?: boolean | Prisma.Profile$acceptedInvitationsArgs<ExtArgs>
-  userTracks?: boolean | Prisma.Profile$userTracksArgs<ExtArgs>
-  tags?: boolean | Prisma.Profile$tagsArgs<ExtArgs>
-  playlists?: boolean | Prisma.Profile$playlistsArgs<ExtArgs>
+  djStudioProfile?: boolean | Prisma.Profile$djStudioProfileArgs<ExtArgs>
+  addedLibraryItems?: boolean | Prisma.Profile$addedLibraryItemsArgs<ExtArgs>
+  addedPlaylistItems?: boolean | Prisma.Profile$addedPlaylistItemsArgs<ExtArgs>
+  legacyUserTracks?: boolean | Prisma.Profile$legacyUserTracksArgs<ExtArgs>
+  legacyProfileTags?: boolean | Prisma.Profile$legacyProfileTagsArgs<ExtArgs>
+  legacyProfilePlaylists?: boolean | Prisma.Profile$legacyProfilePlaylistsArgs<ExtArgs>
   ingestionJobs?: boolean | Prisma.Profile$ingestionJobsArgs<ExtArgs>
-  playlistTracksAdded?: boolean | Prisma.Profile$playlistTracksAddedArgs<ExtArgs>
+  legacyPlaylistTracksAdded?: boolean | Prisma.Profile$legacyPlaylistTracksAddedArgs<ExtArgs>
   _count?: boolean | Prisma.ProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1568,11 +2091,14 @@ export type $ProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     memberships: Prisma.$OrganizationMembershipPayload<ExtArgs>[]
     acceptedInvitations: Prisma.$OrganizationInvitationPayload<ExtArgs>[]
-    userTracks: Prisma.$UserTrackPayload<ExtArgs>[]
-    tags: Prisma.$TagPayload<ExtArgs>[]
-    playlists: Prisma.$PlaylistPayload<ExtArgs>[]
+    djStudioProfile: Prisma.$DjStudioProfilePayload<ExtArgs> | null
+    addedLibraryItems: Prisma.$LibraryItemPayload<ExtArgs>[]
+    addedPlaylistItems: Prisma.$PlaylistItemPayload<ExtArgs>[]
+    legacyUserTracks: Prisma.$LegacyUserTrackPayload<ExtArgs>[]
+    legacyProfileTags: Prisma.$LegacyProfileTagPayload<ExtArgs>[]
+    legacyProfilePlaylists: Prisma.$LegacyProfilePlaylistPayload<ExtArgs>[]
     ingestionJobs: Prisma.$IngestionJobPayload<ExtArgs>[]
-    playlistTracksAdded: Prisma.$PlaylistTrackPayload<ExtArgs>[]
+    legacyPlaylistTracksAdded: Prisma.$LegacyPlaylistTrackPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1984,11 +2510,14 @@ export interface Prisma__ProfileClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   memberships<T extends Prisma.Profile$membershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$membershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   acceptedInvitations<T extends Prisma.Profile$acceptedInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$acceptedInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userTracks<T extends Prisma.Profile$userTracksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$userTracksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  tags<T extends Prisma.Profile$tagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  playlists<T extends Prisma.Profile$playlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$playlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  djStudioProfile<T extends Prisma.Profile$djStudioProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$djStudioProfileArgs<ExtArgs>>): Prisma.Prisma__DjStudioProfileClient<runtime.Types.Result.GetResult<Prisma.$DjStudioProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  addedLibraryItems<T extends Prisma.Profile$addedLibraryItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$addedLibraryItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LibraryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  addedPlaylistItems<T extends Prisma.Profile$addedPlaylistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$addedPlaylistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  legacyUserTracks<T extends Prisma.Profile$legacyUserTracksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$legacyUserTracksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LegacyUserTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  legacyProfileTags<T extends Prisma.Profile$legacyProfileTagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$legacyProfileTagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LegacyProfileTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  legacyProfilePlaylists<T extends Prisma.Profile$legacyProfilePlaylistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$legacyProfilePlaylistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LegacyProfilePlaylistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ingestionJobs<T extends Prisma.Profile$ingestionJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$ingestionJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IngestionJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  playlistTracksAdded<T extends Prisma.Profile$playlistTracksAddedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$playlistTracksAddedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlaylistTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  legacyPlaylistTracksAdded<T extends Prisma.Profile$legacyPlaylistTracksAddedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Profile$legacyPlaylistTracksAddedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LegacyPlaylistTrackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2472,75 +3001,142 @@ export type Profile$acceptedInvitationsArgs<ExtArgs extends runtime.Types.Extens
 }
 
 /**
- * Profile.userTracks
+ * Profile.djStudioProfile
  */
-export type Profile$userTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Profile$djStudioProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UserTrack
+   * Select specific fields to fetch from the DjStudioProfile
    */
-  select?: Prisma.UserTrackSelect<ExtArgs> | null
+  select?: Prisma.DjStudioProfileSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UserTrack
+   * Omit specific fields from the DjStudioProfile
    */
-  omit?: Prisma.UserTrackOmit<ExtArgs> | null
+  omit?: Prisma.DjStudioProfileOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserTrackInclude<ExtArgs> | null
-  where?: Prisma.UserTrackWhereInput
-  orderBy?: Prisma.UserTrackOrderByWithRelationInput | Prisma.UserTrackOrderByWithRelationInput[]
-  cursor?: Prisma.UserTrackWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.UserTrackScalarFieldEnum | Prisma.UserTrackScalarFieldEnum[]
+  include?: Prisma.DjStudioProfileInclude<ExtArgs> | null
+  where?: Prisma.DjStudioProfileWhereInput
 }
 
 /**
- * Profile.tags
+ * Profile.addedLibraryItems
  */
-export type Profile$tagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Profile$addedLibraryItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Tag
+   * Select specific fields to fetch from the LibraryItem
    */
-  select?: Prisma.TagSelect<ExtArgs> | null
+  select?: Prisma.LibraryItemSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Tag
+   * Omit specific fields from the LibraryItem
    */
-  omit?: Prisma.TagOmit<ExtArgs> | null
+  omit?: Prisma.LibraryItemOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TagInclude<ExtArgs> | null
-  where?: Prisma.TagWhereInput
-  orderBy?: Prisma.TagOrderByWithRelationInput | Prisma.TagOrderByWithRelationInput[]
-  cursor?: Prisma.TagWhereUniqueInput
+  include?: Prisma.LibraryItemInclude<ExtArgs> | null
+  where?: Prisma.LibraryItemWhereInput
+  orderBy?: Prisma.LibraryItemOrderByWithRelationInput | Prisma.LibraryItemOrderByWithRelationInput[]
+  cursor?: Prisma.LibraryItemWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TagScalarFieldEnum | Prisma.TagScalarFieldEnum[]
+  distinct?: Prisma.LibraryItemScalarFieldEnum | Prisma.LibraryItemScalarFieldEnum[]
 }
 
 /**
- * Profile.playlists
+ * Profile.addedPlaylistItems
  */
-export type Profile$playlistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Profile$addedPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Playlist
+   * Select specific fields to fetch from the PlaylistItem
    */
-  select?: Prisma.PlaylistSelect<ExtArgs> | null
+  select?: Prisma.PlaylistItemSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Playlist
+   * Omit specific fields from the PlaylistItem
    */
-  omit?: Prisma.PlaylistOmit<ExtArgs> | null
+  omit?: Prisma.PlaylistItemOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PlaylistInclude<ExtArgs> | null
-  where?: Prisma.PlaylistWhereInput
-  orderBy?: Prisma.PlaylistOrderByWithRelationInput | Prisma.PlaylistOrderByWithRelationInput[]
-  cursor?: Prisma.PlaylistWhereUniqueInput
+  include?: Prisma.PlaylistItemInclude<ExtArgs> | null
+  where?: Prisma.PlaylistItemWhereInput
+  orderBy?: Prisma.PlaylistItemOrderByWithRelationInput | Prisma.PlaylistItemOrderByWithRelationInput[]
+  cursor?: Prisma.PlaylistItemWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PlaylistScalarFieldEnum | Prisma.PlaylistScalarFieldEnum[]
+  distinct?: Prisma.PlaylistItemScalarFieldEnum | Prisma.PlaylistItemScalarFieldEnum[]
+}
+
+/**
+ * Profile.legacyUserTracks
+ */
+export type Profile$legacyUserTracksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LegacyUserTrack
+   */
+  select?: Prisma.LegacyUserTrackSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LegacyUserTrack
+   */
+  omit?: Prisma.LegacyUserTrackOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LegacyUserTrackInclude<ExtArgs> | null
+  where?: Prisma.LegacyUserTrackWhereInput
+  orderBy?: Prisma.LegacyUserTrackOrderByWithRelationInput | Prisma.LegacyUserTrackOrderByWithRelationInput[]
+  cursor?: Prisma.LegacyUserTrackWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LegacyUserTrackScalarFieldEnum | Prisma.LegacyUserTrackScalarFieldEnum[]
+}
+
+/**
+ * Profile.legacyProfileTags
+ */
+export type Profile$legacyProfileTagsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LegacyProfileTag
+   */
+  select?: Prisma.LegacyProfileTagSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LegacyProfileTag
+   */
+  omit?: Prisma.LegacyProfileTagOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LegacyProfileTagInclude<ExtArgs> | null
+  where?: Prisma.LegacyProfileTagWhereInput
+  orderBy?: Prisma.LegacyProfileTagOrderByWithRelationInput | Prisma.LegacyProfileTagOrderByWithRelationInput[]
+  cursor?: Prisma.LegacyProfileTagWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LegacyProfileTagScalarFieldEnum | Prisma.LegacyProfileTagScalarFieldEnum[]
+}
+
+/**
+ * Profile.legacyProfilePlaylists
+ */
+export type Profile$legacyProfilePlaylistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LegacyProfilePlaylist
+   */
+  select?: Prisma.LegacyProfilePlaylistSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LegacyProfilePlaylist
+   */
+  omit?: Prisma.LegacyProfilePlaylistOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LegacyProfilePlaylistInclude<ExtArgs> | null
+  where?: Prisma.LegacyProfilePlaylistWhereInput
+  orderBy?: Prisma.LegacyProfilePlaylistOrderByWithRelationInput | Prisma.LegacyProfilePlaylistOrderByWithRelationInput[]
+  cursor?: Prisma.LegacyProfilePlaylistWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LegacyProfilePlaylistScalarFieldEnum | Prisma.LegacyProfilePlaylistScalarFieldEnum[]
 }
 
 /**
@@ -2568,27 +3164,27 @@ export type Profile$ingestionJobsArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
- * Profile.playlistTracksAdded
+ * Profile.legacyPlaylistTracksAdded
  */
-export type Profile$playlistTracksAddedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Profile$legacyPlaylistTracksAddedArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the PlaylistTrack
+   * Select specific fields to fetch from the LegacyPlaylistTrack
    */
-  select?: Prisma.PlaylistTrackSelect<ExtArgs> | null
+  select?: Prisma.LegacyPlaylistTrackSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the PlaylistTrack
+   * Omit specific fields from the LegacyPlaylistTrack
    */
-  omit?: Prisma.PlaylistTrackOmit<ExtArgs> | null
+  omit?: Prisma.LegacyPlaylistTrackOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PlaylistTrackInclude<ExtArgs> | null
-  where?: Prisma.PlaylistTrackWhereInput
-  orderBy?: Prisma.PlaylistTrackOrderByWithRelationInput | Prisma.PlaylistTrackOrderByWithRelationInput[]
-  cursor?: Prisma.PlaylistTrackWhereUniqueInput
+  include?: Prisma.LegacyPlaylistTrackInclude<ExtArgs> | null
+  where?: Prisma.LegacyPlaylistTrackWhereInput
+  orderBy?: Prisma.LegacyPlaylistTrackOrderByWithRelationInput | Prisma.LegacyPlaylistTrackOrderByWithRelationInput[]
+  cursor?: Prisma.LegacyPlaylistTrackWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PlaylistTrackScalarFieldEnum | Prisma.PlaylistTrackScalarFieldEnum[]
+  distinct?: Prisma.LegacyPlaylistTrackScalarFieldEnum | Prisma.LegacyPlaylistTrackScalarFieldEnum[]
 }
 
 /**

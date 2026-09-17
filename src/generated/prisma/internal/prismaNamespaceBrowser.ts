@@ -52,6 +52,12 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Profile: 'Profile',
+  DjStudioProfile: 'DjStudioProfile',
+  LibraryItem: 'LibraryItem',
+  Tag: 'Tag',
+  LibraryItemTag: 'LibraryItemTag',
+  Playlist: 'Playlist',
+  PlaylistItem: 'PlaylistItem',
   Organization: 'Organization',
   Role: 'Role',
   Permission: 'Permission',
@@ -73,11 +79,11 @@ export const ModelName = {
   IngestionJob: 'IngestionJob',
   IngestionItem: 'IngestionItem',
   EnrichmentJob: 'EnrichmentJob',
-  UserTrack: 'UserTrack',
-  Tag: 'Tag',
-  UserTrackTag: 'UserTrackTag',
-  Playlist: 'Playlist',
-  PlaylistTrack: 'PlaylistTrack'
+  LegacyUserTrack: 'LegacyUserTrack',
+  LegacyProfileTag: 'LegacyProfileTag',
+  LegacyUserTrackTag: 'LegacyUserTrackTag',
+  LegacyProfilePlaylist: 'LegacyProfilePlaylist',
+  LegacyPlaylistTrack: 'LegacyPlaylistTrack'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -113,6 +119,96 @@ export const ProfileScalarFieldEnum = {
 } as const
 
 export type ProfileScalarFieldEnum = (typeof ProfileScalarFieldEnum)[keyof typeof ProfileScalarFieldEnum]
+
+
+export const DjStudioProfileScalarFieldEnum = {
+  profileId: 'profileId',
+  stageName: 'stageName',
+  experienceLevel: 'experienceLevel',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DjStudioProfileScalarFieldEnum = (typeof DjStudioProfileScalarFieldEnum)[keyof typeof DjStudioProfileScalarFieldEnum]
+
+
+export const LibraryItemScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  trackId: 'trackId',
+  addedByProfileId: 'addedByProfileId',
+  status: 'status',
+  rating: 'rating',
+  energy: 'energy',
+  familiarity: 'familiarity',
+  notes: 'notes',
+  customBpm: 'customBpm',
+  customKey: 'customKey',
+  isFavorite: 'isFavorite',
+  playCount: 'playCount',
+  dateAdded: 'dateAdded',
+  lastPlayedAt: 'lastPlayedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LibraryItemScalarFieldEnum = (typeof LibraryItemScalarFieldEnum)[keyof typeof LibraryItemScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  normalizedName: 'normalizedName',
+  color: 'color',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const LibraryItemTagScalarFieldEnum = {
+  organizationId: 'organizationId',
+  libraryItemId: 'libraryItemId',
+  tagId: 'tagId'
+} as const
+
+export type LibraryItemTagScalarFieldEnum = (typeof LibraryItemTagScalarFieldEnum)[keyof typeof LibraryItemTagScalarFieldEnum]
+
+
+export const PlaylistScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  playlistType: 'playlistType',
+  visibility: 'visibility',
+  artworkUrl: 'artworkUrl',
+  sourceUrl: 'sourceUrl',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlaylistScalarFieldEnum = (typeof PlaylistScalarFieldEnum)[keyof typeof PlaylistScalarFieldEnum]
+
+
+export const PlaylistItemScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  playlistId: 'playlistId',
+  libraryItemId: 'libraryItemId',
+  position: 'position',
+  addedByProfileId: 'addedByProfileId',
+  notes: 'notes',
+  transitionNotes: 'transitionNotes',
+  sourceTimestampMs: 'sourceTimestampMs',
+  createdAt: 'createdAt'
+} as const
+
+export type PlaylistItemScalarFieldEnum = (typeof PlaylistItemScalarFieldEnum)[keyof typeof PlaylistItemScalarFieldEnum]
 
 
 export const OrganizationScalarFieldEnum = {
@@ -457,7 +553,7 @@ export const EnrichmentJobScalarFieldEnum = {
 export type EnrichmentJobScalarFieldEnum = (typeof EnrichmentJobScalarFieldEnum)[keyof typeof EnrichmentJobScalarFieldEnum]
 
 
-export const UserTrackScalarFieldEnum = {
+export const LegacyUserTrackScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   trackId: 'trackId',
@@ -476,10 +572,10 @@ export const UserTrackScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type UserTrackScalarFieldEnum = (typeof UserTrackScalarFieldEnum)[keyof typeof UserTrackScalarFieldEnum]
+export type LegacyUserTrackScalarFieldEnum = (typeof LegacyUserTrackScalarFieldEnum)[keyof typeof LegacyUserTrackScalarFieldEnum]
 
 
-export const TagScalarFieldEnum = {
+export const LegacyProfileTagScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
@@ -489,18 +585,18 @@ export const TagScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+export type LegacyProfileTagScalarFieldEnum = (typeof LegacyProfileTagScalarFieldEnum)[keyof typeof LegacyProfileTagScalarFieldEnum]
 
 
-export const UserTrackTagScalarFieldEnum = {
+export const LegacyUserTrackTagScalarFieldEnum = {
   userTrackId: 'userTrackId',
   tagId: 'tagId'
 } as const
 
-export type UserTrackTagScalarFieldEnum = (typeof UserTrackTagScalarFieldEnum)[keyof typeof UserTrackTagScalarFieldEnum]
+export type LegacyUserTrackTagScalarFieldEnum = (typeof LegacyUserTrackTagScalarFieldEnum)[keyof typeof LegacyUserTrackTagScalarFieldEnum]
 
 
-export const PlaylistScalarFieldEnum = {
+export const LegacyProfilePlaylistScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   name: 'name',
@@ -515,10 +611,10 @@ export const PlaylistScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type PlaylistScalarFieldEnum = (typeof PlaylistScalarFieldEnum)[keyof typeof PlaylistScalarFieldEnum]
+export type LegacyProfilePlaylistScalarFieldEnum = (typeof LegacyProfilePlaylistScalarFieldEnum)[keyof typeof LegacyProfilePlaylistScalarFieldEnum]
 
 
-export const PlaylistTrackScalarFieldEnum = {
+export const LegacyPlaylistTrackScalarFieldEnum = {
   id: 'id',
   playlistId: 'playlistId',
   trackId: 'trackId',
@@ -530,7 +626,7 @@ export const PlaylistTrackScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type PlaylistTrackScalarFieldEnum = (typeof PlaylistTrackScalarFieldEnum)[keyof typeof PlaylistTrackScalarFieldEnum]
+export type LegacyPlaylistTrackScalarFieldEnum = (typeof LegacyPlaylistTrackScalarFieldEnum)[keyof typeof LegacyPlaylistTrackScalarFieldEnum]
 
 
 export const SortOrder = {
