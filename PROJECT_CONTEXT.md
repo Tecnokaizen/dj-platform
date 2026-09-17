@@ -59,14 +59,16 @@ Domain data, Profile field extraction intent). Milestone
 **CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-001-CLOSURE.md`).
 Milestone **DJ-STUDIO-002** (AI Session Builder MVP) is
 **CLOSED — STAGING MVP READY** (`docs/domains/dj-studio/DJ-STUDIO-002-CLOSURE.md`).
-Milestone **DJ-STUDIO-003** (Real AI Provider) is in progress on
-`feature/dj-studio-003` (`docs/domains/dj-studio/DJ-STUDIO-003.md`):
-P0–P4 **COMPLETE** (adapter, config/factory, test hardening, Product wiring + badge);
-P5 live AI staging smoke **NOT STARTED** — staging remains Mock.
+Milestone **DJ-STUDIO-003** (Real AI Provider) is
+**CLOSED — STAGING LIVE AI VALIDATED**
+(`docs/domains/dj-studio/DJ-STUDIO-003-CLOSURE.md`).
+Real OpenAI provider validated on staging (`SESSION_BUILDER_PROVIDER=openai`,
+model via `SESSION_BUILDER_OPENAI_MODEL`). Runtime SHA
+`a9889fe83642fd5987de83c3dfb5bb361b621147`.
 Production has **not** been deployed or modified. Main is **not** merged.
 
-Staging/production ops readiness continues under ADR-010. Live AI provider
-staging smoke requires explicit DJ-STUDIO-003 P5 authorization.
+Staging/production ops readiness continues under ADR-010. Production AI
+rollout still requires explicit authorization and inherited pre-production gates.
 
 ---
 

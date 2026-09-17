@@ -1,19 +1,21 @@
 ---
 title: DJ-STUDIO-003 — Real AI Provider
-status: P4 COMPLETE
-updated: 2026-09-16
+status: CLOSED — STAGING LIVE AI VALIDATED
+updated: 2026-09-17
 related:
   - DJ-STUDIO-002.md
   - DJ-STUDIO-002-CLOSURE.md
+  - DJ-STUDIO-003-CLOSURE.md
   - ../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md
 ---
 
 # DJ-STUDIO-003 — Real AI Provider
 
-**Status:** P4 COMPLETE  
-**Date:** 2026-09-16  
+**Status:** CLOSED — STAGING LIVE AI VALIDATED  
+**Date:** 2026-09-17  
 **Depends on:** DJ-STUDIO-002 CLOSED — STAGING MVP READY  
-**Implementation:** P1–P4 complete (Product wired; staging remains Mock; no live AI)  
+**Implementation:** P0–P6 complete (live OpenAI validated on staging)  
+**Closure:** [DJ-STUDIO-003-CLOSURE.md](./DJ-STUDIO-003-CLOSURE.md)  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -85,7 +87,7 @@ saveSessionBuilderPlaylistAction(untrusted payload)
 | `parsePlaylistGenerationProviderOutput` | Structural + semantic gate (IDs, duplicates, positions) |
 | `ValidatedPlaylistGenerationProposal` | Post-parse proposal used by draft builder |
 | `MockPlaylistGenerationProvider` | `src/lib/ai/providers/...` deterministic fixture |
-| Product action | Currently hard-wires Mock (`actions.ts`) |
+| Product action | Resolves provider via config + factory (P4) |
 
 ### Provider error taxonomy (keep)
 
@@ -612,11 +614,12 @@ Live API smoke: manual / optional only.
 | Environment | Default provider | OpenAI |
 |---|---|---|
 | Local / CI | `mock` | opt-in with key |
-| Staging | `mock` | opt-in via Coolify env for controlled smoke |
+| Staging (post-P6) | `openai` | active for controlled Generate; no auto-calls |
 | Production | unauthorized until explicit later decision | — |
 
-Staging may temporarily set `SESSION_BUILDER_PROVIDER=openai` for OWNER live
-smoke, then revert to mock if cost/repeatability requires it.
+Staging remains `SESSION_BUILDER_PROVIDER=openai` after P6 so quality
+follow-ups can reuse the validated provider. Cost occurs only on explicit
+Generate. Reverting to Mock requires an explicit ops decision.
 
 ---
 
@@ -675,12 +678,12 @@ No arbitrary “AI quality score”. Pass/fail against contract + reviewer notes
 | **P1** | Implement `OpenAiPlaylistGenerationProvider` (server-only adapter) | COMPLETE |
 | **P2** | Config/factory/env wiring (`mock` default) | COMPLETE |
 | **P3** | Adapter unit/error/timeout tests (mocked SDK) | COMPLETE |
-| **P4** | Product Server Action composition via factory + badge behavior | **COMPLETE** |
-| **P5** | Staging opt-in live AI OWNER smoke | NOT STARTED |
-| **P6** | Quality matrix notes + docs closure | NOT STARTED |
+| **P4** | Product Server Action composition via factory + badge behavior | COMPLETE |
+| **P5** | Staging opt-in live AI OWNER smoke | COMPLETE |
+| **P6** | Quality matrix notes + docs closure | COMPLETE |
 
-No phase auto-starts. Each requires explicit authorization.
-P4 does **not** authorize P5. Staging remains Mock until P5.
+No phase auto-starts. Each required explicit authorization.
+Milestone closed: [DJ-STUDIO-003-CLOSURE.md](./DJ-STUDIO-003-CLOSURE.md).
 
 ### P4 Product wiring (implemented)
 
@@ -693,7 +696,7 @@ P4 does **not** authorize P5. Staging remains Mock until P5.
 | Invalid config | `PROVIDER_UNAVAILABLE` Product copy — **no Mock fallback** |
 | UI helper | `getSessionBuilderProviderUiState()` → `{ kind }` only |
 | Badge | mock / Generador IA / Generador no disponible |
-| Live OpenAI | **not enabled** on staging in P4 |
+| Live OpenAI | enabled on staging after P5/P6 (`provider=openai`) |
 
 ### P3 test hardening (implemented)
 
@@ -746,9 +749,9 @@ Inherited pre-production gates (not 003 blockers):
 
 ---
 
-## 33. Next step after P4 COMPLETE
+## 33. Milestone closed
 
-Authorize **DJ-STUDIO-003 P5** explicitly
-(staging opt-in live AI OWNER smoke with OpenAI env).
+See [DJ-STUDIO-003-CLOSURE.md](./DJ-STUDIO-003-CLOSURE.md).
 
-Do **not** auto-start P5. Staging stays Mock until P5 is authorized.
+Do **not** auto-start a new milestone. Production AI rollout remains unauthorized
+until inherited pre-production gates and explicit authorization.

@@ -1,7 +1,7 @@
 ---
 title: DJ Studio Domain Documentation
 status: Living Document
-updated: 2026-09-16
+updated: 2026-09-17
 related:
   - ../../adr/ADR-011-dj-studio-domain-boundary-and-tenancy.md
   - DJ-STUDIO-001.md
@@ -9,6 +9,7 @@ related:
   - DJ-STUDIO-002.md
   - DJ-STUDIO-002-CLOSURE.md
   - DJ-STUDIO-003.md
+  - DJ-STUDIO-003-CLOSURE.md
   - ../dj/
 ---
 
@@ -26,14 +27,15 @@ built on Platform Core.
 | [DJ-STUDIO-001-CLOSURE](./DJ-STUDIO-001-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
 | [DJ-STUDIO-002](./DJ-STUDIO-002.md) | AI Session Builder MVP specification |
 | [DJ-STUDIO-002-CLOSURE](./DJ-STUDIO-002-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
-| [DJ-STUDIO-003](./DJ-STUDIO-003.md) | Real AI provider — **SPEC READY** |
+| [DJ-STUDIO-003](./DJ-STUDIO-003.md) | Real AI provider specification |
+| [DJ-STUDIO-003-CLOSURE](./DJ-STUDIO-003-CLOSURE.md) | Formal staging closure — STAGING LIVE AI VALIDATED |
 
 ## Status
 
 - Architecture boundary: **Accepted** (ADR-011)
 - **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY**
 - **DJ-STUDIO-002:** **CLOSED — STAGING MVP READY**
-- **DJ-STUDIO-003:** **SPEC READY** (implementation not started)
+- **DJ-STUDIO-003:** **CLOSED — STAGING LIVE AI VALIDATED**
 - Production schema / Product: **NOT DEPLOYED to production**
 - Main: **NOT MERGED**
 
@@ -62,8 +64,8 @@ Active Organization cookie = preference only (validated membership).
 | Active Organization | Server resolution + optional cookie preference (write via Server Action only) |
 | Catalog reads | `app_runtime` SELECT on `tracks` / `track_artists` / `artists` (Domain M6) |
 | Writes | Trusted server → Domain services → Prisma |
-| Session Builder provider (002) | MockPlaylistGenerationProvider (default) |
-| Real AI provider (003) | SPEC READY — OpenAI adapter deferred until P1 authorization |
+| Session Builder provider (local/CI default) | `mock` when `SESSION_BUILDER_PROVIDER` absent |
+| Session Builder provider (staging post-003) | `openai` (`OpenAiPlaylistGenerationProvider`) |
 
 ## Legacy Domain docs
 
@@ -71,6 +73,7 @@ Active Organization cookie = preference only (validated membership).
 
 ## Next
 
-1. Authorize DJ-STUDIO-003 **P1** (OpenAI adapter implementation) explicitly when ready.
+1. Do **not** auto-start a new DJ Studio milestone.
 2. Keep 001 pre-production gates (cross-tenant + VIEWER + topology) before production.
-3. Do **not** deploy production / merge main without authorization.
+3. Production AI provider/env/key and deployment require explicit authorization.
+4. Do **not** deploy production / merge main without authorization.
