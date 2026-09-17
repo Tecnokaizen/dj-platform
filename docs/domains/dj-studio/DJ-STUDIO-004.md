@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: SPEC READY — IMPLEMENTATION NOT STARTED
+status: P1 COMPLETE — P2 NOT STARTED
 updated: 2026-09-17
 related:
   - DJ-STUDIO-003-CLOSURE.md
@@ -11,12 +11,12 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** SPEC READY — IMPLEMENTATION NOT STARTED  
+**Status:** P1 COMPLETE — P2 NOT STARTED  
 **Date:** 2026-09-17  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
-**Branch (P0):** `feature/dj-studio-004`  
-**Base SHA:** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
-**Staging runtime (unchanged by P0):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
+**Branch:** `feature/dj-studio-004`  
+**Base SHA (P0):** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
+**Staging runtime (unchanged by P0/P1):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -25,8 +25,9 @@ library into staging and validating Session Builder musical usefulness against
 real metadata — without audio upload, schema expansion by default, or production
 changes.
 
-P0 = audit + design + SPEC + phase plan only.  
-**No implementation. No import. No deploy. No live OpenAI calls in P0.**
+P0 = audit + design + SPEC + phase plan.  
+P1 = manifest importer infrastructure (code + tests). **No real library import.**  
+**P2 owns first controlled staging import.**
 
 ---
 
@@ -467,8 +468,8 @@ If validation finds musical problems:
 
 | Phase | Objective | Status |
 |---|---|---|
-| **P0** | Audit + SPEC (this document) | **COMPLETE when committed** |
-| **P1** | Manifest schema + normalize/validate + preview/apply CLI; Track/Artist/LibraryItem upsert; idempotency | NOT STARTED |
+| **P0** | Audit + SPEC (this document) | **COMPLETE** |
+| **P1** | Manifest schema + normalize/validate + preview/apply CLI; Track/Artist/LibraryItem upsert; idempotency | **COMPLETE** |
 | **P2** | Staging Real Library org + controlled import (50–100 tracks) | NOT STARTED |
 | **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | NOT STARTED |
 | **P4** | Session Builder matrix A–H on Real Library (provider openai) | NOT STARTED |
@@ -476,6 +477,31 @@ If validation finds musical problems:
 | **P6** | Closure **or** follow-up tuning decision | NOT STARTED |
 
 Each phase requires explicit authorization. No auto-start.
+
+---
+
+## 20.1 P1 implementation record
+
+**Module:** `src/domains/dj-studio/library-import/`  
+**CLI:** `npm run dj-studio:library-import -- <preview|apply|rollback-preview|rollback-apply>`  
+**CSV parser:** `csv-parse` (Node/server; quoted commas/newlines, UTF-8, CRLF/LF, BOM)  
+**Manifest version:** `dj-studio-library-manifest.v1`  
+**Duration tolerance:** `TRACK_DURATION_TOLERANCE_MS = 2000`  
+**Energy contract (manifest only):** integer `1..10` → `LibraryItem.energy`  
+**Camelot:** Domain `parseCamelotKey` after stripping leading zeros (`08A` → `8A`); no musicalKey→Camelot conversion  
+**BPM:** `>0` and `<=400` → `Track.bpm`; else null + warning; never `LibraryItem.customBpm` for canonical metadata  
+**Catalog match:** ISRC → title+primary artist (+duration when present); ambiguous → REJECT  
+**Existing Track policy:** FILL-NULL-ONLY; never overwrite non-null; never change title/artists; no `createdBatchId` on reused Tracks  
+**Import markers:** Tag `import:<batch>` on touched items; `import-created:<batch>` on created memberships; Track.metadata.djStudioImport only on created Tracks  
+**Preview:** zero writes  
+**Apply:** requires `--confirm-target staging`; refuses production; refuses if any REJECT; single Prisma transaction  
+**Auth:** ACTIVE membership + `library.manage` (no isAdmin shortcut)  
+**Receipt:** safe IDs + manifestHash + counts; not committed to Git (`tmp/`)  
+**Rollback:** preview/apply; preserves pre-existing Tracks/Artists/LibraryItems; cross-org Track safety  
+**Provider contract:** UNCHANGED  
+**Schema:** NOT MODIFIED  
+
+**Test evidence (local):** library-import suite 36 passed; DJ Studio library/session-builder/permissions/m6 regressions 137 passed in combined run.
 
 ---
 
@@ -506,8 +532,9 @@ Inherited pre-production gates (still required before any production AI/library 
 
 ---
 
-## 23. Next step after P0
+## 23. Next step after P1
 
-Authorize **DJ-STUDIO-004 P1** (importer / normalization implementation) explicitly.
+Authorize **DJ-STUDIO-004 P2** (staging Real Library Organization + controlled
+real import) explicitly.
 
-Do **not** auto-start P1.
+Do **not** auto-start P2.

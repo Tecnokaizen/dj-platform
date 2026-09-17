@@ -27,5 +27,9 @@ supabase/.temp/
 # Cursor
 .cursor/mcp.json
 
+# DJ Studio library import operator receipts (never commit)
+tmp/
+*.receipt.json
+
 # IDE
 .vscode/settings.json

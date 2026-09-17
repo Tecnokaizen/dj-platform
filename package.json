@@ -68,13 +68,16 @@
     "test:tenancy:onboarding": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/organization-onboarding.test.ts",
     "test:tenancy:context": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenancy-context.test.ts",
     "test:tenancy:rls": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/organizations/tests/tenant-rls.test.ts",
-    "test:permissions:foundation": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/permissions/tests/permissions-foundation.test.ts"
+    "test:permissions:foundation": "vitest run --no-file-parallelism --config vitest.config.ts src/core/modules/permissions/tests/permissions-foundation.test.ts",
+    "dj-studio:library-import": "tsx scripts/dj-studio/library-manifest-import.ts",
+    "test:dj-studio:library-import": "vitest run --config vitest.config.ts src/domains/dj-studio/library-import/tests"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
+    "csv-parse": "^6.2.1",
     "dotenv": "^17.4.2",
     "next": "16.3.5",
     "openai": "^7.16.0",
