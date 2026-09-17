@@ -10,6 +10,7 @@ related:
   - DJ-STUDIO-002-CLOSURE.md
   - DJ-STUDIO-003.md
   - DJ-STUDIO-003-CLOSURE.md
+  - DJ-STUDIO-004.md
   - ../dj/
 ---
 
@@ -29,6 +30,7 @@ built on Platform Core.
 | [DJ-STUDIO-002-CLOSURE](./DJ-STUDIO-002-CLOSURE.md) | Formal staging closure — STAGING MVP READY |
 | [DJ-STUDIO-003](./DJ-STUDIO-003.md) | Real AI provider specification |
 | [DJ-STUDIO-003-CLOSURE](./DJ-STUDIO-003-CLOSURE.md) | Formal staging closure — STAGING LIVE AI VALIDATED |
+| [DJ-STUDIO-004](./DJ-STUDIO-004.md) | Real library + musical validation — **SPEC READY** |
 
 ## Status
 
@@ -36,6 +38,7 @@ built on Platform Core.
 - **DJ-STUDIO-001:** **CLOSED — STAGING MVP READY**
 - **DJ-STUDIO-002:** **CLOSED — STAGING MVP READY**
 - **DJ-STUDIO-003:** **CLOSED — STAGING LIVE AI VALIDATED**
+- **DJ-STUDIO-004:** **SPEC READY — IMPLEMENTATION NOT STARTED**
 - Production schema / Product: **NOT DEPLOYED to production**
 - Main: **NOT MERGED**
 
@@ -73,7 +76,8 @@ Active Organization cookie = preference only (validated membership).
 
 ## Next
 
-1. Do **not** auto-start a new DJ Studio milestone.
-2. Keep 001 pre-production gates (cross-tenant + VIEWER + topology) before production.
-3. Production AI provider/env/key and deployment require explicit authorization.
-4. Do **not** deploy production / merge main without authorization.
+1. Authorize DJ-STUDIO-004 **P1** (manifest importer / normalization) explicitly when ready.
+2. Do **not** auto-start implementation phases.
+3. Keep 001 pre-production gates (cross-tenant + VIEWER + topology) before production.
+4. Production AI provider/env/key and deployment require explicit authorization.
+5. Do **not** deploy production / merge main without authorization.
