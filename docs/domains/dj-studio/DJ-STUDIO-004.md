@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: P1.1.1 COMPLETE — P2 NOT STARTED
+status: P2 COMPLETE — P3 NOT STARTED
 updated: 2026-09-17
 related:
   - DJ-STUDIO-003-CLOSURE.md
@@ -11,12 +11,12 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** P1.1.1 COMPLETE — P2 NOT STARTED  
+**Status:** P2 COMPLETE — P3 NOT STARTED  
 **Date:** 2026-09-17  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
 **Branch:** `feature/dj-studio-004`  
 **Base SHA (P0):** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
-**Staging runtime (unchanged by P0/P1/P1.1):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
+**Staging runtime (unchanged by P0–P2):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -28,7 +28,8 @@ changes.
 P0 = audit + design + SPEC + phase plan.  
 P1 = manifest importer infrastructure (code + tests). **No real library import.**  
 P1.1 = Engine DJ + Mixed In Key **pilot adapter** → canonical manifest.  
-**P2 owns first controlled staging import.**
+P2 = first controlled staging Real Library pilot apply (**COMPLETE**).  
+**P3 owns real library data quality reporting.**
 
 ---
 
@@ -243,7 +244,7 @@ Adapters (P1/P2 scripts) may convert Engine CSV / MIK exports → manifest.
 
 ### Recommendation: **Option A**
 
-Create staging Organization **DJ Kaizen Real Library** (name exact TBD at P2 apply).
+Create staging Organization **DJ Kaizen Real Library** (created in P2; slug `dj-kaizen-real-library`).
 
 - Do **not** create in P0.
 - Keep `Staging Smoke DJ` synthetic fixtures untouched.
@@ -473,7 +474,7 @@ If validation finds musical problems:
 | **P1** | Manifest schema + normalize/validate + preview/apply CLI; Track/Artist/LibraryItem upsert; idempotency | **COMPLETE** |
 | **P1.1** | Engine DJ + Mixed In Key pilot adapter → canonical manifest | **COMPLETE** |
 | **P1.1.1** | Audio-extension-aware filename stem (preserve dotted titles) | **COMPLETE** |
-| **P2** | Staging Real Library org + controlled import (50–100 tracks) | NOT STARTED |
+| **P2** | Staging Real Library org + controlled pilot import (`latin-afrohouse-pilot-001`, 18 tracks) | **COMPLETE** |
 | **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | NOT STARTED |
 | **P4** | Session Builder matrix A–H on Real Library (provider openai) | NOT STARTED |
 | **P5** | Human musical review + findings (no silent tuning) | NOT STARTED |
@@ -578,9 +579,66 @@ Inherited pre-production gates (still required before any production AI/library 
 
 ---
 
-## 23. Next step after P1.1
+## 20.3 P2 real pilot library apply (staging)
 
-Authorize **DJ-STUDIO-004 P2** (staging Real Library Organization + controlled
-real import of the generated pilot manifest) explicitly.
+**Pilot:** `latin-afrohouse-pilot-001`  
+**Organization:** DJ Kaizen Real Library (`4bb69c3b-41ca-4dfb-8bfb-1a1e80425d08`)  
+**Operator:** staging.smoke.002 (`5ddcade1-fff0-4c7f-8572-3fb2a2a24da8`) — ACTIVE OWNER + `library.manage`  
+**Manifest rows:** 18  
+**File SHA-256:** `53c95ac0600b14bddd627462843a14f2de094272e0ce40fa4660fbeb3a957e9b`  
+**Normalized hash:** `39205b8a267a123e84741a5afdfb745f6663abe49d97ea2c7f477ded56cf60a6`
 
-Do **not** auto-start P2.
+### Privileged operator path
+
+`app_runtime` remains **catalog SELECT-only** (Domain M6 unchanged).  
+First real catalog creates for this pilot used the existing trusted staging
+**`platform_migration`** DB role for operator APPLY only.  
+Application authorization (`requireImporterAuthorization` / ACTIVE membership /
+`library.manage`) still ran — no isAdmin shortcut.  
+No permanent GRANTs issued to `app_runtime`. No Product runtime permission change.
+
+### Apply result
+
+| Entity | Delta |
+|---|---|
+| Tracks | +18 (global) |
+| Artists | +18 (global) |
+| TrackArtists | +18 |
+| LibraryItems | +18 (org) |
+| Tags | +2 (`import:` / `import-created:` markers) |
+| LibraryItemTags | +36 |
+| Playlists / PlaylistItems | 0 |
+
+### Metadata coverage (pilot)
+
+| Field | Coverage |
+|---|---|
+| duration | 18/18 |
+| BPM | 18/18 |
+| Camelot | 18/18 |
+| Energy | 18/18 |
+| year | 6/18 |
+| Genre source tags (non-import) | 0/18 |
+
+Known pilot limitations (accepted; **not** fixed in P2): no genre source tags
+beyond import markers; compound artist credits stored as one primary credited
+string (no heuristic artist splitting).
+
+### Verification
+
+- Idempotency preview: reuse Track 18 / LibraryItem 18; create 0; reject 0  
+- Rollback preview: 18 LibraryItems / 18 Tracks / 18 Artists deletable; blocked 0  
+- Rollback **not** executed  
+- Absolute paths stored: 0  
+- OpenAI / Session Builder: **not** run  
+- Staging web deploy: **unchanged**  
+- Receipt: ignored under `tmp/` (not committed)
+
+---
+
+## 23. Next step after P2
+
+Authorize **DJ-STUDIO-004 P3** (real library data quality report on the staging
+pilot library) explicitly.
+
+Do **not** auto-start P3.

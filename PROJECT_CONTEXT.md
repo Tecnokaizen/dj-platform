@@ -66,15 +66,16 @@ Real OpenAI provider validated on staging (`SESSION_BUILDER_PROVIDER=openai`,
 model via `SESSION_BUILDER_OPENAI_MODEL`). Runtime SHA
 `a9889fe83642fd5987de83c3dfb5bb361b621147`.
 Milestone **DJ-STUDIO-004** (Real Library + Musical Validation) is
-**P1.1 COMPLETE — P2 NOT STARTED** on `feature/dj-studio-004`
-(`docs/domains/dj-studio/DJ-STUDIO-004.md`). Manifest importer +
-Engine DJ / Mixed In Key pilot adapter are ready; MIK is optional pilot
-enrichment only (not a commercial product dependency). No real staging
-library import yet.
+**P2 COMPLETE — P3 NOT STARTED** on `feature/dj-studio-004`
+(`docs/domains/dj-studio/DJ-STUDIO-004.md`). Staging org **DJ Kaizen Real Library**
+holds pilot batch `latin-afrohouse-pilot-001` (18 real metadata tracks).
+Catalog creates used trusted staging `platform_migration` for operator APPLY only;
+`app_runtime` catalog remains SELECT-only (M6 unchanged). MIK remains optional
+pilot enrichment only. No OpenAI / Session Builder in P2. No staging web deploy.
 Production has **not** been deployed or modified. Main is **not** merged.
 
-Staging/production ops readiness continues under ADR-010. DJ-STUDIO-004 P2
-real staging import and production AI rollout each require explicit authorization.
+Staging/production ops readiness continues under ADR-010. DJ-STUDIO-004 P3
+data quality and production AI rollout each require explicit authorization.
 
 ---
 
