@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 
 export type UpdateCurrentProfileInput = {
   displayName: string;
-  djName: string | null;
   bio: string | null;
   preferredLanguage: string;
 };
@@ -25,7 +24,6 @@ export async function updateCurrentProfile(input: UpdateCurrentProfileInput) {
     .from("profiles")
     .update({
       display_name: input.displayName,
-      dj_name: input.djName,
       bio: input.bio,
       preferred_language: input.preferredLanguage,
     })

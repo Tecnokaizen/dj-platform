@@ -3,7 +3,6 @@ import { updateProfile } from '@/core/identity/profile/actions/update-profile'
 type ProfileFormProps = {
   profile: {
     display_name: string | null
-    dj_name: string | null
     bio: string | null
     preferred_language: string
   }
@@ -35,30 +34,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         />
 
         <p className="mt-2 text-xs text-neutral-500">
-          Es el nombre que mostraremos dentro de la plataforma.
-        </p>
-      </div>
-
-      <div>
-        <label
-          htmlFor="djName"
-          className="mb-2 block text-sm font-medium text-neutral-200"
-        >
-          Nombre DJ
-        </label>
-
-        <input
-          id="djName"
-          name="djName"
-          type="text"
-          defaultValue={profile.dj_name ?? ''}
-          maxLength={120}
-          className="w-full rounded-lg border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition focus:border-violet-500"
-          placeholder="DJ Kaizen"
-        />
-
-        <p className="mt-2 text-xs text-neutral-500">
-          Es opcional y no crea automáticamente una ficha pública de artista.
+          Nombre genérico de cuenta. El nombre artístico vive en Perfil DJ.
         </p>
       </div>
 
@@ -77,7 +53,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           maxLength={1000}
           rows={6}
           className="w-full resize-y rounded-lg border border-white/10 bg-neutral-950 px-4 py-3 text-white outline-none transition focus:border-violet-500"
-          placeholder="Cuéntanos algo sobre tu experiencia, estilo musical o proyecto..."
+          placeholder="Cuéntanos algo sobre tu experiencia..."
         />
       </div>
 
