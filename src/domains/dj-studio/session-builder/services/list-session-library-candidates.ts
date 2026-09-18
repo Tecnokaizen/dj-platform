@@ -8,6 +8,7 @@ import {
   effectiveBpm,
   effectiveCamelotKey,
 } from '@/domains/dj-studio/session-builder/musical-rules'
+import { isSessionBuilderVisibleTag } from '@/domains/dj-studio/session-builder/tags/is-session-builder-visible-tag'
 import type { SessionCandidateSource } from '@/domains/dj-studio/session-builder/types'
 
 function decimalToNumber(value: unknown): number | null {
@@ -115,11 +116,13 @@ export async function listSessionLibraryCandidateSources(
       rating: item.rating,
       familiarity: item.familiarity,
       isFavorite: item.isFavorite,
-      tags: item.tags.map((join) => ({
-        id: join.tag.id,
-        name: join.tag.name,
-        normalizedName: join.tag.normalizedName,
-      })),
+      tags: item.tags
+        .map((join) => ({
+          id: join.tag.id,
+          name: join.tag.name,
+          normalizedName: join.tag.normalizedName,
+        }))
+        .filter((tag) => isSessionBuilderVisibleTag(tag)),
     }
   })
 }

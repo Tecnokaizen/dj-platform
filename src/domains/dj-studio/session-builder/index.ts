@@ -44,6 +44,11 @@ export {
 
 export { buildSessionCandidateShortlist } from '@/domains/dj-studio/session-builder/services/build-session-candidate-shortlist'
 export { listSessionLibraryCandidateSources } from '@/domains/dj-studio/session-builder/services/list-session-library-candidates'
+export {
+  SESSION_BUILDER_EXCLUDED_TAG_PREFIXES,
+  isSessionBuilderVisibleTag,
+  type SessionBuilderTagNameInput,
+} from '@/domains/dj-studio/session-builder/tags/is-session-builder-visible-tag'
 export { generateSessionProposal } from '@/domains/dj-studio/session-builder/services/generate-session-proposal'
 export {
   SESSION_BUILDER_GENERATED_BY,

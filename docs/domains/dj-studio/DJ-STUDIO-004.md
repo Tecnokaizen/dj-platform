@@ -693,6 +693,18 @@ Manifest parity: **18/18** (year stored as UTC Jan 1 of imported year).
 - `listSessionLibraryCandidateSources` (no provider): **18/18** eligible; missing candidate metadata **0**  
 - OpenAI: **not** invoked
 
+### P3R.2 technical tag egress filter
+
+Session Builder candidate sources **exclude** import/provenance tag namespaces:
+
+- `import:*`
+- `import-created:*`
+
+Operator/musical tags (e.g. `Latin House`, `Afro House`) remain visible to scoring and provider payload.  
+DB Tag / LibraryItemTag rows are **not** deleted. Importer marker semantics unchanged.
+
+Helper: `isSessionBuilderVisibleTag` in `session-builder/tags/`.
+
 ---
 
 ## 20.5 P4 real library Session Builder matrix A–H
