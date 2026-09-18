@@ -1,7 +1,7 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: P4 COMPLETE — P5 NOT STARTED
-updated: 2026-09-17
+status: P4R COMPLETE — P5 NOT STARTED
+updated: 2026-09-18
 related:
   - DJ-STUDIO-003-CLOSURE.md
   - DJ-STUDIO-003.md
@@ -11,12 +11,12 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** P4 COMPLETE — P5 NOT STARTED  
-**Date:** 2026-09-17  
+**Status:** P4R COMPLETE — P5 NOT STARTED  
+**Date:** 2026-09-18  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
 **Branch:** `feature/dj-studio-004`  
 **Base SHA (P0):** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
-**Staging runtime (unchanged by P0–P4):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
+**Staging runtime (unchanged by P0–P4R):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -30,8 +30,9 @@ P1 = manifest importer infrastructure (code + tests). **No real library import.*
 P1.1 = Engine DJ + Mixed In Key **pilot adapter** → canonical manifest.  
 P2 = first controlled staging Real Library pilot apply (**COMPLETE**).  
 P3 = real library data quality (read-only) (**COMPLETE**).  
-P4 = Session Builder matrix A–H on Real Library + live OpenAI (**COMPLETE**).  
-**P5 owns HUMAN DJ musical review (no auto-tuning).**
+P4 = Session Builder matrix A–H on Real Library + live OpenAI (**COMPLETE** — historical; previous Xica version).  
+P4R = controlled matrix A–H rerun after Xica correction + P3R.2 import-tag filter (**COMPLETE**).  
+**P5 owns HUMAN DJ musical review (no auto-tuning).** Current P5 review should use **P4R** evidence; original P4 remains historical.
 
 ---
 
@@ -478,7 +479,8 @@ If validation finds musical problems:
 | **P1.1.1** | Audio-extension-aware filename stem (preserve dotted titles) | **COMPLETE** |
 | **P2** | Staging Real Library org + controlled pilot import (`latin-afrohouse-pilot-001`, 18 tracks) | **COMPLETE** |
 | **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | **COMPLETE** |
-| **P4** | Session Builder matrix A–H on Real Library (provider openai) | **COMPLETE** |
+| **P4** | Session Builder matrix A–H on Real Library (provider openai) | **COMPLETE** (historical; previous Xica) |
+| **P4R** | Controlled A–H rerun after Xica correction + P3R.2 filter | **COMPLETE** |
 | **P5** | Human musical review + findings (no silent tuning) | NOT STARTED |
 | **P6** | Closure **or** follow-up tuning decision | NOT STARTED |
 
@@ -748,10 +750,69 @@ Human musical judgment: **P5**.
 
 ---
 
-## 23. Next step after P4
+## 20.6 P4R controlled Real Library matrix rerun
 
-Authorize **DJ-STUDIO-004 P5** (human DJ musical review of matrix A–H evidence)
-explicitly.
+**Purpose:** establish a new technical baseline after:
 
-Do **not** auto-start P5. Do **not** tune prompts/models/Domain from P4 evidence
-without a follow-up phase.
+1. replacing the incorrect Xica recording/version  
+2. filtering technical import tags from Session Builder candidates (P3R.2)
+
+**Not a tuning pass.** Same prompts, model, provider, Domain rules, scoring,
+shortlist, warning thresholds, duration tolerances, and energy semantics as
+original P4. Jojo human reference sequence was **not** sent to OpenAI and was
+**not** used for candidate ordering or generation hints.
+
+**Dataset (current):**
+
+- Org: DJ Kaizen Real Library (`4bb69c3b-41ca-4dfb-8bfb-1a1e80425d08`)  
+- Eligible candidates: **18/18**  
+- New Xica: `Xica Da Silva` / Aroop ROY / LI `092f58e4-921d-4ace-8a57-d0326efa524f` / BPM **127** / Camelot **3A** / Energy **7**  
+- Old Xica (Makeba 156.7 / LI `537931df-669b-4fd2-869c-54fba796f01a`): **absent** from candidates (global Track retained)  
+- Provider-visible musical tags: `Afro House`, `Latin House`  
+- Provider-visible `import:*` / `import-created:*`: **0**
+
+**Runtime:** no Coolify redeploy — branch code path with P3R.2 filter against staging data  
+**Provider:** `openai` / `gpt-5.6-terra` — Mock fallback: **NO**  
+**Writes:** GENERATE ONLY — DB write delta **0**  
+**Evidence:** `tmp/dj-studio-004-p4r/` (original `tmp/dj-studio-004-p4/` preserved)
+
+### Matrix technical outcomes (P4R)
+
+| Case | Intent | Attempts | Retry | Result | Tracks | Duration | First→Last BPM | New Xica | Latency |
+|---|---|---|---|---|---|---|---|---|---|
+| A | Sunset Afro House 90m 118→123 | 2 | yes | **FAIL** (provider timeout) | — | — | — | — | ~90s |
+| B | House warm-up 60m | 1 | no | PASS | 10 | 60.8 min (±10%) | 120→130 | YES @7 | ~42s |
+| C | Peak-time House 75m | 2 | yes | **FAIL** (provider timeout) | — | — | — | — | ~90s |
+| D | Latin/Afro crossover 75m | 2 | yes | **FAIL** (provider timeout) | — | — | — | — | ~90s |
+| E | Disco/Nu Disco 60m (stress) | 1 | no | PASS WITH LIMITATION | 10 | 59.8 min (±10%) | 118→129 | YES @7 | ~42s |
+| F | Long session 120m | 2 | yes | **FAIL** (provider timeout) | — | — | — | — | ~90s |
+| G | Vague afternoon | 2 | yes | **FAIL** (provider timeout) | — | — | — | — | ~90s |
+| H | Harmonic-focused 60m | 2 | yes | **FAIL** (provider timeout) | — | — | — | — | ~90s |
+
+No manual regenerations beyond the provider’s normal single retry.
+
+### Contract (P4R)
+
+- Unknown libraryItemIds: **0** (successful cases)  
+- Duplicate libraryItemIds: **0** (successful cases)  
+- Old Xica selections across A–H: **0**  
+- Mock fallback: **NO**  
+- Provider-visible import tags: **NONE**  
+- Privacy: no path / org / profile / private-notes egress  
+- DB write delta: **0**
+
+### Historical note
+
+Original **P4** used the previous Xica version (Makeba remix / 156.7 / 8A) and
+ran before the P3R.2 technical-tag egress filter. It remains historical evidence
+under `tmp/dj-studio-004-p4/` but is **superseded for current P5 review** by P4R.
+
+---
+
+## 23. Next step after P4R
+
+Authorize **DJ-STUDIO-004 P5** (human DJ musical review of **P4R** matrix A–H
+evidence — including timeout FAILs as technical outcomes) explicitly.
+
+Do **not** auto-start P5. Do **not** tune prompts/models/Domain from P4/P4R
+evidence without a follow-up phase. P5 is **not** complete.
