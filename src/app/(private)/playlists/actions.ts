@@ -25,22 +25,65 @@ function getString(formData: FormData, key: string): string {
   return typeof value === 'string' ? value : ''
 }
 
-function playlistPath(playlistId?: string) {
-  return playlistId ? `/playlists/${playlistId}` : '/playlists'
+function playlistPath(playlistId?: string, view?: 'edit') {
+  if (!playlistId) {
+    return '/playlists'
+  }
+  return view === 'edit'
+    ? `/playlists/${playlistId}?view=edit`
+    : `/playlists/${playlistId}`
+}
+
+function withPlaylistNotice(
+  playlistId: string,
+  noticeKey: 'error' | 'success',
+  code: string,
+  view: 'edit' = 'edit',
+) {
+  const params = new URLSearchParams({ view, [noticeKey]: code })
+  return `/playlists/${playlistId}?${params.toString()}`
 }
 
 function redirectPlaylistError(error: unknown, playlistId?: string): never {
-  const path = playlistPath(playlistId)
+  if (!playlistId) {
+    if (error instanceof ZodError) {
+      redirect(`/playlists?error=${DJ_STUDIO_PUBLIC_NOTICE_CODES.VALIDATION_ERROR}`)
+    }
+    if (error instanceof DjStudioError) {
+      redirect(
+        `/playlists?error=${mapDjStudioErrorToPublicNotice(error.code)}`,
+      )
+    }
+    redirect(`/playlists?error=${DJ_STUDIO_PUBLIC_NOTICE_CODES.UPDATE_FAILED}`)
+  }
 
   if (error instanceof ZodError) {
-    redirect(`${path}?error=${DJ_STUDIO_PUBLIC_NOTICE_CODES.VALIDATION_ERROR}`)
+    redirect(
+      withPlaylistNotice(
+        playlistId,
+        'error',
+        DJ_STUDIO_PUBLIC_NOTICE_CODES.VALIDATION_ERROR,
+      ),
+    )
   }
 
   if (error instanceof DjStudioError) {
-    redirect(`${path}?error=${mapDjStudioErrorToPublicNotice(error.code)}`)
+    redirect(
+      withPlaylistNotice(
+        playlistId,
+        'error',
+        mapDjStudioErrorToPublicNotice(error.code),
+      ),
+    )
   }
 
-  redirect(`${path}?error=${DJ_STUDIO_PUBLIC_NOTICE_CODES.UPDATE_FAILED}`)
+  redirect(
+    withPlaylistNotice(
+      playlistId,
+      'error',
+      DJ_STUDIO_PUBLIC_NOTICE_CODES.UPDATE_FAILED,
+    ),
+  )
 }
 
 export async function createPlaylistAction(formData: FormData) {
@@ -104,7 +147,11 @@ export async function addPlaylistItemAction(formData: FormData) {
   revalidatePath(`/playlists/${playlistId}`)
   revalidatePath('/playlists')
   redirect(
-    `/playlists/${playlistId}?success=${DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_ITEM_ADDED}`,
+    withPlaylistNotice(
+      playlistId,
+      'success',
+      DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_ITEM_ADDED,
+    ),
   )
 }
 
@@ -126,7 +173,11 @@ export async function updatePlaylistItemAction(formData: FormData) {
 
   revalidatePath(`/playlists/${playlistId}`)
   redirect(
-    `/playlists/${playlistId}?success=${DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_ITEM_UPDATED}`,
+    withPlaylistNotice(
+      playlistId,
+      'success',
+      DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_ITEM_UPDATED,
+    ),
   )
 }
 
@@ -143,7 +194,11 @@ export async function removePlaylistItemAction(formData: FormData) {
 
   revalidatePath(`/playlists/${playlistId}`)
   redirect(
-    `/playlists/${playlistId}?success=${DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_ITEM_REMOVED}`,
+    withPlaylistNotice(
+      playlistId,
+      'success',
+      DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_ITEM_REMOVED,
+    ),
   )
 }
 
@@ -160,14 +215,18 @@ export async function movePlaylistItemAction(formData: FormData) {
 
     if (index < 0) {
       redirect(
-        `/playlists/${playlistId}?error=${DJ_STUDIO_PUBLIC_NOTICE_CODES.VALIDATION_ERROR}`,
+        withPlaylistNotice(
+          playlistId,
+          'error',
+          DJ_STUDIO_PUBLIC_NOTICE_CODES.VALIDATION_ERROR,
+        ),
       )
     }
 
     const targetIndex = direction === 'up' ? index - 1 : index + 1
 
     if (targetIndex < 0 || targetIndex >= orderedIds.length) {
-      redirect(`/playlists/${playlistId}`)
+      redirect(playlistPath(playlistId, 'edit'))
     }
 
     const next = [...orderedIds]
@@ -181,6 +240,10 @@ export async function movePlaylistItemAction(formData: FormData) {
 
   revalidatePath(`/playlists/${playlistId}`)
   redirect(
-    `/playlists/${playlistId}?success=${DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_REORDERED}`,
+    withPlaylistNotice(
+      playlistId,
+      'success',
+      DJ_STUDIO_PUBLIC_NOTICE_CODES.PLAYLIST_REORDERED,
+    ),
   )
 }

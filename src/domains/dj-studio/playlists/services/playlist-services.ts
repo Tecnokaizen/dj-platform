@@ -91,11 +91,15 @@ export async function getPlaylist(
         orderBy: { position: 'asc' },
         include: {
           libraryItem: {
-            include: {
+            select: {
+              id: true,
+              energy: true,
+              customKey: true,
               track: {
                 select: {
                   id: true,
                   title: true,
+                  durationMs: true,
                   bpm: true,
                   musicalKey: true,
                   camelotKey: true,
