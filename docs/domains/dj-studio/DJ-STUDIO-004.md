@@ -1,6 +1,6 @@
 ---
 title: DJ-STUDIO-004 — Real Library + Musical Validation
-status: P4R COMPLETE — P5 NOT STARTED
+status: CURRENT CORRECTED A–H BASELINE COMPLETE — P5 NOT STARTED
 updated: 2026-09-18
 related:
   - DJ-STUDIO-003-CLOSURE.md
@@ -11,12 +11,12 @@ related:
 
 # DJ-STUDIO-004 — Real Library + Musical Validation
 
-**Status:** P4R COMPLETE — P5 NOT STARTED  
+**Status:** CURRENT CORRECTED A–H BASELINE COMPLETE — P5 NOT STARTED  
 **Date:** 2026-09-18  
 **Depends on:** DJ-STUDIO-003 CLOSED — STAGING LIVE AI VALIDATED  
 **Branch:** `feature/dj-studio-004`  
 **Base SHA (P0):** `a72158cda8b3cb05b1a530fd4b7f2e6c4c7d50c4`  
-**Staging runtime (unchanged by P0–P4R):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
+**Staging runtime (unchanged by P0–P4R.6):** `a9889fe83642fd5987de83c3dfb5bb361b621147`  
 **Production:** NOT AUTHORIZED  
 **Main merge:** NOT AUTHORIZED
 
@@ -31,8 +31,9 @@ P1.1 = Engine DJ + Mixed In Key **pilot adapter** → canonical manifest.
 P2 = first controlled staging Real Library pilot apply (**COMPLETE**).  
 P3 = real library data quality (read-only) (**COMPLETE**).  
 P4 = Session Builder matrix A–H on Real Library + live OpenAI (**COMPLETE** — historical; previous Xica version).  
-P4R = controlled matrix A–H rerun after Xica correction + P3R.2 import-tag filter (**COMPLETE**).  
-**P5 owns HUMAN DJ musical review (no auto-tuning).** Current P5 review should use **P4R** evidence; original P4 remains historical.
+P4R = controlled matrix A–H rerun after Xica correction + P3R.2 import-tag filter (**COMPLETE** — initial run; many timeouts).  
+P4R.2–P4R.6 = controlled recovery / timeout experiments assembling the **current corrected A–H baseline** (**COMPLETE**).  
+**P5 owns HUMAN DJ musical review (no auto-tuning).** Current P5 review should use the **assembled corrected baseline** (provenance below); original P4 remains historical.
 
 ---
 
@@ -480,7 +481,8 @@ If validation finds musical problems:
 | **P2** | Staging Real Library org + controlled pilot import (`latin-afrohouse-pilot-001`, 18 tracks) | **COMPLETE** |
 | **P3** | Data quality report (null rates BPM/Camelot/duration/energy; coverage) | **COMPLETE** |
 | **P4** | Session Builder matrix A–H on Real Library (provider openai) | **COMPLETE** (historical; previous Xica) |
-| **P4R** | Controlled A–H rerun after Xica correction + P3R.2 filter | **COMPLETE** |
+| **P4R** | Controlled A–H rerun after Xica correction + P3R.2 filter | **COMPLETE** (initial; timeouts) |
+| **P4R.2–P4R.6** | Recover / assemble current corrected A–H baseline | **COMPLETE** |
 | **P5** | Human musical review + findings (no silent tuning) | NOT STARTED |
 | **P6** | Closure **or** follow-up tuning decision | NOT STARTED |
 
@@ -805,14 +807,61 @@ No manual regenerations beyond the provider’s normal single retry.
 
 Original **P4** used the previous Xica version (Makeba remix / 156.7 / 8A) and
 ran before the P3R.2 technical-tag egress filter. It remains historical evidence
-under `tmp/dj-studio-004-p4/` but is **superseded for current P5 review** by P4R.
+under `tmp/dj-studio-004-p4/` but is **superseded for current P5 review** by the
+corrected assembled baseline (section 20.7).
 
 ---
 
-## 23. Next step after P4R
+## 20.7 Current corrected A–H baseline (assembled)
 
-Authorize **DJ-STUDIO-004 P5** (human DJ musical review of **P4R** matrix A–H
-evidence — including timeout FAILs as technical outcomes) explicitly.
+**Status:** COMPLETE for technical generation evidence — **P5 NOT COMPLETE**.
 
-Do **not** auto-start P5. Do **not** tune prompts/models/Domain from P4/P4R
+Assembled from controlled GENERATE-ONLY recoveries after the P3R.2 dataset
+correction. No Jojo human reference was sent to the provider. Product default
+adapter timeout remains **45000 ms**. Experimental **90000 ms** timeouts were
+validation-only (ephemeral operator harness); **no permanent timeout policy
+decision** has been made — deferred to follow-up / closure.
+
+### Evidence provenance
+
+| Case | Evidence source | Result | Tracks | Duration | First→Last BPM | Xica |
+|---|---|---|---:|---:|---|---|
+| A | P4R.2 | PASS | 16 | 90.82 | 118→124 | — |
+| B | P4R | PASS | 10 | 60.8 | 120→130 | YES @7 |
+| C | P4R.3 | PASS | 12 | 75.03 | 120→130 | YES @9 |
+| D | P4R.4 | PASS | 12 | 74.33 | 120→130 | YES @8 |
+| E | P4R | PASS WITH LIMITATION | 10 | 59.77 | 118→129 | YES @7 |
+| F | P4R.6 | PASS WITH LIMITATION | 18 | 106.33 | 120→124 | YES @14 |
+| G | P4R.5 | PASS WITH LIMITATION | 15 | 91.5 | 120→124 | YES @12 |
+| H | P4R.3 | PASS | 10 | 61.2 | 120→130 | YES @2 |
+
+Local evidence roots: `tmp/dj-studio-004-p4r/` … `tmp/dj-studio-004-p4r6/`  
+(original `tmp/dj-studio-004-p4/` preserved).
+
+### Timeout / recovery notes (technical only)
+
+- **D (P4R.4):** required experimental 90s budget; completed at **47044 ms** (PASS). Confirms 45s product budget too low for that generation.  
+- **F (P4R.5):** first recovery returned `INVALID_PROVIDER_PROPOSAL` (libraryItemId outside candidate set) — correctly rejected by Domain parser; contract unchanged.  
+- **F (P4R.6):** clean single recheck PASS WITH LIMITATION at **40150 ms** (duration shortfall vs 120 — unique library limit; no duplicates). Classification: transient invalid proposal.  
+- **G (P4R.5):** PASS WITH LIMITATION at **44661 ms** under experimental 90s (also &lt;45s).  
+- Product `DEFAULT_TIMEOUT_MS = 45000` **unchanged**. Timeout policy review deferred.
+
+### Contract (assembled baseline)
+
+- Unknown libraryItemIds: **0**  
+- Duplicate libraryItemIds: **0**  
+- Old Xica selections: **0**  
+- Mock fallback: **NO**  
+- Provider-visible import tags: **NONE**  
+- DB write delta: **0**  
+- Domain safety validation / allowed-ID contract: **unchanged**
+
+---
+
+## 23. Next step after corrected baseline
+
+Authorize **DJ-STUDIO-004 P5** (human DJ musical review of the **assembled
+corrected A–H baseline**, section 20.7) explicitly.
+
+Do **not** auto-start P5. Do **not** tune prompts/models/Domain from P4/P4R*
 evidence without a follow-up phase. P5 is **not** complete.
